@@ -1,7 +1,5 @@
 name: Cvent Registration
-description: The Cvent Registration API enables developers to integrate event 
-  registration functionality, manage attendee data, and automate registration 
-  workflows for events managed through the Cvent platform.
+description: The Cvent Registration API enables developers to integrate event registration functionality, manage attendee data, and automate registration workflows for events managed through the Cvent platform.
 image: https://www.cvent.com/sites/all/themes/cvent_custom/logo.png
 url: https://developer.cvent.com/
 created: '2024-01-15'
@@ -14,10 +12,10 @@ apis:
     humanURL: https://developer.cvent.com/documentation/registration
     baseURL: https://api.cvent.com/registration/v1
     tags:
-      - Events
-      - Registration
       - Attendees
       - Event Management
+      - Events
+      - Registration
       - Ticketing
     properties:
       - type: Documentation
@@ -53,8 +51,8 @@ maintainers:
   - FN: Kin Lane
     email: kin@apievangelist.com
 tags:
-  - Events
-  - Registration
-  - Event Management
   - Attendee Management
   - Conference Management
+  - Event Management
+  - Events
+  - Registration
