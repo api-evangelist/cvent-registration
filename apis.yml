@@ -1,6 +1,6 @@
 aid: cvent-registration
 name: Cvent Registration
-x-type: company
+kind: company
 description: >-
   Cvent Registration is the event registration product within the Cvent
   Event Cloud, providing online registration websites, attendee data
@@ -109,7 +109,7 @@ common:
     url: https://developers.cvent.com/docs/rest-api/explanation/authentication
   - type: OAuthTokenEndpoint
     url: https://api-platform.cvent.com/ea/oauth2/token
-  - type: Status
+  - type: StatusPage
     url: https://status.cvent.com/
   - type: Support
     url: https://support.cvent.com/
