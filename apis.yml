@@ -14,7 +14,7 @@ description: >-
   Cvent SOAP API.
 url: >-
   https://raw.githubusercontent.com/api-evangelist/cvent-registration/refs/heads/main/apis.yml
-image: https://kinlane-productions2.s3.amazonaws.com/apis-json/apis-json-logo.jpg
+image: https://kinlane-images.s3.amazonaws.com/shared/apis-json/apis-json-logo.jpg
 type: Index
 access: 3rd-Party
 position: Consuming
@@ -45,7 +45,7 @@ apis:
       Authentication uses OAuth 2.0 client credentials with the token
       endpoint at api-platform.cvent.com/ea/oauth2/token. Detailed
       registration workflows are documented in the Registration Guide.
-    image: https://kinlane-productions2.s3.amazonaws.com/apis-json/apis-json-logo.jpg
+    image: https://kinlane-images.s3.amazonaws.com/shared/apis-json/apis-json-logo.jpg
     humanURL: https://developers.cvent.com/docs/rest-api/guides/registration-guide
     baseURL: https://api-platform.cvent.com
     tags:
@@ -80,7 +80,7 @@ apis:
       configured URL, enabling reactive integration with CRM, marketing
       automation, data warehouses, and analytics without polling the
       REST API.
-    image: https://kinlane-productions2.s3.amazonaws.com/apis-json/apis-json-logo.jpg
+    image: https://kinlane-images.s3.amazonaws.com/shared/apis-json/apis-json-logo.jpg
     humanURL: https://developers.cvent.com/docs/webhooks/overview
     tags:
       - Attendees
