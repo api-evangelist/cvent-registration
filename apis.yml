@@ -99,6 +99,12 @@ apis:
       - type: TechnicalRequirements
         url: https://developers.cvent.com/docs/webhooks/technical-requirements
 common:
+  - type: TrustCenter
+    url: security/cvent-registration-trust-center.yml
+  - type: DomainSecurity
+    url: security/cvent-registration-domain-security.yml
+  - type: Authentication
+    url: authentication/cvent-registration-authentication.yml
   - type: OAuthScopes
     url: scopes/cvent-registration-scopes.yml
   - type: GitHubOrganization
