@@ -99,6 +99,8 @@ apis:
       - type: TechnicalRequirements
         url: https://developers.cvent.com/docs/webhooks/technical-requirements
 common:
+  - type: OAuthScopes
+    url: scopes/cvent-registration-scopes.yml
   - type: GitHubOrganization
     url: https://github.com/cvent
   - type: Website
@@ -125,6 +127,8 @@ common:
     url: https://twitter.com/cvent
   - type: LinkedIn
     url: https://www.linkedin.com/company/cvent/
+  - url: https://www.cvent.com/en/blog/feed.xml
+    type: Blog
 maintainers:
   - FN: Kin Lane
     email: kin@apievangelist.com
