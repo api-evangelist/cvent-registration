@@ -99,6 +99,8 @@ apis:
       - type: TechnicalRequirements
         url: https://developers.cvent.com/docs/webhooks/technical-requirements
 common:
+  - type: AgenticAccess
+    url: agentic-access/cvent-registration-agentic-access.yml
   - type: TrustCenter
     url: security/cvent-registration-trust-center.yml
   - type: DomainSecurity
