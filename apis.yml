@@ -14,7 +14,20 @@ description: >-
   Cvent SOAP API.
 url: >-
   https://raw.githubusercontent.com/api-evangelist/cvent-registration/refs/heads/main/apis.yml
-image: https://kinlane-images.s3.amazonaws.com/shared/apis-json/apis-json-logo.jpg
+accessModel:
+  pricing: freemium
+  onboarding: self-serve
+  trial: false
+  try_now: true
+  public: false
+  label: Freemium · Self-serve signup
+  confidence: high
+  source:
+  - plans
+  - authentication
+  generated: '2026-07-22'
+  method: derived
+image: https://kinlane-images.s3.amazonaws.com/shared/apis-json/icons/cvent-registration.png
 type: Index
 access: 3rd-Party
 position: Consuming
@@ -35,69 +48,135 @@ tags:
   - Ticketing
   - Webhooks
 apis:
-  - aid: cvent-registration:rest-api
-    name: Cvent Registration REST API
-    description: >-
-      The Cvent Registration REST API is the registration surface of
-      the unified Cvent Platform REST API. It allows integrations to
-      create and manage events, registration types, fees, sessions,
-      contacts, attendees, registrations, payments, and travel data.
-      Authentication uses OAuth 2.0 client credentials with the token
-      endpoint at api-platform.cvent.com/ea/oauth2/token. Detailed
-      registration workflows are documented in the Registration Guide.
-    image: https://kinlane-images.s3.amazonaws.com/shared/apis-json/apis-json-logo.jpg
-    humanURL: https://developers.cvent.com/docs/rest-api/guides/registration-guide
-    baseURL: https://api-platform.cvent.com
-    tags:
-      - Attendees
-      - Contacts
-      - Events
-      - OAuth 2.0
-      - Payments
-      - Registration
-      - REST
-      - Sessions
-      - Ticketing
-    properties:
-      - type: Documentation
-        url: https://developers.cvent.com/docs/rest-api/overview
-      - type: RegistrationGuide
-        url: https://developers.cvent.com/docs/rest-api/guides/registration-guide
-      - type: APIReference
-        url: https://developers.cvent.com/docs/rest-api/reference/reference
-      - type: Authentication
-        url: https://developers.cvent.com/docs/rest-api/explanation/authentication
-      - type: OAuthTokenEndpoint
-        url: https://api-platform.cvent.com/ea/oauth2/token
-      - type: ChangeLog
-        url: https://developers.cvent.com/docs/rest-api/changelog
-  - aid: cvent-registration:webhooks
-    name: Cvent Registration Webhooks
-    description: >-
-      Cvent Webhooks deliver real-time push notifications when
-      registration, attendee, session, and meeting request events occur
-      in Cvent. Webhook subscribers receive event payloads at a
-      configured URL, enabling reactive integration with CRM, marketing
-      automation, data warehouses, and analytics without polling the
-      REST API.
-    image: https://kinlane-images.s3.amazonaws.com/shared/apis-json/apis-json-logo.jpg
-    humanURL: https://developers.cvent.com/docs/webhooks/overview
-    tags:
-      - Attendees
-      - Events
-      - Notifications
-      - Real-Time
-      - Registration
-      - Webhooks
-    properties:
-      - type: Documentation
-        url: https://developers.cvent.com/docs/webhooks/overview
-      - type: GettingStarted
-        url: https://developers.cvent.com/docs/webhooks/tutorials/account-setup
-      - type: Guide
-        url: https://developers.cvent.com/docs/webhooks/understanding-webhooks
-      - type: TechnicalRequirements
-        url: https://developers.cvent.com/docs/webhooks/technical-requirements
+- aid: cvent-registration:rest-api
+  name: Cvent Registration REST API
+  description: >-
+    The Cvent Registration REST API is the registration surface of the unified Cvent Platform REST API.
+    It allows integrations to create and manage events, registration types, fees, sessions, contacts,
+    attendees, registrations, payments, and travel data. Authentication uses OAuth 2.0 client credentials
+    with the token endpoint at api-platform.cvent.com/ea/oauth2/token. Detailed registration workflows
+    are documented in the Registration Guide.
+  image: https://kinlane-images.s3.amazonaws.com/shared/apis-json/apis-json-logo.jpg
+  humanURL: https://developers.cvent.com/docs/rest-api/guides/registration-guide
+  baseURL: https://api-platform.cvent.com
+  tags:
+  - Attendees
+  - Contacts
+  - Events
+  - OAuth 2.0
+  - Payments
+  - Registration
+  - REST
+  - Sessions
+  - Ticketing
+  properties:
+  - type: Documentation
+    url: https://developers.cvent.com/docs/rest-api/overview
+  - type: RegistrationGuide
+    url: https://developers.cvent.com/docs/rest-api/guides/registration-guide
+  - type: APIReference
+    url: https://developers.cvent.com/docs/rest-api/reference/reference
+  - type: Authentication
+    url: https://developers.cvent.com/docs/rest-api/explanation/authentication
+  - type: OAuthTokenEndpoint
+    url: https://api-platform.cvent.com/ea/oauth2/token
+  - type: ChangeLog
+    url: https://developers.cvent.com/docs/rest-api/changelog
+- aid: cvent-registration:webhooks
+  name: Cvent Registration Webhooks
+  description: >-
+    Cvent Webhooks deliver real-time push notifications when registration, attendee, session, and meeting
+    request events occur in Cvent. Webhook subscribers receive event payloads at a configured URL, enabling
+    reactive integration with CRM, marketing automation, data warehouses, and analytics without polling
+    the REST API.
+  image: https://kinlane-images.s3.amazonaws.com/shared/apis-json/apis-json-logo.jpg
+  humanURL: https://developers.cvent.com/docs/webhooks/overview
+  tags:
+  - Attendees
+  - Events
+  - Notifications
+  - Real-Time
+  - Registration
+  - Webhooks
+  properties:
+  - type: Documentation
+    url: https://developers.cvent.com/docs/webhooks/overview
+  - type: GettingStarted
+    url: https://developers.cvent.com/docs/webhooks/tutorials/account-setup
+  - type: Guide
+    url: https://developers.cvent.com/docs/webhooks/understanding-webhooks
+  - type: TechnicalRequirements
+    url: https://developers.cvent.com/docs/webhooks/technical-requirements
+- aid: cvent-registration:cvent-registration-attendees-api
+  name: Cvent Registration Attendees API
+  description: Event registrations and attendees
+  humanURL: https://developers.cvent.com/docs/rest-api/guides/registration-guide
+  baseURL: https://api-platform.cvent.com
+  tags:
+  - Attendees
+  properties:
+  - type: OpenAPI
+    url: openapi/cvent-registration-attendees-api-openapi.yml
+- aid: cvent-registration:cvent-registration-contacts-api
+  name: Cvent Registration Contacts API
+  description: Contact/address book
+  humanURL: https://developers.cvent.com/docs/rest-api/guides/registration-guide
+  baseURL: https://api-platform.cvent.com
+  tags:
+  - Contacts
+  properties:
+  - type: OpenAPI
+    url: openapi/cvent-registration-contacts-api-openapi.yml
+- aid: cvent-registration:cvent-registration-events-api
+  name: Cvent Registration Events API
+  description: Event lifecycle and configuration
+  humanURL: https://developers.cvent.com/docs/rest-api/guides/registration-guide
+  baseURL: https://api-platform.cvent.com
+  tags:
+  - Events
+  properties:
+  - type: OpenAPI
+    url: openapi/cvent-registration-events-api-openapi.yml
+- aid: cvent-registration:cvent-registration-exhibitors-api
+  name: Cvent Registration Exhibitors API
+  description: Exhibitor management
+  humanURL: https://developers.cvent.com/docs/rest-api/guides/registration-guide
+  baseURL: https://api-platform.cvent.com
+  tags:
+  - Exhibitors
+  properties:
+  - type: OpenAPI
+    url: openapi/cvent-registration-exhibitors-api-openapi.yml
+- aid: cvent-registration:cvent-registration-oauth-api
+  name: Cvent Registration OAuth API
+  description: OAuth 2.0 token issuance
+  humanURL: https://developers.cvent.com/docs/rest-api/guides/registration-guide
+  baseURL: https://api-platform.cvent.com
+  tags:
+  - OAuth
+  properties:
+  - type: OpenAPI
+    url: openapi/cvent-registration-oauth-api-openapi.yml
+- aid: cvent-registration:cvent-registration-sessions-api
+  name: Cvent Registration Sessions API
+  description: Agenda sessions
+  humanURL: https://developers.cvent.com/docs/rest-api/guides/registration-guide
+  baseURL: https://api-platform.cvent.com
+  tags:
+  - Sessions
+  properties:
+  - type: OpenAPI
+    url: openapi/cvent-registration-sessions-api-openapi.yml
+- aid: cvent-registration:cvent-registration-webhooks-api
+  name: Cvent Registration Webhooks API
+  description: Webhook subscriptions
+  humanURL: https://developers.cvent.com/docs/rest-api/guides/registration-guide
+  baseURL: https://api-platform.cvent.com
+  tags:
+  - Webhooks
+  properties:
+  - type: OpenAPI
+    url: openapi/cvent-registration-webhooks-api-openapi.yml
 common:
   - type: AgenticAccess
     url: agentic-access/cvent-registration-agentic-access.yml
