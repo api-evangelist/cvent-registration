@@ -1,0 +1,26 @@
+{
+  "provider": "cvent-registration",
+  "sources": [
+    "cvent-registration-attendees-api-openapi.yml",
+    "cvent-registration-contacts-api-openapi.yml",
+    "cvent-registration-events-api-openapi.yml",
+    "cvent-registration-exhibitors-api-openapi.yml",
+    "cvent-registration-oauth-api-openapi.yml",
+    "cvent-registration-sessions-api-openapi.yml",
+    "cvent-registration-webhooks-api-openapi.yml"
+  ],
+  "outputs": [
+    "cvent-registration-attendees-api-openapi.yml",
+    "cvent-registration-contacts-api-openapi.yml",
+    "cvent-registration-events-api-openapi.yml",
+    "cvent-registration-exhibitors-api-openapi.yml",
+    "cvent-registration-oauth-api-openapi.yml",
+    "cvent-registration-sessions-api-openapi.yml",
+    "cvent-registration-webhooks-api-openapi.yml"
+  ],
+  "archived": [],
+  "errors": [],
+  "warnings": [],
+  "notes": [],
+  "skipped": []
+}
