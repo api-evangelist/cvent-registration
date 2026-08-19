@@ -1,0 +1,524 @@
+{
+  "item": [
+    {
+      "id": "fa22f649-8786-47a9-aecb-58305e267f8a",
+      "name": "Attendees",
+      "description": {
+        "content": "Event registrations and attendees",
+        "type": "text/plain"
+      },
+      "item": [
+        {
+          "id": "7636520e-223d-42e2-99af-be6e4809925b",
+          "name": "List attendees for an event",
+          "request": {
+            "name": "List attendees for an event",
+            "description": {},
+            "url": {
+              "path": [
+                "ea",
+                "events",
+                ":eventId",
+                "attendees"
+              ],
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "query": [
+                {
+                  "disabled": false,
+                  "key": "limit",
+                  "value": "50"
+                },
+                {
+                  "disabled": false,
+                  "key": "token",
+                  "value": "<string>",
+                  "description": "Continuation token for paged results."
+                }
+              ],
+              "variable": [
+                {
+                  "disabled": false,
+                  "type": "any",
+                  "value": "<string>",
+                  "key": "eventId",
+                  "description": "(Required) "
+                }
+              ]
+            },
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "method": "GET",
+            "auth": null
+          },
+          "response": [
+            {
+              "id": "0ca1245d-f242-47f0-bf18-f206a8c00acf",
+              "name": "Paginated attendee list",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "ea",
+                    "events",
+                    ":eventId",
+                    "attendees"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [
+                    {
+                      "key": "limit",
+                      "value": "50"
+                    },
+                    {
+                      "key": "token",
+                      "value": "<string>"
+                    }
+                  ],
+                  "variable": [
+                    {
+                      "disabled": false,
+                      "type": "any",
+                      "value": "<string>",
+                      "key": "eventId",
+                      "description": "(Required) "
+                    }
+                  ]
+                },
+                "header": [
+                  {
+                    "description": {
+                      "content": "Added as a part of security scheme: oauth2",
+                      "type": "text/plain"
+                    },
+                    "key": "Authorization",
+                    "value": "<token>"
+                  },
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
+                "method": "GET",
+                "body": {}
+              },
+              "status": "OK",
+              "code": 200,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"data\": [\n    {\n      \"id\": \"string\",\n      \"contactId\": \"string\",\n      \"eventId\": \"string\",\n      \"registrationStatus\": \"DECLINED\",\n      \"registrationTypeId\": \"string\",\n      \"admissionItemId\": \"string\",\n      \"attendanceType\": \"VIRTUAL\",\n      \"checkedIn\": false,\n      \"registered\": \"1955-06-04T02:03:58.251Z\"\n    },\n    {\n      \"id\": \"string\",\n      \"contactId\": \"string\",\n      \"eventId\": \"string\",\n      \"registrationStatus\": \"ACCEPTED\",\n      \"registrationTypeId\": \"string\",\n      \"admissionItemId\": \"string\",\n      \"attendanceType\": \"IN_PERSON\",\n      \"checkedIn\": true,\n      \"registered\": \"1968-07-22T04:29:44.809Z\"\n    }\n  ],\n  \"paging\": {\n    \"token\": \"string\",\n    \"limit\": 1892\n  }\n}",
+              "cookie": [],
+              "_postman_previewlanguage": "json"
+            }
+          ],
+          "event": [],
+          "protocolProfileBehavior": {
+            "disableBodyPruning": true
+          }
+        },
+        {
+          "id": "db07d141-51c4-43f5-a7e1-324f0a6ea402",
+          "name": "Add attendees (register contacts)",
+          "request": {
+            "name": "Add attendees (register contacts)",
+            "description": {},
+            "url": {
+              "path": [
+                "ea",
+                "events",
+                ":eventId",
+                "attendees"
+              ],
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "query": [],
+              "variable": [
+                {
+                  "disabled": false,
+                  "type": "any",
+                  "value": "<string>",
+                  "key": "eventId",
+                  "description": "(Required) "
+                }
+              ]
+            },
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "method": "POST",
+            "auth": null,
+            "body": {
+              "mode": "raw",
+              "raw": "[\n  {\n    \"id\": \"<string>\",\n    \"contactId\": \"<string>\",\n    \"eventId\": \"<string>\",\n    \"registrationStatus\": \"<string>\",\n    \"registrationTypeId\": \"<string>\",\n    \"admissionItemId\": \"<string>\",\n    \"attendanceType\": \"<string>\",\n    \"checkedIn\": \"<boolean>\",\n    \"registered\": \"<dateTime>\"\n  },\n  {\n    \"id\": \"<string>\",\n    \"contactId\": \"<string>\",\n    \"eventId\": \"<string>\",\n    \"registrationStatus\": \"<string>\",\n    \"registrationTypeId\": \"<string>\",\n    \"admissionItemId\": \"<string>\",\n    \"attendanceType\": \"<string>\",\n    \"checkedIn\": \"<boolean>\",\n    \"registered\": \"<dateTime>\"\n  }\n]",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": [
+            {
+              "id": "b0db1043-c353-4b13-8ace-6fe2534e7571",
+              "name": "Attendees registered",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "ea",
+                    "events",
+                    ":eventId",
+                    "attendees"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [],
+                  "variable": [
+                    {
+                      "disabled": false,
+                      "type": "any",
+                      "value": "<string>",
+                      "key": "eventId",
+                      "description": "(Required) "
+                    }
+                  ]
+                },
+                "header": [
+                  {
+                    "description": {
+                      "content": "Added as a part of security scheme: oauth2",
+                      "type": "text/plain"
+                    },
+                    "key": "Authorization",
+                    "value": "<token>"
+                  }
+                ],
+                "method": "POST",
+                "body": {
+                  "mode": "raw",
+                  "raw": "[\n  {\n    \"id\": \"string\",\n    \"contactId\": \"string\",\n    \"eventId\": \"string\",\n    \"registrationStatus\": \"REGISTERED\",\n    \"registrationTypeId\": \"string\",\n    \"admissionItemId\": \"string\",\n    \"attendanceType\": \"VIRTUAL\",\n    \"checkedIn\": false,\n    \"registered\": \"1963-09-09T08:29:10.558Z\"\n  },\n  {\n    \"id\": \"string\",\n    \"contactId\": \"string\",\n    \"eventId\": \"string\",\n    \"registrationStatus\": \"REGISTERED\",\n    \"registrationTypeId\": \"string\",\n    \"admissionItemId\": \"string\",\n    \"attendanceType\": \"VIRTUAL\",\n    \"checkedIn\": false,\n    \"registered\": \"2016-12-11T00:07:43.310Z\"\n  }\n]",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                }
+              },
+              "status": "Created",
+              "code": 201,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "text/plain"
+                }
+              ],
+              "body": "",
+              "cookie": [],
+              "_postman_previewlanguage": "text"
+            }
+          ],
+          "event": [],
+          "protocolProfileBehavior": {
+            "disableBodyPruning": true
+          }
+        },
+        {
+          "id": "401aef1f-beb3-4dc9-8ac2-8feb7ce1719f",
+          "name": "Get attendee",
+          "request": {
+            "name": "Get attendee",
+            "description": {},
+            "url": {
+              "path": [
+                "ea",
+                "events",
+                ":eventId",
+                "attendees",
+                ":attendeeId"
+              ],
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "query": [],
+              "variable": [
+                {
+                  "disabled": false,
+                  "type": "any",
+                  "value": "<string>",
+                  "key": "eventId",
+                  "description": "(Required) "
+                },
+                {
+                  "disabled": false,
+                  "type": "any",
+                  "value": "<string>",
+                  "key": "attendeeId",
+                  "description": "(Required) "
+                }
+              ]
+            },
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "method": "GET",
+            "auth": null
+          },
+          "response": [
+            {
+              "id": "6123c29b-3050-4954-bc83-16b9ccab332c",
+              "name": "Attendee detail",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "ea",
+                    "events",
+                    ":eventId",
+                    "attendees",
+                    ":attendeeId"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [],
+                  "variable": [
+                    {
+                      "disabled": false,
+                      "type": "any",
+                      "value": "<string>",
+                      "key": "eventId",
+                      "description": "(Required) "
+                    },
+                    {
+                      "disabled": false,
+                      "type": "any",
+                      "value": "<string>",
+                      "key": "attendeeId",
+                      "description": "(Required) "
+                    }
+                  ]
+                },
+                "header": [
+                  {
+                    "description": {
+                      "content": "Added as a part of security scheme: oauth2",
+                      "type": "text/plain"
+                    },
+                    "key": "Authorization",
+                    "value": "<token>"
+                  },
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
+                "method": "GET",
+                "body": {}
+              },
+              "status": "OK",
+              "code": 200,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"id\": \"string\",\n  \"contactId\": \"string\",\n  \"eventId\": \"string\",\n  \"registrationStatus\": \"WAITLISTED\",\n  \"registrationTypeId\": \"string\",\n  \"admissionItemId\": \"string\",\n  \"attendanceType\": \"VIRTUAL\",\n  \"checkedIn\": true,\n  \"registered\": \"1975-08-09T20:10:03.783Z\"\n}",
+              "cookie": [],
+              "_postman_previewlanguage": "json"
+            }
+          ],
+          "event": [],
+          "protocolProfileBehavior": {
+            "disableBodyPruning": true
+          }
+        },
+        {
+          "id": "e5810a35-c06e-4468-8998-68c9910c012a",
+          "name": "Update attendee (cancel, modify)",
+          "request": {
+            "name": "Update attendee (cancel, modify)",
+            "description": {},
+            "url": {
+              "path": [
+                "ea",
+                "events",
+                ":eventId",
+                "attendees",
+                ":attendeeId"
+              ],
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "query": [],
+              "variable": [
+                {
+                  "disabled": false,
+                  "type": "any",
+                  "value": "<string>",
+                  "key": "eventId",
+                  "description": "(Required) "
+                },
+                {
+                  "disabled": false,
+                  "type": "any",
+                  "value": "<string>",
+                  "key": "attendeeId",
+                  "description": "(Required) "
+                }
+              ]
+            },
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "method": "PUT",
+            "auth": null,
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"id\": \"<string>\",\n  \"contactId\": \"<string>\",\n  \"eventId\": \"<string>\",\n  \"registrationStatus\": \"<string>\",\n  \"registrationTypeId\": \"<string>\",\n  \"admissionItemId\": \"<string>\",\n  \"attendanceType\": \"<string>\",\n  \"checkedIn\": \"<boolean>\",\n  \"registered\": \"<dateTime>\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": [
+            {
+              "id": "cfa201a7-1a0f-4120-ae8f-fe07b0881ddf",
+              "name": "Updated attendee",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "ea",
+                    "events",
+                    ":eventId",
+                    "attendees",
+                    ":attendeeId"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [],
+                  "variable": [
+                    {
+                      "disabled": false,
+                      "type": "any",
+                      "value": "<string>",
+                      "key": "eventId",
+                      "description": "(Required) "
+                    },
+                    {
+                      "disabled": false,
+                      "type": "any",
+                      "value": "<string>",
+                      "key": "attendeeId",
+                      "description": "(Required) "
+                    }
+                  ]
+                },
+                "header": [
+                  {
+                    "description": {
+                      "content": "Added as a part of security scheme: oauth2",
+                      "type": "text/plain"
+                    },
+                    "key": "Authorization",
+                    "value": "<token>"
+                  },
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
+                "method": "PUT",
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"id\": \"<string>\",\n  \"contactId\": \"<string>\",\n  \"eventId\": \"<string>\",\n  \"registrationStatus\": \"<string>\",\n  \"registrationTypeId\": \"<string>\",\n  \"admissionItemId\": \"<string>\",\n  \"attendanceType\": \"<string>\",\n  \"checkedIn\": \"<boolean>\",\n  \"registered\": \"<dateTime>\"\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                }
+              },
+              "status": "OK",
+              "code": 200,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"id\": \"string\",\n  \"contactId\": \"string\",\n  \"eventId\": \"string\",\n  \"registrationStatus\": \"WAITLISTED\",\n  \"registrationTypeId\": \"string\",\n  \"admissionItemId\": \"string\",\n  \"attendanceType\": \"VIRTUAL\",\n  \"checkedIn\": true,\n  \"registered\": \"1975-08-09T20:10:03.783Z\"\n}",
+              "cookie": [],
+              "_postman_previewlanguage": "json"
+            }
+          ],
+          "event": [],
+          "protocolProfileBehavior": {
+            "disableBodyPruning": true
+          }
+        }
+      ],
+      "event": []
+    }
+  ],
+  "event": [],
+  "variable": [
+    {
+      "type": "string",
+      "value": "https://api-platform.cvent.com",
+      "key": "baseUrl"
+    }
+  ],
+  "auth": {
+    "type": "oauth2",
+    "oauth2": [
+      {
+        "key": "scope",
+        "value": "event/events:read event/events:write event/contacts:read event/contacts:write event/attendees:read event/attendees:write event/sessions:read event/registration-types:read event/custom-fields:read"
+      },
+      {
+        "key": "accessTokenUrl",
+        "value": "https://api-platform.cvent.com/ea/oauth2/token"
+      },
+      {
+        "key": "grant_type",
+        "value": "client_credentials"
+      }
+    ]
+  },
+  "info": {
+    "_postman_id": "167708ba-8952-46c4-b793-f22dec9cc928",
+    "name": "Cvent Registration REST Attendees API",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+    "description": {
+      "content": "Registration surface of the Cvent Platform REST API — manage\nevents, registration types, contacts, attendees, and webhook\nsubscriptions for registration lifecycle events. Provides programmatic access to events, contacts,\nregistrations, attendees, sessions, exhibitors, surveys, webhooks, and\nrelated Event Cloud resources, authenticated via OAuth 2.0 client\ncredentials. Endpoint host varies by region — US accounts use\napi-platform.cvent.com and EMEA accounts use api-platform-eur.cvent.com.\n\nBest-effort spec derived from Cvent developer portal documentation\n(overview, quickstart, Registration Guide, Managing Events Guide).\nRefer to https://developers.cvent.com/docs/rest-api/overview for the\nauthoritative reference and downloadable OpenAPI.\n\n\nContact Support:\n Name: Cvent Developer Portal",
+      "type": "text/plain"
+    }
+  }
+}
