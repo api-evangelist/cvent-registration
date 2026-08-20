@@ -39,6 +39,19 @@ tags:
   - Attendees
   - Conferences
   - Event Management
+  - Event
+  - Authentication
+  - On-Site Check-In
+  - Payments
+  - Registration
+  - REST API
+  - Ticketing
+  - Webhook
+tags_raw:
+  - Attendee Management
+  - Attendees
+  - Conferences
+  - Event Management
   - Events
   - OAuth 2.0
   - On-Site Check-In
@@ -60,6 +73,16 @@ apis:
   humanURL: https://developers.cvent.com/docs/rest-api/guides/registration-guide
   baseURL: https://api-platform.cvent.com
   tags:
+  - Attendees
+  - Contacts
+  - Event
+  - Authentication
+  - Payments
+  - Registration
+  - REST
+  - Sessions
+  - Ticketing
+  tags_raw:
   - Attendees
   - Contacts
   - Events
@@ -92,6 +115,13 @@ apis:
   image: https://kinlane-images.s3.amazonaws.com/shared/apis-json/apis-json-logo.jpg
   humanURL: https://developers.cvent.com/docs/webhooks/overview
   tags:
+  - Attendees
+  - Event
+  - Notification
+  - Real-Time
+  - Registration
+  - Webhook
+  tags_raw:
   - Attendees
   - Events
   - Notifications
@@ -133,6 +163,8 @@ apis:
   humanURL: https://developers.cvent.com/docs/rest-api/guides/registration-guide
   baseURL: https://api-platform.cvent.com
   tags:
+  - Event
+  tags_raw:
   - Events
   properties:
   - type: OpenAPI
@@ -153,6 +185,8 @@ apis:
   humanURL: https://developers.cvent.com/docs/rest-api/guides/registration-guide
   baseURL: https://api-platform.cvent.com
   tags:
+  - Authentication
+  tags_raw:
   - OAuth
   properties:
   - type: OpenAPI
@@ -173,6 +207,8 @@ apis:
   humanURL: https://developers.cvent.com/docs/rest-api/guides/registration-guide
   baseURL: https://api-platform.cvent.com
   tags:
+  - Webhook
+  tags_raw:
   - Webhooks
   properties:
   - type: OpenAPI
