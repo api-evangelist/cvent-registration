@@ -1,6 +1,6 @@
-openapi: 3.1.0
+openapi: 3.2.0
 info:
-  title: Cvent Registration REST Attendees OAuth API
+  title: Cvent Registration REST Attendees O Auth API
   version: v2
   description: 'Registration surface of the Cvent Platform REST API — manage
 
@@ -81,13 +81,6 @@ paths:
         '401':
           $ref: '#/components/responses/Unauthorized'
 components:
-  responses:
-    Unauthorized:
-      description: Missing or invalid OAuth credentials
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/Error'
   schemas:
     AccessToken:
       type: object
@@ -113,6 +106,13 @@ components:
           type: integer
         detail:
           type: string
+  responses:
+    Unauthorized:
+      description: Missing or invalid OAuth credentials
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
   securitySchemes:
     OAuth2ClientCredentials:
       type: oauth2
