@@ -1,0 +1,66 @@
+generated: '2026-09-07'
+method: searched
+source: https://developers.cvent.com/docs/rest-api/changelog
+description: >-
+  Cvent publishes a single dated changelog for the whole Platform REST API, structured with
+  Added / New APIs / New Tags / Updated / Deprecated sections per release. It runs continuously
+  from September 2022 to the present — 68 dated releases — on a roughly biweekly cadence tied to
+  Cvent's two-day release windows. Entry titles and section labels below are read verbatim from
+  that page; highlights are recorded only for the two most recent releases, where the section
+  contents could be attributed unambiguously.
+scheme: date-based
+cadence: biweekly (two-day release windows, e.g. "August 19–20, 2026")
+current_version: ea
+current_spec_version: 1.6.1 (SDK release generated from this contract, 2026-08-21)
+entry_count_published: 68
+window: 2022-09 .. 2026-08
+url: https://developers.cvent.com/docs/rest-api/changelog
+entries:
+- title: REST API Updates (August 19–20, 2026)
+  date: '2026-08-20'
+  sections: [New APIs, New Tags, Updated]
+  breaking: false
+  additions: true
+  highlights:
+    - New Orders surface — list orders for an account, get an order, list order items, get an order item.
+    - New Transactions surface — list transactions for an account, get a transaction, list transaction items, get a transaction item.
+    - Meeting-room images — associate an image with a meeting room, list images for a meeting room, remove an image.
+    - AttendeeStatus schema description updated to document "Pending Approval -> Cancelled" as a supported status transition.
+    - Attendee Messages supported-type description expanded (session chats, exhibitor chats, text discussions, 1:1 attendee messaging, group messaging).
+    - housing-event-hotel schema gains reservationAccessDate, a reservation close date, and a rewardPrograms array.
+    - PolicyValueType gains a boolean enum value.
+- title: REST API Updates (August 5–6, 2026)
+  date: '2026-08-06'
+  sections: [Updated]
+  breaking: false
+  additions: false
+  highlights:
+    - BudgetVendor vendor.type now includes REPOSITE, indicating a vendor sourced from Reposite.
+    - air-actual-detail response documents minItems 0 on the air actuals array.
+    - RfpRequest gains an optional preferredVenueIntegrations array (maxItems 1) of VenueIntegrationType.
+    - New business-transient/bids:read OAuth2 scope alongside business-transient/proposals:read.
+- { title: 'REST API Updates (July 22-23)', date: '2026-07-23', sections: [Added, New APIs, New Tags, Updated] }
+- { title: 'REST API Updates (July 7–8, 2026)', date: '2026-07-08', sections: [Updated] }
+- { title: 'REST API Updates (June 17–18, 2026)', date: '2026-06-18', sections: [Added, Updated] }
+- { title: 'REST API Updates (June 3–4, 2026)', date: '2026-06-04', sections: [Added, Updated] }
+- { title: 'REST API Updates (May 20–21, 2026)', date: '2026-05-21', sections: [Added, Updated] }
+- { title: 'REST API Updates (May 6–7, 2026)', date: '2026-05-07', sections: [Updated] }
+- { title: 'REST API Updates (April 22–23, 2026)', date: '2026-04-23', sections: [Added, Updated] }
+- { title: 'REST API Updates (April 8–9, 2026)', date: '2026-04-09', sections: [Updated] }
+- { title: 'REST API Updates (March 25–26, 2026)', date: '2026-03-26', sections: [Updated] }
+- { title: 'REST API Updates (March 12, 2026)', date: '2026-03-12', sections: [Added, Updated] }
+- { title: 'REST API Updates (February 25–26, 2026)', date: '2026-02-26', sections: [Updated] }
+- { title: 'REST API Updates (February 11–12, 2026)', date: '2026-02-12', sections: [Added, Updated] }
+- { title: 'REST API Updates (January 14–15, 2026)', date: '2026-01-15', sections: [Added, Updated] }
+deprecations:
+  mechanism: '"Deprecated" sections in this changelog'
+  occurrences: 14
+  most_recent_year: 2025
+  note: >-
+    Fourteen releases between 2023 and 2025 carry a Deprecated section; none of the fifteen 2026
+    releases listed above does. There is no Sunset/Deprecation response header, so the changelog
+    is the only deprecation channel. See lifecycle/cvent-registration-lifecycle.yml.
+sdk_release_notes:
+  - https://github.com/cvent/rest-sdks/blob/main/packages/typescript/RELEASES.md
+  - https://github.com/cvent/rest-sdks/blob/main/packages/java/RELEASES.md
+  - https://github.com/cvent/rest-sdks/blob/main/packages/csharp/RELEASES.md

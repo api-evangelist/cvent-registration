@@ -1,0 +1,123 @@
+generated: '2026-09-07'
+method: searched
+source: https://github.com/cvent/rest-sdks/blob/main/cvent-public-spec/openapi.yaml
+sources:
+  - https://github.com/cvent/rest-sdks/blob/main/cvent-public-spec/openapi.yaml
+  - https://developers.cvent.com/docs/rest-api/reference/api-standards
+  - https://trust.cvent.com/
+description: >-
+  Cross-cutting and domain standards asserted by the Cvent Platform REST contract itself, plus
+  the compliance programme published on Cvent's trust center. Every entry cites the exact spec
+  location or page it was read from.
+conformance:
+  - id: oauth2
+    name: OAuth 2.0 (RFC 6749)
+    conforms: true
+    evidence: >-
+      components.securitySchemes.OAuth2.clientCredentials and OAuth2.authorizationCode in
+      openapi/_original/cvent-rest-apis-openapi.yaml; authorizationUrl
+      https://api-platform.cvent.com/ea/oauth2/authorize, tokenUrl .../ea/oauth2/token,
+      238 declared scopes. Authorization-code flow is restricted to planner users holding the
+      administrator role.
+  - id: scim2
+    name: SCIM 2.0 — System for Cross-domain Identity Management (RFC 7643 / RFC 7644)
+    conforms: true
+    domain_standard: true
+    evidence: >-
+      Eleven operations under /scim/v2/* (Users, Groups, Schemas, ResourceTypes,
+      ServiceProviderConfig) declaring the canonical URNs
+      urn:ietf:params:scim:schemas:core:2.0:User,
+      urn:ietf:params:scim:schemas:extension:enterprise:2.0:User,
+      urn:ietf:params:scim:api:messages:2.0:ListResponse and
+      urn:ietf:params:scim:api:messages:2.0:Error, plus the SCIM scimType enum
+      (invalidFilter, uniqueness, invalidSyntax, invalidValue). See
+      openapi/cvent-registration-scim-api-openapi.yml.
+    note: >-
+      This is the domain-standard signature for the identity/provisioning half of the platform:
+      an IdP that already speaks SCIM provisions Cvent users with no bespoke connector.
+  - id: iso8601
+    name: ISO 8601 date-time, UTC with Z suffix
+    conforms: true
+    evidence: >-
+      https://developers.cvent.com/docs/rest-api/reference/api-standards — "Date-Time Format and
+      UTC": all date-times use ISO 8601 with a zero UTC offset indicated by the Z (Zulu) suffix.
+      Documented exception: custom fields/questions that are date-time, and meeting-request-form
+      event start/end dates, are NOT in UTC and carry no Z.
+  - id: iso4217
+    name: ISO 4217 currency codes
+    conforms: true
+    evidence: api-standards, "Currency Codes in REST API Requests".
+  - id: iso3166
+    name: ISO 3166 country and region codes
+    conforms: true
+    evidence: api-standards, "Country Codes" and "Region Codes in REST API Requests" (with stated exceptions).
+  - id: iana-tz
+    name: IANA time zone identifiers
+    conforms: true
+    evidence: api-standards, "Time Zones in REST API Requests" / "Supported Timezones" table.
+  - id: cursor-pagination
+    name: Cursor (token) pagination
+    conforms: true
+    evidence: >-
+      paging.currentToken / nextToken / previousToken with a token query parameter, described in
+      the contract's info.description and formalised by Cvent's own pagination overlay
+      (overlays/cvent-registration-pagination-overlay.yaml, x-speakeasy-pagination type cursor,
+      nextCursor $.paging.nextToken).
+  - id: rfc9457
+    name: RFC 9457 Problem Details for HTTP APIs
+    conforms: false
+    evidence: >-
+      Zero occurrences of application/problem+json in the 2MB contract. Errors use a Cvent-specific
+      code/message/target/details envelope. See errors/cvent-registration-problem-types.yml.
+  - id: idempotency
+    name: Idempotency-Key on unsafe methods
+    conforms: false
+    evidence: >-
+      Zero occurrences of "idempoten" anywhere in the contract or the developer portal guides.
+      No replay-protection header is defined on any of the 211 registration-surface write operations.
+  - id: rfc8594
+    name: RFC 8594 Sunset / Deprecation headers
+    conforms: false
+    evidence: >-
+      No Sunset or Deprecation response header is declared. Deprecation is announced in prose on
+      the dated changelog only. See lifecycle/cvent-registration-lifecycle.yml.
+  - id: openapi3
+    name: OpenAPI 3.0.2
+    conforms: true
+    evidence: >-
+      openapi/_original/cvent-rest-apis-openapi.yaml declares openapi 3.0.2 — 356 paths,
+      469 operations, 1290 component schemas. First-party, and the source Cvent generates its
+      own TypeScript/Java/C# SDKs from.
+  - id: soap-wsdl
+    name: WSDL 1.1 / SOAP 1.1 + 1.2
+    conforms: true
+    evidence: >-
+      wsdl/cvent-registration-soap-v200611.wsdl, fetched verbatim from
+      https://api.cvent.com/soap/V200611.ASMX?WSDL (HTTP 200, 330,911 bytes),
+      targetNamespace http://api.cvent.com/2006-11. The legacy Cvent SOAP API is still served.
+  - id: openapi-overlay
+    name: OpenAPI Overlay 1.0.0
+    conforms: true
+    evidence: >-
+      Cvent publishes five first-party Overlay 1.0.0 documents in its SDK monorepo and applies
+      them in .speakeasy/workflow.yaml. Saved verbatim under overlays/.
+compliance:
+  published: true
+  source: https://trust.cvent.com/
+  certifications:
+    - SOC 2
+    - ISO 27001
+    - ISO 27017
+    - ISO 27018
+    - PCI DSS
+    - CSA STAR
+    - FedRAMP
+    - TX-RAMP
+    - StateRAMP
+  regimes:
+    - GDPR
+    - HIPAA
+  note: >-
+    Read from the Cvent trust center (SafeBase-hosted). Certification names are those the trust
+    center itself lists for Cvent; other vendor names appearing on that page belong to Cvent's
+    subprocessor list and are not attributed here.

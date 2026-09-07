@@ -1,0 +1,1767 @@
+generated: '2026-09-07'
+method: derived
+source: openapi/cvent-registration-*-openapi.yml
+description: Entity-relationship graph derived from the 17 registration-surface OpenAPI slices, which are themselves
+  cut from Cvent's own published contract. Relationships are read from real $ref links and real *Id reference fields
+  in components.schemas; nothing here is invented. Schema names are Cvent's own (they are inconsistent in the source
+  spec — event, event1, event.json2 are the same object seen from different operations — so names are canonicalised
+  by stripping trailing digits and .json).
+summary:
+  resource_schemas: 161
+  relationships: 230
+entities:
+- name: attendee
+  schema_aliases:
+  - attendee
+  field_count: 41
+  description: An event attendee.
+- name: event
+  schema_aliases:
+  - event.json1
+  - event.json2
+  - event.json4
+  - event1
+  field_count: 37
+  description: Represents an event.
+- name: SessionBase
+  schema_aliases:
+  - SessionBase
+  field_count: 35
+  description: Used to denote a session and all of its attributes.
+- name: AttendeeContact
+  schema_aliases:
+  - AttendeeContact
+  field_count: 33
+  description: An Attendee Contact
+- name: session
+  schema_aliases:
+  - session1
+  field_count: 22
+  description: Represents an event session.
+- name: order-item-response
+  schema_aliases:
+  - order-item-response
+  field_count: 20
+  description: This is used to denote an item in the order
+- name: transaction-detail-response
+  schema_aliases:
+  - transaction-detail-response
+  field_count: 18
+  description: This is used to denote the details of the transaction made by an attendee.
+- name: create-transaction-request
+  schema_aliases:
+  - create-transaction-request
+  field_count: 15
+  description: Denotes the details of the transaction created for an attendee.
+- name: User
+  schema_aliases:
+  - User
+  field_count: 15
+  description: Generic sample User. Not a real model used by any Cvent service.
+- name: order-detail
+  schema_aliases:
+  - order-detail
+  field_count: 14
+  description: This is used to denote the details of the order made by an attendee.
+- name: membership-item
+  schema_aliases:
+  - membership-item
+  field_count: 13
+  description: Represents a membership item. Membership items are products that can be purchased during registration
+    or on contact websites.
+- name: FeeItem
+  schema_aliases:
+  - FeeItem
+  field_count: 12
+  description: A fee item is a fee associated with something an agenda item at the event. A given agenda item can
+    have one or more fee items associated.
+- name: DonationItem
+  schema_aliases:
+  - DonationItem1
+  field_count: 10
+  description: Represents a donation item. Donation items give event invitees the option to contribute money to
+    an association, charity, or cause during registration.
+- name: quantity-item
+  schema_aliases:
+  - quantity-item
+  field_count: 10
+  description: Represents a quantity item. A quantity item allows invitees to specify the amount of a particular
+    product, such as raffle tickets, t-shirts, or tote bags, they would like to purcha
+- name: transaction-item-response
+  schema_aliases:
+  - transaction-item-response
+  field_count: 10
+  description: This is used to denote an item in the transaction.
+- name: LeadQualificationQuestion
+  schema_aliases:
+  - LeadQualificationQuestion
+  field_count: 10
+  description: A JSON schema representing a Lead Qualification Question model
+- name: Tax
+  schema_aliases:
+  - Tax
+  field_count: 9
+  description: A tax is an event-level pricing configuration applied to products such as admission items, sessions,
+    and other billable items.
+- name: event-question
+  schema_aliases:
+  - event-question.json
+  field_count: 9
+  description: Represents a question associated with an event.
+- name: transaction-item-account-response
+  schema_aliases:
+  - transaction-item-account-response
+  field_count: 9
+  description: This is used to denote an item in the transaction.
+- name: existing-badge-print-job
+  schema_aliases:
+  - existing-badge-print-job
+  field_count: 9
+  description: Badge Print Job.
+- name: sessions-attendance-response
+  schema_aliases:
+  - sessions-attendance-response.json
+  field_count: 8
+  description: Represents session attendance details.
+- name: ResourceType
+  schema_aliases:
+  - ResourceType
+  field_count: 8
+  description: Resource Type
+- name: contact-group
+  schema_aliases:
+  - contact-group
+  field_count: 7
+  description: A group of contacts.
+- name: voucher
+  schema_aliases:
+  - voucher
+  field_count: 7
+  description: Represents a voucher configured for an event. Event-level vouchers are special codes that can be
+    assigned to invitees or attendees, enabling benefits such as free registration, dis
+- name: program-item
+  schema_aliases:
+  - program-item
+  field_count: 7
+  description: Represents a program item object that will be added to a session.
+- name: program-item-update-request
+  schema_aliases:
+  - program-item-update-request
+  field_count: 7
+  description: Represents a program item object that will be updated.
+- name: DiscountDetail
+  schema_aliases:
+  - DiscountDetail
+  field_count: 6
+  description: This is used to denote the discount details
+- name: sessions-enrollment
+  schema_aliases:
+  - sessions-enrollment.json
+  field_count: 6
+  description: Represents the attendee registration action for a session.
+- name: ActivityAd
+  schema_aliases:
+  - ActivityAd
+  field_count: 5
+  description: The details of the advertisement.
+- name: ActivityCommon
+  schema_aliases:
+  - ActivityCommon
+  field_count: 5
+  description: Common base entity for an activity.
+- name: attendee-insights
+  schema_aliases:
+  - attendee-insights
+  field_count: 5
+  description: Attendee insights.
+- name: external-activity-metadata
+  schema_aliases:
+  - external-activity-metadata
+  field_count: 5
+  description: Metadata for an activity.
+- name: badge
+  schema_aliases:
+  - badge
+  field_count: 5
+  description: A JSON Schema for Badge object.
+- name: ContactType
+  schema_aliases:
+  - ContactType
+  field_count: 5
+  description: This entity represents a contact type at contact level.
+- name: GeneralLedger
+  schema_aliases:
+  - GeneralLedger
+  - GeneralLedger2
+  field_count: 5
+  description: This is used to denote the general ledger detail in an order item
+- name: checkin
+  schema_aliases:
+  - checkin.json
+  field_count: 5
+  description: Represents event check-in details.
+- name: exhibitor-response
+  schema_aliases:
+  - exhibitor-response
+  field_count: 5
+  description: JSON schema for the exhibitor object
+- name: UsersSchema
+  schema_aliases:
+  - UsersSchema
+  field_count: 5
+  description: Schema
+- name: badge-print-job-created
+  schema_aliases:
+  - badge-print-job-created
+  field_count: 5
+  description: The Badge Print Job that was created.
+- name: program-item-session-document
+  schema_aliases:
+  - program-item-session-document
+  field_count: 5
+  description: Represents a program item object that will be added to a session document.
+- name: session-segment
+  schema_aliases:
+  - session-segment
+  field_count: 5
+  description: Represents a mapping between a session and an audience segment, which is used to enforce session
+    visibility to only those in certain audience segments.
+- name: speaker-program-item
+  schema_aliases:
+  - speaker-program-item
+  field_count: 5
+  description: Represents a program item object that will be added to a speaker.
+- name: custom-field
+  schema_aliases:
+  - custom-field.json1
+  field_count: 5
+  description: A survey custom field.
+- name: response-common
+  schema_aliases:
+  - response-common
+  field_count: 5
+  description: Base model with properties common to a survey response.
+- name: contact-field
+  schema_aliases:
+  - contact-field.json
+  field_count: 5
+  description: Contains contact data. For example, a User's email address.
+- name: ActivityBaseAppointment
+  schema_aliases:
+  - ActivityBaseAppointment
+  field_count: 4
+  description: Base entity of an activity appointment.
+- name: ActivityBoothStaff
+  schema_aliases:
+  - ActivityBoothStaff
+  field_count: 4
+  description: Booth staff for an activity.
+- name: ActivityExhibitor
+  schema_aliases:
+  - ActivityExhibitor
+  field_count: 4
+  description: An activity exhibitor.
+- name: ActivityExhibitorDocument
+  schema_aliases:
+  - ActivityExhibitorDocument
+  field_count: 4
+  description: Document for an activity exhibitor.
+- name: ActivityLead
+  schema_aliases:
+  - ActivityLead
+  field_count: 4
+  description: An activity lead.
+- name: ContactFields
+  schema_aliases:
+  - ContactFields
+  field_count: 4
+  description: Details of a contact.
+- name: EventActivityDetail
+  schema_aliases:
+  - EventActivityDetail
+  field_count: 4
+  description: Details for an event activity.
+- name: Exhibitor
+  schema_aliases:
+  - Exhibitor
+  - Exhibitor1
+  field_count: 4
+  description: An exhibitor.
+- name: LeadObject
+  schema_aliases:
+  - LeadObject
+  field_count: 4
+  description: A Lead
+- name: CustomFieldBase
+  schema_aliases:
+  - CustomFieldBase
+  field_count: 4
+  description: Base schema for Custom Field - allows type to be customized by extending schemas
+- name: EarlyBirdPricing
+  schema_aliases:
+  - EarlyBirdPricing
+  field_count: 4
+  description: Early bird pricing for a fee, where attendees receive a discounted fee if they register before a
+    given date.
+- name: invitation-list
+  schema_aliases:
+  - invitation-list.json
+  field_count: 4
+  description: Object encapsulating relevant information about an invitation list.
+- name: quantity-item-update
+  schema_aliases:
+  - quantity-item-update
+  field_count: 4
+  description: Represents details for updating a quantity item for an attendee's registration.
+- name: session-checkin-base
+  schema_aliases:
+  - session-checkin-base.json
+  field_count: 4
+  description: Base model for a session check-in.
+- name: registration-pack-response
+  schema_aliases:
+  - registration-pack-response
+  field_count: 4
+  description: Schema for existing registration pack object
+- name: Group-
+  schema_aliases:
+  - Group-1
+  field_count: 4
+  description: Generic sample name. Not a real model used by any Cvent service.
+- name: SessionSpeaker
+  schema_aliases:
+  - SessionSpeaker
+  field_count: 4
+  description: A session speaker
+- name: hook
+  schema_aliases:
+  - hook
+  field_count: 4
+  description: A hook with a callback URI.
+- name: ExternalActivitiesAdditionalFields
+  schema_aliases:
+  - ExternalActivitiesAdditionalFields
+  field_count: 3
+  description: Additional fields for external activities.
+- name: SurveyResponse
+  schema_aliases:
+  - SurveyResponse
+  field_count: 3
+  description: A survey response.
+- name: AttendeeGroup
+  schema_aliases:
+  - AttendeeGroup
+  field_count: 3
+  description: An attendee group.
+- name: ExternalReference
+  schema_aliases:
+  - ExternalReference
+  field_count: 3
+  description: An external reference.
+- name: Lookup
+  schema_aliases:
+  - Lookup
+  field_count: 3
+  description: Lookup response object
+- name: contact
+  schema_aliases:
+  - contact
+  field_count: 3
+  description: Represents a contact that has been created and has an id.
+- name: AgendaItem
+  schema_aliases:
+  - AgendaItem1
+  field_count: 3
+  description: Represents the associated agenda item of a discount.
+- name: DiscountCode
+  schema_aliases:
+  - DiscountCode
+  field_count: 3
+  description: Representation of a code based discount.
+- name: ExistingVolumeDiscount
+  schema_aliases:
+  - ExistingVolumeDiscount
+  field_count: 3
+  description: Representation of an existing volume based discount.
+- name: Product-
+  schema_aliases:
+  - Product-1
+  field_count: 3
+  description: Represents a product. Products are items that can be purchased during registration.
+- name: TaxSchedule
+  schema_aliases:
+  - TaxSchedule
+  field_count: 3
+  description: A tax schedule used for location-based tax calculation.
+- name: attendee-response
+  schema_aliases:
+  - attendee-response.json
+  field_count: 3
+  description: Response object indicating the status of send email request for a particular attendee.
+- name: event-email
+  schema_aliases:
+  - event-email.json
+  field_count: 3
+  description: An email and its details for a specific event.
+- name: exhibitor-category-response
+  schema_aliases:
+  - exhibitor-category-response
+  field_count: 3
+  description: A description of the Existing Exhibitor Category JSON schema
+- name: Location
+  schema_aliases:
+  - Location1
+  field_count: 3
+  description: Used to denote a locations name and abbreviation.
+- name: session-category
+  schema_aliases:
+  - session-category
+  field_count: 3
+  description: This is used to denote the category of a session.
+- name: session-location
+  schema_aliases:
+  - session-location
+  field_count: 3
+  description: Used to denote a sessions location.
+- name: SpeakerSession
+  schema_aliases:
+  - SpeakerSession
+  field_count: 3
+  description: A speaker to session relationship.
+- name: existing-speaker
+  schema_aliases:
+  - existing-speaker
+  field_count: 3
+  description: An existing, event speaker.
+- name: large-choice
+  schema_aliases:
+  - large-choice.json
+  field_count: 3
+  description: Choice of large choices question.
+- name: text-field
+  schema_aliases:
+  - text-field.json
+  field_count: 3
+  description: A survey text field.
+- name: ActivityExhibitorSponsorshipLevel
+  schema_aliases:
+  - ActivityExhibitorSponsorshipLevel
+  field_count: 2
+  description: Sponsorship level for an activity exhibitor.
+- name: ActivityExhibitorWeblink
+  schema_aliases:
+  - ActivityExhibitorWeblink
+  field_count: 2
+  description: A web-link for an activity exhibitor.
+- name: BaseAnswer
+  schema_aliases:
+  - BaseAnswer
+  field_count: 2
+  description: Base entity of a question answer.
+- name: BaseQuestion
+  schema_aliases:
+  - BaseQuestion
+  field_count: 2
+  description: The question that was answered.
+- name: QuestionDetail
+  schema_aliases:
+  - QuestionDetail
+  field_count: 2
+  description: The question asked in a session.
+- name: Speaker
+  schema_aliases:
+  - Speaker1
+  field_count: 2
+  description: An activity speaker.
+- name: AttendeeContactType
+  schema_aliases:
+  - AttendeeContactType
+  field_count: 2
+  description: Contains details related to the attendee's contact type.
+- name: NamedObject
+  schema_aliases:
+  - NamedObject
+  field_count: 2
+  description: A Named object
+- name: Choice
+  schema_aliases:
+  - Choice2
+  field_count: 2
+  description: This is used to denote the choice of question.
+- name: existing-custom-field
+  schema_aliases:
+  - existing-custom-field
+  field_count: 2
+  description: This is used to denote an existing custom field.
+- name: AlternateQuestion
+  schema_aliases:
+  - AlternateQuestion
+  field_count: 2
+  description: Represents a reference to an alternate travel question entity, containing only the question ID and
+    text.
+- name: HousingReservation
+  schema_aliases:
+  - HousingReservation
+  field_count: 2
+  description: Representation of the housing reservation details.
+- name: Fee
+  schema_aliases:
+  - Fee
+  field_count: 2
+  description: Fee for a product.
+- name: OrderRef
+  schema_aliases:
+  - OrderRef
+  field_count: 2
+  description: Represents an order by its ID and includes the order type.
+- name: ProductOrderItem
+  schema_aliases:
+  - ProductOrderItem
+  field_count: 2
+  description: This is used to denote the product details in an order item
+- name: TransactionId
+  schema_aliases:
+  - TransactionId
+  field_count: 2
+  description: This is used to denote the id and merchant/processor transaction id for transaction items.
+- name: event-async-response
+  schema_aliases:
+  - event-async-response
+  field_count: 2
+  description: Asynchronous event operation job details.
+- name: existing-admission-item
+  schema_aliases:
+  - existing-admission-item
+  field_count: 2
+  description: Represents an existing event admission item.
+- name: id-name
+  schema_aliases:
+  - id-name.json
+  field_count: 2
+  description: A Named object
+- name: registration-type-response
+  schema_aliases:
+  - registration-type-response
+  field_count: 2
+  description: Represents the details of an existing registration type.
+- name: user-group
+  schema_aliases:
+  - user-group.json
+  field_count: 2
+  description: Contains information about a user group associated with an event
+- name: BaseChoice
+  schema_aliases:
+  - BaseChoice
+  field_count: 2
+  description: A JSON schema representing a base choice object
+- name: existing-exhibitor-question
+  schema_aliases:
+  - existing-exhibitor-question
+  field_count: 2
+  description: Schema for an existing exhibitor question
+- name: existing-sponsorship-level
+  schema_aliases:
+  - existing-sponsorship-level
+  field_count: 2
+  description: Existing sponsorship level model
+- name: BadgePrinter
+  schema_aliases:
+  - BadgePrinter
+  field_count: 2
+  description: An entity that represents a badge printer.
+- name: existing-badge-printer-pool
+  schema_aliases:
+  - existing-badge-printer-pool
+  field_count: 2
+  description: Badge Printer Pool.
+- name: SpeakerCategory
+  schema_aliases:
+  - SpeakerCategory
+  field_count: 2
+  description: A defined speaker category.
+- name: existing-speaker-category
+  schema_aliases:
+  - existing-speaker-category
+  field_count: 2
+  description: An existing speaker category.
+- name: standard-survey-email-template-response
+  schema_aliases:
+  - standard-survey-email-template-response
+  field_count: 2
+  description: A standard survey email template
+- name: standard-survey-email-template
+  schema_aliases:
+  - standard-survey-email-template.json
+  field_count: 2
+  description: A standard survey email template
+- name: UUID
+  schema_aliases:
+  - UUID
+  field_count: 1
+  description: The reference to the related entity. Contains only the ID of the related entity.
+- name: AppointmentGroup
+  schema_aliases:
+  - AppointmentGroup
+  field_count: 1
+  description: An appointment group.
+- name: Attendee
+  schema_aliases:
+  - Attendee
+  - Attendee1
+  - Attendee2
+  - Attendee3
+  field_count: 1
+  description: The associated Attendee.
+- name: AttendeeAddResponse
+  schema_aliases:
+  - AttendeeAddResponse
+  field_count: 1
+  description: AttendeeAddResponse
+- name: Event
+  schema_aliases:
+  - Event
+  - Event4
+  field_count: 1
+  description: The Associated Event.
+- name: existing-duration
+  schema_aliases:
+  - existing-duration
+  field_count: 1
+  description: An existing duration.
+- name: uuid
+  schema_aliases:
+  - uuid.json
+  field_count: 1
+  description: The reference to the related entity. Contains only the ID of the related entity.
+- name: ContactId
+  schema_aliases:
+  - ContactId
+  field_count: 1
+  description: A contact id.
+- name: IdOnlyEntity
+  schema_aliases:
+  - IdOnlyEntity
+  field_count: 1
+  description: An entity which only has an id.
+- name: Guest
+  schema_aliases:
+  - Guest
+  field_count: 1
+  description: The reference to the guest. Contains only the ID of the guest.
+- name: Order
+  schema_aliases:
+  - Order
+  field_count: 1
+  description: Represents an order. Contains only the ID of the order.
+- name: OrderItem
+  schema_aliases:
+  - OrderItem
+  field_count: 1
+  description: Represents an order item. Contains only the ID of the order item.
+- name: OrderItemRef
+  schema_aliases:
+  - OrderItemRef
+  field_count: 1
+  description: Represents an order item by its ID.
+- name: associated-registration-path
+  schema_aliases:
+  - associated-registration-path.json
+  field_count: 1
+  description: Represents the details of a registration path.
+- name: email
+  schema_aliases:
+  - email.json
+  field_count: 1
+  description: Details of an email to be send.
+- name: event-copy-target
+  schema_aliases:
+  - event-copy-target.json
+  field_count: 1
+  description: Represents the target event information for an event copy operation.
+- name: existing-registration-path
+  schema_aliases:
+  - existing-registration-path.json
+  field_count: 1
+  description: Represents the details of an existing registration path.
+- name: invitation-list-id
+  schema_aliases:
+  - invitation-list-id.json
+  field_count: 1
+  description: Object encapsulating invitation list id
+- name: planning-document-event-id
+  schema_aliases:
+  - planning-document-event-id.json
+  field_count: 1
+  description: Event associated with the document.
+- name: ExhibitorCategoryId
+  schema_aliases:
+  - ExhibitorCategoryId
+  field_count: 1
+  description: Schema for Exhibitor Category ID.
+- name: ExhibitorId
+  schema_aliases:
+  - ExhibitorId
+  field_count: 1
+  description: A JSON Schema representation of an exhibitor ID.
+- name: ExistingExhibitorAnswer
+  schema_aliases:
+  - ExistingExhibitorAnswer
+  field_count: 1
+  description: Existing Exhibitor Answer schema
+- name: SponsorshipLevel
+  schema_aliases:
+  - SponsorshipLevel
+  field_count: 1
+  description: Associated sponsorship level for an exhibitor
+- name: booth-staff-response
+  schema_aliases:
+  - booth-staff-response
+  field_count: 1
+  description: Booth staff with an associated ID.
+- name: exhibitor-admin-response
+  schema_aliases:
+  - exhibitor-admin-response
+  field_count: 1
+  description: Existing Exhibitor Admin with an id property
+- name: existing-file
+  schema_aliases:
+  - existing-file
+  field_count: 1
+  description: Content of existing exhibitor file
+- name: existing-weblink
+  schema_aliases:
+  - existing-weblink
+  field_count: 1
+  description: Content of existing exhibitor weblink
+- name: BadgePrinterPoolRef
+  schema_aliases:
+  - BadgePrinterPoolRef
+  field_count: 1
+  description: Reference to a Badge Print Pool.
+- name: existing-seat
+  schema_aliases:
+  - existing-seat
+  field_count: 1
+  description: The response from a request to get the event seat for the event.
+- name: existing-seating
+  schema_aliases:
+  - existing-seating
+  field_count: 1
+  description: The response from a request to get the event seating for the event.
+- name: existing-table
+  schema_aliases:
+  - existing-table
+  field_count: 1
+  description: The response from a request to get the event table for the event.
+- name: expandable-seat
+  schema_aliases:
+  - expandable-seat.json
+  field_count: 1
+  description: 'An object that contains the associated seat ID.
+
+
+    This is an **expandable** object and if requested will contain all the properties of a seat object.'
+- name: expandable-seating
+  schema_aliases:
+  - expandable-seating.json
+  field_count: 1
+  description: 'An object that contains the associated seating ID.
+
+
+    This is an **expandable** object and if requested will contain all the properties of a seating object.'
+- name: expandable-table
+  schema_aliases:
+  - expandable-table.json
+  field_count: 1
+  description: 'An object that contains the associated table ID.
+
+
+    This is an **expandable** object and if requested will contain all the properties of a table object.'
+- name: CategoryId
+  schema_aliases:
+  - CategoryId
+  field_count: 1
+  description: An object that holds the id for a category
+- name: ProgramItem
+  schema_aliases:
+  - ProgramItem
+  field_count: 1
+  description: The program item associated with the session.
+- name: Segment
+  schema_aliases:
+  - Segment1
+  field_count: 1
+  description: The audience segment associated with the session.
+- name: Session-
+  schema_aliases:
+  - Session-1
+  field_count: 1
+  description: The related session object.
+- name: SessionDocumentLite
+  schema_aliases:
+  - SessionDocumentLite
+  field_count: 1
+  description: The related document object.
+- name: SessionLite
+  schema_aliases:
+  - SessionLite
+  field_count: 1
+  description: The unique identifier of a session.
+- name: event-id
+  schema_aliases:
+  - event-id
+  field_count: 1
+  description: The related event object.
+- name: EventLite
+  schema_aliases:
+  - EventLite
+  field_count: 1
+  description: The unique identifier of an event.
+- name: ProgramItemLite
+  schema_aliases:
+  - ProgramItemLite
+  field_count: 1
+  description: The unique identifier of a program item.
+- name: SpeakerLite
+  schema_aliases:
+  - SpeakerLite
+  - SpeakerLite1
+  field_count: 1
+  description: The unique identifier of a speaker.
+- name: invitation-list-common
+  schema_aliases:
+  - invitation-list-common.json
+  field_count: 1
+  description: Invitation list of respondents
+- name: looping-choice
+  schema_aliases:
+  - looping-choice.json
+  field_count: 1
+  description: Loop Choice is the choice for which the chapter is looped. Questions in the looping chapter get repeated
+    once for each choice selected in the parent question
+- name: question-id
+  schema_aliases:
+  - question-id.json
+  field_count: 1
+  description: An object that holds the ID of the question.
+relationships:
+- from: ActivityAd
+  type: has_one
+  to: AdLocation
+  via: location
+- from: ActivityBaseAppointment
+  type: has_one
+  to: UUIDProperty
+  via: id
+- from: ActivityCommon
+  type: has_one
+  to: EventActivityDetail
+  via: event
+- from: ActivityCommon
+  type: has_one
+  to: UUID
+  via: attendee
+- from: ActivityLead
+  type: belongs_to
+  to: Device
+  via: deviceId
+- from: ActivityLead
+  type: has_one
+  to: ActivityBoothStaff
+  via: boothStaff
+- from: AgendaItem
+  type: has_one
+  to: EntityType
+  via: type
+- from: AgendaItem
+  type: has_one
+  to: UUID
+  via: discount
+- from: Attendee
+  type: has_one
+  to: uuid-property
+  via: id
+- from: AttendeeContact
+  type: belongs_to
+  to: Source
+  via: sourceId
+- from: AttendeeContact
+  type: has_many
+  to: Compliance
+  via: compliance
+- from: AttendeeContact
+  type: has_many
+  to: CustomField
+  via: customFields
+- from: AttendeeContact
+  type: has_one
+  to: Address
+  via: homeAddress
+- from: AttendeeContact
+  type: has_one
+  to: Address
+  via: workAddress
+- from: AttendeeContact
+  type: has_one
+  to: AddressType
+  via: primaryAddressType
+- from: AttendeeContact
+  type: has_one
+  to: AttendeeContactMembership
+  via: membership
+- from: AttendeeContact
+  type: has_one
+  to: AttendeeContactType
+  via: type
+- from: AttendeeContact
+  type: has_one
+  to: Gender
+  via: gender
+- from: BadgePrinter
+  type: has_one
+  to: uuid-property
+  via: id
+- from: BadgePrinterPoolRef
+  type: has_one
+  to: uuid-property
+  via: id
+- from: CategoryId
+  type: has_one
+  to: uuid-property
+  via: id
+- from: DiscountCode
+  type: has_one
+  to: DiscountCapacity
+  via: capacity
+- from: DiscountDetail
+  type: has_one
+  to: DiscountType
+  via: type
+- from: DonationItem
+  type: has_many
+  to: RegistrationTypeID
+  via: registrationTypes
+- from: DonationItem
+  type: has_one
+  to: GeneralLedger
+  via: generalLedger
+- from: EventLite
+  type: has_one
+  to: EventId
+  via: id
+- from: ExhibitorId
+  type: has_one
+  to: uuid-property
+  via: id
+- from: ExternalReference
+  type: belongs_to
+  to: Reference
+  via: referenceId
+- from: ExternalReference
+  type: has_one
+  to: ExternalReferenceType
+  via: type
+- from: FeeItem
+  type: has_many
+  to: AGeneralLedgerCodeUsedToCategorizeFinancialDataWhichHelpsBusinessesAnalyzeAndReportOnTheirFinancialActivity
+  via: generalLedgerCodes
+- from: FeeItem
+  type: has_many
+  to: EarlyBirdPricing
+  via: earlyBirdPricing
+- from: FeeItem
+  type: has_many
+  to: RefundPolicy
+  via: refundPolicy
+- from: FeeItem
+  type: has_one
+  to: Product-
+  via: product
+- from: Group-
+  type: has_one
+  to: Meta
+  via: meta
+- from: LeadObject
+  type: belongs_to
+  to: Device
+  via: deviceId
+- from: LeadObject
+  type: has_one
+  to: UUIDProperty
+  via: id
+- from: LeadQualificationQuestion
+  type: has_many
+  to: Choice
+  via: choices
+- from: LeadQualificationQuestion
+  type: has_one
+  to: AdditionalChoice
+  via: notApplicableAnswer
+- from: LeadQualificationQuestion
+  type: has_one
+  to: AdditionalChoice
+  via: otherAnswers
+- from: LeadQualificationQuestion
+  type: has_one
+  to: Event
+  via: event
+- from: LeadQualificationQuestion
+  type: has_one
+  to: Exhibitor
+  via: exhibitor
+- from: Location
+  type: has_one
+  to: uuid-property
+  via: id
+- from: Lookup
+  type: has_one
+  to: uuid-property
+  via: id
+- from: NamedObject
+  type: has_one
+  to: uuid-property
+  via: id
+- from: OrderRef
+  type: has_one
+  to: OrderType
+  via: type
+- from: Product-
+  type: has_one
+  to: ProductType
+  via: type
+- from: ProductOrderItem
+  type: has_one
+  to: ProductType
+  via: type
+- from: ProductOrderItem
+  type: has_one
+  to: uuid-property
+  via: id
+- from: ProgramItem
+  type: has_one
+  to: ProgramItemId
+  via: id
+- from: ProgramItemLite
+  type: has_one
+  to: ProgramItemId
+  via: id
+- from: QuestionDetail
+  type: has_one
+  to: UUIDProperty
+  via: id
+- from: ResourceType
+  type: has_one
+  to: Meta
+  via: meta
+- from: Segment
+  type: has_one
+  to: segment-id
+  via: id
+- from: Session-
+  type: has_one
+  to: SessionId
+  via: id
+- from: SessionBase
+  type: has_many
+  to: custom-field
+  via: customFields
+- from: SessionBase
+  type: has_many
+  to: segment-id
+  via: segments
+- from: SessionBase
+  type: has_many
+  to: uuid-property
+  via: admissionItems
+- from: SessionBase
+  type: has_many
+  to: uuid-property
+  via: registrationTypes
+- from: SessionBase
+  type: has_one
+  to: Location
+  via: location
+- from: SessionBase
+  type: has_one
+  to: NamedObject
+  via: category
+- from: SessionBase
+  type: has_one
+  to: SessionStatus
+  via: status
+- from: SessionBase
+  type: has_one
+  to: UUID
+  via: event
+- from: SessionDocumentLite
+  type: has_one
+  to: DocumentId
+  via: id
+- from: SessionLite
+  type: has_one
+  to: SessionId
+  via: id
+- from: SessionSpeaker
+  type: has_one
+  to: SessionLite
+  via: session
+- from: SessionSpeaker
+  type: has_one
+  to: SpeakerCategory
+  via: category
+- from: SessionSpeaker
+  type: has_one
+  to: uuid-property
+  via: id
+- from: SpeakerCategory
+  type: has_one
+  to: uuid-property
+  via: id
+- from: SpeakerLite
+  type: has_one
+  to: SpeakerId
+  via: id
+- from: SpeakerSession
+  type: has_one
+  to: NamedObject
+  via: category
+- from: SpeakerSession
+  type: has_one
+  to: SpeakerLite
+  via: speaker
+- from: SpeakerSession
+  type: has_one
+  to: uuid-property
+  via: id
+- from: SurveyResponse
+  type: has_many
+  to: QuestionResponse
+  via: responses
+- from: Tax
+  type: has_one
+  to: AGeneralLedgerCodeUsedToCategorizeFinancialDataWhichHelpsBusinessesAnalyzeAndReportOnTheirFinancialActivity
+  via: generalLedgerCode
+- from: Tax
+  type: has_one
+  to: TaxSchedule
+  via: taxSchedule
+- from: TransactionId
+  type: belongs_to
+  to: ProcessorTransaction
+  via: processorTransactionId
+- from: TransactionId
+  type: has_one
+  to: uuid-property
+  via: id
+- from: UUID
+  type: has_one
+  to: UUIDProperty
+  via: id
+- from: User
+  type: has_many
+  to: Address
+  via: addresses
+- from: User
+  type: has_many
+  to: Email
+  via: emails
+- from: User
+  type: has_many
+  to: Group
+  via: groups
+- from: User
+  type: has_many
+  to: PhoneNumber
+  via: phoneNumbers
+- from: User
+  type: has_one
+  to: Meta
+  via: meta
+- from: User
+  type: has_one
+  to: Name
+  via: name
+- from: User
+  type: has_one
+  to: UserEnterpriseExtension
+  via: urn:ietf:params:scim:schemas:extension:enterprise:2.0:User
+- from: User
+  type: has_one
+  to: UserType
+  via: userType
+- from: UsersSchema
+  type: has_many
+  to: Attribute
+  via: attributes
+- from: UsersSchema
+  type: has_one
+  to: Meta
+  via: meta
+- from: attendee
+  type: belongs_to
+  to: Primary
+  via: primaryId
+- from: attendee
+  type: belongs_to
+  to: Reference
+  via: referenceId
+- from: attendee
+  type: has_many
+  to: AppointmentGroup
+  via: appointmentGroups
+- from: attendee
+  type: has_many
+  to: AttendeeAnswer
+  via: answers
+- from: attendee
+  type: has_many
+  to: CustomField
+  via: questions
+- from: attendee
+  type: has_many
+  to: ExternalReference
+  via: externalReferences
+- from: attendee
+  type: has_one
+  to: AttendeeContactInfo
+  via: contact
+- from: attendee
+  type: has_one
+  to: AttendeeGroup
+  via: group
+- from: attendee
+  type: has_one
+  to: AttendeeInvitedBy-
+  via: invitedBy
+- from: attendee
+  type: has_one
+  to: AttendeeResponseMethod-
+  via: responseMethod
+- from: attendee
+  type: has_one
+  to: AttendeeStatus
+  via: status
+- from: attendee
+  type: has_one
+  to: AttendeeVisibility
+  via: visibility
+- from: attendee
+  type: has_one
+  to: AttendeeWebLinks
+  via: webLinks
+- from: attendee
+  type: has_one
+  to: Lookup
+  via: registrationPath
+- from: attendee
+  type: has_one
+  to: Lookup
+  via: registrationType
+- from: attendee
+  type: has_one
+  to: NamedObject
+  via: invitationList
+- from: attendee
+  type: has_one
+  to: UUID
+  via: administrator
+- from: attendee-insights
+  type: has_one
+  to: event
+  via: event
+- from: attendee-response
+  type: has_one
+  to: send-email-status
+  via: status
+- from: badge
+  type: has_one
+  to: Attendee
+  via: attendee
+- from: badge
+  type: has_one
+  to: BadgeStatus
+  via: status
+- from: badge
+  type: has_one
+  to: BadgeType
+  via: type
+- from: badge
+  type: has_one
+  to: Event
+  via: event
+- from: badge-print-job-created
+  type: belongs_to
+  to: Badge
+  via: badgeId
+- from: badge-print-job-created
+  type: has_one
+  to: BadgePrintJobStatus
+  via: status
+- from: badge-print-job-created
+  type: has_one
+  to: BadgePrinterPoolRef
+  via: pool
+- from: badge-print-job-created
+  type: has_one
+  to: UUIDProperty
+  via: id
+- from: contact
+  type: belongs_to
+  to: Parent
+  via: parentId
+- from: contact-group
+  type: has_one
+  to: ContactGroupType
+  via: type
+- from: contact-group
+  type: has_one
+  to: DistributionListInfo
+  via: distributionListInfo
+- from: create-transaction-request
+  type: has_many
+  to: Order
+  via: orders
+- from: create-transaction-request
+  type: has_many
+  to: TransactionItemCreate
+  via: transactionItems
+- from: create-transaction-request
+  type: has_one
+  to: Attendee
+  via: attendee
+- from: create-transaction-request
+  type: has_one
+  to: Event
+  via: event
+- from: create-transaction-request
+  type: has_one
+  to: PaymentMethod
+  via: paymentMethod
+- from: create-transaction-request
+  type: has_one
+  to: PaymentType
+  via: paymentType
+- from: event
+  type: belongs_to
+  to: MeetingRequest
+  via: meetingRequestId
+- from: event
+  type: has_many
+  to: custom-field
+  via: customFields
+- from: event
+  type: has_many
+  to: planner
+  via: planners
+- from: event
+  type: has_many
+  to: stakeholder
+  via: stakeholders
+- from: event
+  type: has_many
+  to: venue
+  via: venues
+- from: event
+  type: has_one
+  to: event-format
+  via: format
+- from: event
+  type: has_one
+  to: event-links
+  via: _links
+- from: event
+  type: has_one
+  to: event-security-level
+  via: registrationSecurityLevel
+- from: event
+  type: has_one
+  to: event-status
+  via: eventStatus
+- from: event
+  type: has_one
+  to: event-type
+  via: type
+- from: event
+  type: has_one
+  to: registration-status
+  via: status
+- from: event-email
+  type: has_one
+  to: invitation-list-id
+  via: invitationList
+- from: event-id
+  type: has_one
+  to: EventId
+  via: id
+- from: event-question
+  type: has_one
+  to: question-type
+  via: type
+- from: event-question
+  type: has_one
+  to: uuid
+  via: event
+- from: event-question
+  type: has_one
+  to: uuid-property
+  via: id
+- from: exhibitor-category-response
+  type: belongs_to
+  to: Banner
+  via: bannerId
+- from: exhibitor-response
+  type: belongs_to
+  to: Banner
+  via: bannerId
+- from: exhibitor-response
+  type: belongs_to
+  to: ProfileLogo
+  via: profileLogoId
+- from: existing-admission-item
+  type: has_one
+  to: uuid
+  via: event
+- from: existing-badge-print-job
+  type: belongs_to
+  to: Badge
+  via: badgeId
+- from: existing-badge-print-job
+  type: has_one
+  to: BadgePrintJobErrorCode
+  via: code
+- from: existing-badge-print-job
+  type: has_one
+  to: BadgePrintJobStatus
+  via: status
+- from: existing-badge-print-job
+  type: has_one
+  to: uuid-property
+  via: id
+- from: existing-badge-printer-pool
+  type: has_one
+  to: UUIDProperty
+  via: id
+- from: existing-custom-field
+  type: has_one
+  to: PageVisibility
+  via: pageVisibility
+- from: existing-speaker-category
+  type: has_one
+  to: uuid-property
+  via: id
+- from: external-activity-metadata
+  type: has_many
+  to: ExternalActivityAdditionalFieldsMetadata
+  via: fields
+- from: external-activity-metadata
+  type: has_one
+  to: ExternalActivityType
+  via: type
+- from: hook
+  type: has_one
+  to: hook-security
+  via: security
+- from: id-name
+  type: has_one
+  to: uuid-property
+  via: id
+- from: invitation-list
+  type: has_one
+  to: locale
+  via: locale
+- from: large-choice
+  type: has_one
+  to: question-id
+  via: question
+- from: membership-item
+  type: has_many
+  to: RegistrationTypeID
+  via: registrationTypes
+- from: membership-item
+  type: has_one
+  to: GeneralLedger
+  via: generalLedger
+- from: order-detail
+  type: has_many
+  to: DiscountDetail
+  via: discounts
+- from: order-detail
+  type: has_one
+  to: Attendee
+  via: attendee
+- from: order-detail
+  type: has_one
+  to: Event
+  via: event
+- from: order-detail
+  type: has_one
+  to: OrderType
+  via: type
+- from: order-detail
+  type: has_one
+  to: uuid-property
+  via: id
+- from: order-item-response
+  type: has_many
+  to: DiscountDetail
+  via: discounts
+- from: order-item-response
+  type: has_many
+  to: GeneralLedger
+  via: generalLedgerItems
+- from: order-item-response
+  type: has_one
+  to: Attendee
+  via: attendee
+- from: order-item-response
+  type: has_one
+  to: Event
+  via: event
+- from: order-item-response
+  type: has_one
+  to: Fee
+  via: fee
+- from: order-item-response
+  type: has_one
+  to: Guest
+  via: guestDetail
+- from: order-item-response
+  type: has_one
+  to: OrderRef
+  via: order
+- from: order-item-response
+  type: has_one
+  to: ProductOrderItem
+  via: product
+- from: order-item-response
+  type: has_one
+  to: uuid-property
+  via: id
+- from: program-item
+  type: has_one
+  to: Session-
+  via: session
+- from: program-item
+  type: has_one
+  to: event-id
+  via: event
+- from: program-item-session-document
+  type: has_one
+  to: ProgramItem
+  via: programItem
+- from: program-item-session-document
+  type: has_one
+  to: Session-
+  via: session
+- from: program-item-session-document
+  type: has_one
+  to: SessionDocumentLite
+  via: document
+- from: program-item-session-document
+  type: has_one
+  to: event-id
+  via: event
+- from: program-item-update-request
+  type: has_one
+  to: Session-
+  via: session
+- from: program-item-update-request
+  type: has_one
+  to: event-id
+  via: event
+- from: quantity-item
+  type: has_many
+  to: RegistrationTypeID
+  via: registrationTypes
+- from: registration-pack-response
+  type: has_many
+  to: ExistingCapacity
+  via: capacities
+- from: registration-pack-response
+  type: has_one
+  to: Event
+  via: event
+- from: registration-pack-response
+  type: has_one
+  to: Exhibitor
+  via: exhibitor
+- from: registration-type-response
+  type: has_one
+  to: capacity
+  via: capacity
+- from: response-common
+  type: has_many
+  to: answer
+  via: answers
+- from: response-common
+  type: has_one
+  to: uuid
+  via: question
+- from: session
+  type: has_many
+  to: custom-field
+  via: customFields
+- from: session
+  type: has_many
+  to: uuid-property
+  via: registrationTypes
+- from: session
+  type: has_one
+  to: ''
+  via: location
+- from: session
+  type: has_one
+  to: id-name
+  via: category
+- from: session
+  type: has_one
+  to: session-status
+  via: status
+- from: session
+  type: has_one
+  to: uuid
+  via: event
+- from: session-segment
+  type: has_one
+  to: Segment
+  via: segment
+- from: session-segment
+  type: has_one
+  to: Session-
+  via: session
+- from: session-segment
+  type: has_one
+  to: event-id
+  via: event
+- from: sessions-attendance-response
+  type: has_one
+  to: uuid
+  via: attendee
+- from: sessions-attendance-response
+  type: has_one
+  to: uuid
+  via: event
+- from: sessions-attendance-response
+  type: has_one
+  to: uuid
+  via: session
+- from: sessions-enrollment
+  type: has_one
+  to: session-enrollment-status
+  via: status
+- from: sessions-enrollment
+  type: has_one
+  to: uuid
+  via: attendee
+- from: sessions-enrollment
+  type: has_one
+  to: uuid
+  via: event
+- from: sessions-enrollment
+  type: has_one
+  to: uuid
+  via: session
+- from: speaker-program-item
+  type: has_one
+  to: EventLite
+  via: event
+- from: speaker-program-item
+  type: has_one
+  to: ProgramItemLite
+  via: programItem
+- from: speaker-program-item
+  type: has_one
+  to: SessionLite
+  via: session
+- from: speaker-program-item
+  type: has_one
+  to: SpeakerLite
+  via: speaker
+- from: standard-survey-email-template
+  type: has_one
+  to: uuid-property
+  via: id
+- from: standard-survey-email-template-response
+  type: has_one
+  to: uuid-property
+  via: id
+- from: transaction-detail-response
+  type: belongs_to
+  to: ProcessorTransaction
+  via: processorTransactionId
+- from: transaction-detail-response
+  type: has_many
+  to: Order
+  via: orders
+- from: transaction-detail-response
+  type: has_one
+  to: Attendee
+  via: attendee
+- from: transaction-detail-response
+  type: has_one
+  to: BillingAddress
+  via: billingAddress
+- from: transaction-detail-response
+  type: has_one
+  to: Event
+  via: event
+- from: transaction-detail-response
+  type: has_one
+  to: PaymentMethod
+  via: paymentMethod
+- from: transaction-detail-response
+  type: has_one
+  to: PaymentType-
+  via: paymentType
+- from: transaction-item-account-response
+  type: has_one
+  to: Attendee
+  via: attendee
+- from: transaction-item-account-response
+  type: has_one
+  to: Event
+  via: event
+- from: transaction-item-account-response
+  type: has_one
+  to: OrderItemRef
+  via: orderItem
+- from: transaction-item-account-response
+  type: has_one
+  to: ProductOrderItem
+  via: product
+- from: transaction-item-account-response
+  type: has_one
+  to: TransactionId
+  via: transaction
+- from: transaction-item-response
+  type: belongs_to
+  to: Unique
+  via: uniqueId
+- from: transaction-item-response
+  type: has_one
+  to: Attendee
+  via: attendee
+- from: transaction-item-response
+  type: has_one
+  to: Event
+  via: event
+- from: transaction-item-response
+  type: has_one
+  to: OrderItemRef
+  via: orderItem
+- from: transaction-item-response
+  type: has_one
+  to: ProductOrderItem
+  via: product
+- from: transaction-item-response
+  type: has_one
+  to: TransactionId
+  via: transaction
+- from: uuid
+  type: has_one
+  to: uuid-property
+  via: id
+- from: voucher
+  type: has_one
+  to: VoucherCapacity
+  via: capacity

@@ -3,159 +3,122 @@ specificationVersion: '0.1'
 schema: https://raw.githubusercontent.com/api-evangelist/interface-research/main/schema/api-commons.yml#/$defs/Plans
 provider: Cvent Registration
 providerId: cvent-registration
+generated: '2026-09-07'
+method: searched
+source: https://www.cvent.com/en/event-management-software/cvent-pricing
+sources:
+  - https://www.cvent.com/en/event-management-software/cvent-pricing
+  - https://github.com/cvent/rest-sdks/blob/main/cvent-public-spec/openapi.yaml
 created: '2026-05-04'
-# Provenance stamped 2026-08-11: this artifact was written by the API Evangelist
-# bulk sweep dated 2026-05-04, not harvested from the provider. See roadmap#35.
-method: generated
-modified: '2026-05-04'
-tags:
-  - Attendee Management
-  - Attendees
-  - Conferences
-  - Event Management
-  - Events
-  - OAuth 2.0
-  - On-Site Check-In
-  - Payments
-  - Registration
-  - REST API
-  - Ticketing
-  - Webhooks
-description: Machine-readable plans and pricing scaffold for this API provider. Conforms to the API Commons
-  Plans schema. Tier limits and prices are scaffold defaults; replace with provider-published values.
+modified: '2026-09-07'
+plan_count: 5
+description: >-
+  Cvent publishes NO prices. The pricing page names two commercial licence tiers — Professional
+  and Enterprise — and every call to action on it is "Get pricing" / "Get a free quote"; there is
+  no self-serve checkout, no list price, and no per-call rate card anywhere on cvent.com. The one
+  quantified, published tiering that touches the API is the platform's three REST usage tiers
+  (Free / Standard / Premium), whose daily quota, per-second rate and burst are stated in Cvent's
+  own OpenAPI. Both are recorded below; the commercial tiers carry price: null on purpose.
+  This replaces the 2026-05-04 scaffold, whose Free/Professional/Enterprise quotas were invented.
+notes:
+  - >-
+    API ACCESS IS AN ENTERPRISE FEATURE. "API access" is listed only in the Enterprise column of
+    the pricing page, alongside SSO, MFA and the Registration / Attendee Hub / OnArrival licences.
+    Professional does not list it.
+  - >-
+    The former pricing pointer https://www.cvent.com/en/pricing is a confirmed 404; the live page
+    is /en/event-management-software/cvent-pricing.
 plans:
-  - id: cvent-registration-free
-    name: Free
-    type: freemium
-    description: Free entry tier for the Cvent Registration API surface. Intended for evaluation, prototyping,
-      and low-volume integrations. Real limits and pricing must be reconciled with the provider's published
-      plan documentation.
-    entries:
-      - label: API Requests
-        description: Monthly API request quota across all included endpoints
-        name: api_requests
-        type: quota
-        metric: requests
-        limit: 1000
-        timeFrame: month
-        geo: global
-        domains:
-          - https://api-platform.cvent.com
-        unit: 1
-        price: '0.00'
-        userMultiplied: false
-      - label: Rate Limit
-        description: Maximum requests per minute on the free tier
-        name: rate_limit
-        type: rate
-        metric: requests_per_minute
-        limit: 10
-        timeFrame: minute
-        geo: global
-        domains:
-          - https://api-platform.cvent.com
-        unit: 1
-        price: '0.00'
-        userMultiplied: false
-    elements:
-      - name: Public Documentation
-      - name: Community Support
-      - name: Sandbox Access
-      - name: Cvent Registration REST API
-      - name: Cvent Registration Webhooks
-  - id: cvent-registration-pro
+  - id: cvent-professional
     name: Professional
     type: paid
-    description: Production tier for Cvent Registration. Provides higher quotas, priority support, and
-      access to the broader API portfolio. Pricing placeholder; align with the provider's pricing page.
-    entries:
-      - label: API Requests
-        description: Monthly API request quota
-        name: api_requests
-        type: quota
-        metric: requests
-        limit: 100000
-        timeFrame: month
-        geo: global
-        domains:
-          - https://api-platform.cvent.com
-        unit: 1
-        price: TBD
-        userMultiplied: false
-      - label: Rate Limit
-        description: Maximum requests per minute on the professional tier
-        name: rate_limit
-        type: rate
-        metric: requests_per_minute
-        limit: 100
-        timeFrame: minute
-        geo: global
-        domains:
-          - https://api-platform.cvent.com
-        unit: 1
-        price: '0.00'
-        userMultiplied: false
-      - label: Overage
-        description: Per-request price after monthly quota is exceeded
-        name: overage
-        type: metered
-        metric: requests
-        limit: -1
-        timeFrame: month
-        geo: global
-        domains:
-          - https://api-platform.cvent.com
-        unit: 1000
-        price: TBD
-        userMultiplied: false
+    kind: commercial-licence
+    price: null
+    currency: null
+    billingPeriod: null
+    pricingModel: quote-only
+    source: https://www.cvent.com/en/event-management-software/cvent-pricing
+    description: >-
+      License only the solutions you need with access to additional Professional platform features.
     elements:
-      - name: All Production Endpoints
-      - name: Email Support
-      - name: SLA Targets
-      - name: Webhook Subscriptions
-      - name: Cvent Registration REST API
-      - name: Cvent Registration Webhooks
-  - id: cvent-registration-enterprise
+      - name: 15 user logins
+      - name: Accessibility
+      - name: Address book
+      - name: Data security and privacy
+      - name: Event reporting and insights
+      - name: Events Showcase
+      - name: Exhibitor management
+      - name: Language management
+      - name: Session management
+      - name: Speaker management
+      - name: Venue sourcing
+      - name: Video and asset storage
+  - id: cvent-enterprise
     name: Enterprise
     type: enterprise
-    description: Custom-negotiated tier for Cvent Registration. Includes dedicated capacity, contractual
-      SLAs, security review, data residency options, and named technical account management.
-    entries:
-      - label: API Requests
-        description: Negotiated request volume; -1 indicates uncapped subject to fair use
-        name: api_requests
-        type: quota
-        metric: requests
-        limit: -1
-        timeFrame: month
-        geo: configurable
-        domains:
-          - https://api-platform.cvent.com
-        unit: 1
-        price: custom
-        userMultiplied: false
-      - label: Rate Limit
-        description: Negotiated burst and steady-state rate
-        name: rate_limit
-        type: rate
-        metric: requests_per_minute
-        limit: 1000
-        timeFrame: minute
-        geo: configurable
-        domains:
-          - https://api-platform.cvent.com
-        unit: 1
-        price: custom
-        userMultiplied: false
+    kind: commercial-licence
+    price: null
+    currency: null
+    billingPeriod: null
+    pricingModel: quote-only
+    source: https://www.cvent.com/en/event-management-software/cvent-pricing
+    description: All Professional features plus the full solution set and enterprise controls.
     elements:
-      - name: Unlimited / Negotiated Volume
-      - name: 24/7 Dedicated Support
-      - name: Contractual SLA
-      - name: Security & Compliance Review
-      - name: Dedicated Account Manager
-      - name: Custom Data Residency
-      - name: Cvent Registration REST API
-      - name: Cvent Registration Webhooks
+      - name: All Professional features
+      - name: Registration license
+      - name: Attendee Hub license
+      - name: OnArrival license
+      - name: Essentials license
+      - name: All user logins included
+      - name: API access
+      - name: Additional branding control
+      - name: Additional video and asset storage
+      - name: Budget management
+      - name: Meeting Request Form
+      - name: Multi-factor authentication (MFA)
+      - name: Resource management
+      - name: Single sign-on (SSO)
+      - name: Task management
+  - id: cvent-api-usage-free
+    name: REST API usage tier — Free
+    type: freemium
+    kind: api-usage-tier
+    price: null
+    currency: null
+    pricingModel: included-with-licence
+    source: https://github.com/cvent/rest-sdks/blob/main/cvent-public-spec/openapi.yaml
+    entries:
+      - { label: Daily calls, name: daily_calls, type: quota, metric: requests, limit: 1000, timeFrame: day }
+      - { label: Calls per second, name: rate, type: rate, metric: requests, limit: 2, timeFrame: second }
+      - { label: Max burst, name: burst, type: rate, metric: requests, limit: 1, timeFrame: second }
+  - id: cvent-api-usage-standard
+    name: REST API usage tier — Standard
+    type: paid
+    kind: api-usage-tier
+    price: null
+    currency: null
+    pricingModel: included-with-licence
+    source: https://github.com/cvent/rest-sdks/blob/main/cvent-public-spec/openapi.yaml
+    entries:
+      - { label: Daily calls, name: daily_calls, type: quota, metric: requests, limit: 15000, timeFrame: day }
+      - { label: Calls per second, name: rate, type: rate, metric: requests, limit: 10, timeFrame: second }
+      - { label: Max burst, name: burst, type: rate, metric: requests, limit: 10, timeFrame: second }
+  - id: cvent-api-usage-premium
+    name: REST API usage tier — Premium
+    type: paid
+    kind: api-usage-tier
+    price: null
+    currency: null
+    pricingModel: included-with-licence
+    source: https://github.com/cvent/rest-sdks/blob/main/cvent-public-spec/openapi.yaml
+    entries:
+      - { label: Daily calls, name: daily_calls, type: quota, metric: requests, limit: 500000, timeFrame: day }
+      - { label: Calls per second, name: rate, type: rate, metric: requests, limit: 25, timeFrame: second }
+      - { label: Max burst, name: burst, type: rate, metric: requests, limit: 25, timeFrame: second }
+selfCheck:
+  operationId: getUsageTier
+  url: https://api-platform.cvent.com/ea/usage/tier
+  description: An authenticated caller can read which usage tier its account is on.
 maintainers:
   - FN: Kin Lane
     email: kin@apievangelist.com

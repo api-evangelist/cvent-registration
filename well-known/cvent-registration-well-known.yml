@@ -1,0 +1,67 @@
+generated: '2026-09-07'
+method: probed
+source: direct HTTP probe of the named /.well-known/ paths on every host this record knows
+description: >-
+  Well-known discovery probe for Cvent Registration. Every named path was requested on the
+  registrable domain, www, both regional API hosts (the OpenAPI servers[] entries) and the
+  developer/docs host. NOTHING was served. api-platform.cvent.com answers a clean JSON 404
+  ({"message":"Unrecognized request URL ...","code":"Not Found"}) for every path, which is a
+  real API 404 rather than an SPA catch-all; developers.cvent.com and www.cvent.com return
+  HTML 404 shells. No WellKnown or SecurityTxt pointer is emitted because nothing returned a
+  200 carrying a document.
+summary:
+  hosts_probed: 5
+  documents_found: 0
+  security_txt: false
+  openid_configuration: false
+  oauth_authorization_server: false
+  api_catalog: false
+  ai_plugin: false
+  agent_card: false
+hosts:
+- host: api-platform.cvent.com
+  role: API base URL / OpenAPI servers[0]
+  documents:
+  - { path: /.well-known/security.txt, status: 404, file: null }
+  - { path: /.well-known/openid-configuration, status: 404, file: null }
+  - { path: /.well-known/oauth-authorization-server, status: 404, file: null }
+  - { path: /.well-known/api-catalog, status: 404, file: null }
+  - { path: /.well-known/ai-plugin.json, status: 404, file: null }
+  - { path: /.well-known/agent-card.json, status: 404, file: null }
+  - { path: /.well-known/agent.json, status: 404, file: null }
+- host: api-platform-eur.cvent.com
+  role: EMEA API base URL / OpenAPI servers[1]
+  documents:
+  - { path: /.well-known/agent-card.json, status: 404, file: null }
+- host: developers.cvent.com
+  role: developer portal / docs host
+  documents:
+  - { path: /.well-known/security.txt, status: 404, file: null }
+  - { path: /.well-known/openid-configuration, status: 404, file: null }
+  - { path: /.well-known/oauth-authorization-server, status: 404, file: null }
+  - { path: /.well-known/api-catalog, status: 404, file: null }
+  - { path: /.well-known/ai-plugin.json, status: 404, file: null }
+  - { path: /.well-known/agent-card.json, status: 404, file: null }
+  - { path: /.well-known/agent.json, status: 404, file: null }
+- host: www.cvent.com
+  role: primary website
+  documents:
+  - { path: /.well-known/security.txt, status: 404, file: null }
+  - { path: /.well-known/openid-configuration, status: 404, file: null }
+  - { path: /.well-known/oauth-authorization-server, status: 404, file: null }
+  - { path: /.well-known/api-catalog, status: 404, file: null }
+  - { path: /.well-known/ai-plugin.json, status: 404, file: null }
+  - { path: /.well-known/agent-card.json, status: 404, file: null }
+  - { path: /.well-known/agent.json, status: 404, file: null }
+  - { path: /security.txt, status: 404, file: null }
+- host: cvent.com
+  role: registrable domain
+  documents:
+  - { path: /.well-known/security.txt, status: 404, file: null }
+  - { path: /.well-known/api-catalog, status: 404, file: null }
+  - { path: /.well-known/agent-card.json, status: 404, file: null }
+  - { path: /.well-known/agent.json, status: 404, file: null }
+note: >-
+  Cvent DOES run a vulnerability disclosure program and a trust center — they are simply not
+  advertised at /.well-known/security.txt. See security/cvent-registration-vulnerability-disclosure.yml.
+  An llms.txt IS served, but from the site root (https://www.cvent.com/llms.txt), not /.well-known/.

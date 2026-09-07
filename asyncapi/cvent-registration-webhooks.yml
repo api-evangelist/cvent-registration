@@ -1,0 +1,188 @@
+generated: '2026-09-07'
+method: searched
+source: https://developers.cvent.com/docs/webhooks/overview
+sources:
+- https://developers.cvent.com/docs/webhooks/overview
+- https://developers.cvent.com/docs/webhooks/understanding-webhooks
+- https://developers.cvent.com/docs/webhooks/technical-requirements
+- https://developers.cvent.com/docs/rest-api/reference/reference
+description: Cvent's published webhook event catalogue. Cvent does NOT publish an AsyncAPI document — no /asyncapi.yaml,
+  no event-catalog spec, nothing in the cvent GitHub org — so this records the real event surface as a webhook catalogue
+  instead. Each entry has its own documentation page on the developer portal; the message names and grouping are
+  Cvent's, read from the published documentation route index. Payload schemas are documented per page and are not
+  reproduced here.
+asyncapi_published: false
+spec_absent_note: No AsyncAPI/CloudEvents/event-catalog artifact is published by Cvent as of 2026-09-07. Nothing
+  was generated in its place — an AsyncAPI document authored by us would assert a contract Cvent does not serve.
+transport: HTTPS POST to a subscriber-configured URL
+subscription:
+  style: API-managed + UI
+  operations:
+  - getContactHooks
+  - createContactHook
+  - deleteContactHook
+  openapi: openapi/cvent-registration-webhooks-api-openapi.yml
+  tag: Hooks
+  note: The Hooks tag in the REST contract manages contact-hook subscriptions programmatically; event/session/speaker
+    webhooks are configured per event in the Cvent UI (see the Event Setup and Session Setup guides).
+docs:
+  overview: https://developers.cvent.com/docs/webhooks/overview
+  understanding: https://developers.cvent.com/docs/webhooks/understanding-webhooks
+  technical_requirements: https://developers.cvent.com/docs/webhooks/technical-requirements
+  account_setup: https://developers.cvent.com/docs/webhooks/tutorials/account-setup
+  event_setup: https://developers.cvent.com/docs/webhooks/guides/event-setup
+  session_setup: https://developers.cvent.com/docs/webhooks/guides/session-setup
+  manual_sync: https://developers.cvent.com/docs/webhooks/guides/manual-sync
+  meeting_request_form: https://developers.cvent.com/docs/webhooks/guides/mrf
+  reports: https://developers.cvent.com/docs/webhooks/guides/webhooks-reports
+summary:
+  event_count: 41
+  groups: 8
+events:
+- group: attendee-emails
+  count: 7
+  messages:
+  - message: Added To Invitation List
+    slug: added-to-invitation-list
+    docs: https://developers.cvent.com/docs/webhooks/messages/attendee-emails/added-to-invitation-list
+  - message: Declines Invitation
+    slug: declines-invitation
+    docs: https://developers.cvent.com/docs/webhooks/messages/attendee-emails/declines-invitation
+  - message: Email Bounces
+    slug: email-bounces
+    docs: https://developers.cvent.com/docs/webhooks/messages/attendee-emails/email-bounces
+  - message: Email Opened
+    slug: email-opened
+    docs: https://developers.cvent.com/docs/webhooks/messages/attendee-emails/email-opened
+  - message: Email Sent
+    slug: email-sent
+    docs: https://developers.cvent.com/docs/webhooks/messages/attendee-emails/email-sent
+  - message: Resubscribes To Event Email
+    slug: resubscribes-to-event-email
+    docs: https://developers.cvent.com/docs/webhooks/messages/attendee-emails/resubscribes-to-event-email
+  - message: Unsubscribed From Event Email
+    slug: unsubscribed-from-event-email
+    docs: https://developers.cvent.com/docs/webhooks/messages/attendee-emails/unsubscribed-from-event-email
+- group: attendees
+  count: 12
+  messages:
+  - message: Abandons Registration
+    slug: abandons-registration
+    docs: https://developers.cvent.com/docs/webhooks/messages/attendees/abandons-registration
+  - message: Invitee Guest Order Created
+    slug: invitee-guest-order-created
+    docs: https://developers.cvent.com/docs/webhooks/messages/attendees/invitee-guest-order-created
+  - message: Marked As No Show
+    slug: marked-as-no-show
+    docs: https://developers.cvent.com/docs/webhooks/messages/attendees/marked-as-no-show
+  - message: Marked Event Participant
+    slug: marked-event-participant
+    docs: https://developers.cvent.com/docs/webhooks/messages/attendees/marked-event-participant
+  - message: Marked Session No Show
+    slug: marked-session-no-show
+    docs: https://developers.cvent.com/docs/webhooks/messages/attendees/marked-session-no-show
+  - message: Marked Session Participant
+    slug: marked-session-participant
+    docs: https://developers.cvent.com/docs/webhooks/messages/attendees/marked-session-participant
+  - message: Registered For Event
+    slug: registered-for-event
+    docs: https://developers.cvent.com/docs/webhooks/messages/attendees/registered-for-event
+  - message: Registered For Session
+    slug: registered-for-session
+    docs: https://developers.cvent.com/docs/webhooks/messages/attendees/registered-for-session
+  - message: Registration Cancelled
+    slug: registration-cancelled
+    docs: https://developers.cvent.com/docs/webhooks/messages/attendees/registration-cancelled
+  - message: Registration Modified
+    slug: registration-modified
+    docs: https://developers.cvent.com/docs/webhooks/messages/attendees/registration-modified
+  - message: Session Registration Cancelled
+    slug: session-registration-cancelled
+    docs: https://developers.cvent.com/docs/webhooks/messages/attendees/session-registration-cancelled
+  - message: Substituted Into Event Registration
+    slug: substituted-into-event-registration
+    docs: https://developers.cvent.com/docs/webhooks/messages/attendees/substituted-into-event-registration
+- group: contacts
+  count: 6
+  messages:
+  - message: Confirm Email Opt In
+    slug: confirm-email-opt-in
+    docs: https://developers.cvent.com/docs/webhooks/messages/contacts/confirm-email-opt-in
+  - message: Contact Created
+    slug: contact-created
+    docs: https://developers.cvent.com/docs/webhooks/messages/contacts/contact-created
+  - message: Contact Deleted
+    slug: contact-deleted
+    docs: https://developers.cvent.com/docs/webhooks/messages/contacts/contact-deleted
+  - message: Contact Edited
+    slug: contact-edited
+    docs: https://developers.cvent.com/docs/webhooks/messages/contacts/contact-edited
+  - message: Contact Opts Out Of Emails
+    slug: contact-opts-out-of-emails
+    docs: https://developers.cvent.com/docs/webhooks/messages/contacts/contact-opts-out-of-emails
+  - message: Opts Back In To Emails
+    slug: opts-back-in-to-emails
+    docs: https://developers.cvent.com/docs/webhooks/messages/contacts/opts-back-in-to-emails
+- group: event-sessions
+  count: 3
+  messages:
+  - message: Session Created
+    slug: session-created
+    docs: https://developers.cvent.com/docs/webhooks/messages/event-sessions/session-created
+  - message: Session Deleted
+    slug: session-deleted
+    docs: https://developers.cvent.com/docs/webhooks/messages/event-sessions/session-deleted
+  - message: Session Modified
+    slug: session-modified
+    docs: https://developers.cvent.com/docs/webhooks/messages/event-sessions/session-modified
+- group: event-speakers
+  count: 3
+  messages:
+  - message: Speaker Created
+    slug: speaker-created
+    docs: https://developers.cvent.com/docs/webhooks/messages/event-speakers/speaker-created
+  - message: Speaker Deleted
+    slug: speaker-deleted
+    docs: https://developers.cvent.com/docs/webhooks/messages/event-speakers/speaker-deleted
+  - message: Speaker Modified
+    slug: speaker-modified
+    docs: https://developers.cvent.com/docs/webhooks/messages/event-speakers/speaker-modified
+- group: events
+  count: 3
+  messages:
+  - message: Event Cancelled
+    slug: event-cancelled
+    docs: https://developers.cvent.com/docs/webhooks/messages/events/event-cancelled
+  - message: Event Deleted
+    slug: event-deleted
+    docs: https://developers.cvent.com/docs/webhooks/messages/events/event-deleted
+  - message: Event Modified
+    slug: event-modified
+    docs: https://developers.cvent.com/docs/webhooks/messages/events/event-modified
+- group: manual
+  count: 5
+  messages:
+  - message: Manual Attendee
+    slug: manual-attendee
+    docs: https://developers.cvent.com/docs/webhooks/messages/manual/manual-attendee
+  - message: Manual Attendee Abandoned
+    slug: manual-attendee-abandoned
+    docs: https://developers.cvent.com/docs/webhooks/messages/manual/manual-attendee-abandoned
+  - message: Manual Event
+    slug: manual-event
+    docs: https://developers.cvent.com/docs/webhooks/messages/manual/manual-event
+  - message: Manual Session
+    slug: manual-session
+    docs: https://developers.cvent.com/docs/webhooks/messages/manual/manual-session
+  - message: Manual Speaker
+    slug: manual-speaker
+    docs: https://developers.cvent.com/docs/webhooks/messages/manual/manual-speaker
+- group: meeting-requests
+  count: 2
+  messages:
+  - message: Meeting Request Modified
+    slug: meeting-request-modified
+    docs: https://developers.cvent.com/docs/webhooks/messages/meeting-requests/meeting-request-modified
+  - message: Meeting Request Submitted
+    slug: meeting-request-submitted
+    docs: https://developers.cvent.com/docs/webhooks/messages/meeting-requests/meeting-request-submitted

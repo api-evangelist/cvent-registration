@@ -1,0 +1,36 @@
+generated: '2026-09-07'
+method: searched
+source: https://github.com/cvent/rest-sdks/tree/main/overlays
+description: >-
+  OpenAPI Overlay 1.0.0 documents PUBLISHED BY CVENT, saved verbatim. These are not our
+  enhancements — Cvent authors them in its SDK monorepo and applies them in .speakeasy/workflow.yaml
+  on top of cvent-public-spec/openapi.yaml before generating the TypeScript, Java and C# SDKs.
+  Files are byte-identical to the provider's; provenance is recorded here rather than in
+  frontmatter so the overlays themselves stay unmodified.
+applies_to: openapi/_original/cvent-rest-apis-openapi.yaml
+overlays:
+- file: cvent-registration-public-overlay.yaml
+  provider_path: overlays/public_overlay.yaml
+  purpose: >-
+    Sets global security (OAuth2 client-credentials + authorization-code), adds a basic-auth scheme
+    for /oauth2/token, pins servers to api-platform.cvent.com/ea and api-platform-eur.cvent.com/ea,
+    and repairs a set of broken $ref targets in the raw contract.
+- file: cvent-registration-pagination-overlay.yaml
+  provider_path: overlays/operation_level_pagination_overlay.yaml
+  purpose: >-
+    Marks every operation taking the token/token1 parameter as cursor-paginated
+    (x-speakeasy-pagination, nextCursor $.paging.nextToken).
+- file: cvent-registration-retries-overlay.yaml
+  provider_path: overlays/retries_overlay.yaml
+  purpose: >-
+    Declares the SDK retry policy — exponential backoff 2s to 16s, exponent 2.0, ~5 attempts within
+    40s, on 502/503/504 and connection errors. 429 is DELIBERATELY excluded because Cvent uses one
+    status for two conditions ("Too Many Requests" vs "Limit Exceeded") that only the body separates.
+- file: cvent-registration-description-overlay.yaml
+  provider_path: overlays/description_overlay.yaml
+  purpose: Replaces info.description with the short SDK-facing blurb.
+- file: cvent-registration-segments-error-overlay.yaml
+  provider_path: overlays/segments_error_response_overlay.yaml
+  purpose: >-
+    Repairs two audience-segment 400 responses where a schema $ref was used where a response $ref
+    was required, restoring the segments-error-response validationCode enum.

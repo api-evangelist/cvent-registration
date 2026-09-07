@@ -3,102 +3,117 @@ specificationVersion: '0.1'
 schema: https://raw.githubusercontent.com/api-evangelist/interface-research/main/schema/api-commons.yml#/$defs/RateLimits
 provider: Cvent Registration
 providerId: cvent-registration
+generated: '2026-09-07'
+method: searched
+source: https://developers.cvent.com/docs/rest-api/guides/handling-rate-limits
+sources:
+  - https://developers.cvent.com/docs/rest-api/guides/handling-rate-limits
+  - https://github.com/cvent/rest-sdks/blob/main/cvent-public-spec/openapi.yaml
+  - https://github.com/cvent/rest-sdks/blob/main/overlays/retries_overlay.yaml
 created: '2026-05-04'
-# Provenance stamped 2026-08-11: this artifact was written by the API Evangelist
-# bulk sweep dated 2026-05-04, not harvested from the provider. See roadmap#35.
-method: generated
-modified: '2026-05-04'
-tags:
-  - Attendee Management
-  - Attendees
-  - Conferences
-  - Event Management
-  - Events
-  - OAuth 2.0
-  - On-Site Check-In
-  - Payments
-  - Registration
-  - REST API
-  - Ticketing
-  - Webhooks
-  - Rate Limiting
-  - Quotas
-  - Throttling
-description: Machine-readable rate limit definitions for the Cvent Registration API surface. Captures
-  per-tier quotas, burst behavior, response signaling, and recovery semantics. Defaults are scaffold values
-  to be replaced with published provider limits.
+modified: '2026-09-07'
+description: >-
+  Published Cvent Platform REST API rate limits. The three usage tiers, their daily quota,
+  per-second rate and burst are stated verbatim in the "Rate Limits" section of the official
+  OpenAPI's info.description; the response headers, the 429 semantics and the quota-inspection
+  endpoints come from the Handling Rate Limits guide on the developer portal. Replaces the
+  2026-05-04 scaffold, whose numbers were placeholders.
 headers:
   limit: X-RateLimit-Limit
   remaining: X-RateLimit-Remaining
   reset: X-RateLimit-Reset
-  retryAfter: Retry-After
-  policy: RateLimit-Policy
+  retryAfter: null
+  policy: null
+  note: >-
+    Documented example response headers are X-RateLimit-Limit, X-RateLimit-Remaining and
+    X-RateLimit-Reset (a unix timestamp). Cvent does not document a Retry-After header or the
+    RFC 9238 RateLimit-* family; its own retries overlay tells SDK consumers to use fixed
+    exponential backoff instead of reading a server-supplied delay.
 responseCodes:
   throttled: 429
   quotaExceeded: 429
-  serviceUnavailable: 503
+  note: >-
+    Both conditions return 429. Cvent's own overlay comment states they are only distinguishable
+    by the message body — "Too Many Requests" is per-second throttling and safe to retry, while
+    "Limit Exceeded" means the daily quota is gone and retrying burns quota. For this reason
+    Cvent deliberately EXCLUDES 429 from the default SDK retry status codes (502/503/504 only).
+quotaEndpoints:
+  - operationId: getUsageTier
+    method: GET
+    path: /ea/usage/tier
+    url: https://api-platform.cvent.com/ea/usage/tier
+    description: Returns the account's current usage tier.
+  - operationId: getUsage
+    method: GET
+    path: /ea/usage
+    url: https://api-platform.cvent.com/ea/usage
+    description: Returns current quota consumption; poll it to monitor headroom.
 limits:
-  - tier: free
-    name: Free Tier Default
-    scope: api-key
-    metric: requests_per_minute
+  - tier: Free
+    name: Free tier daily quota
+    scope: account
+    metric: requests_per_day
+    limit: 1000
+    timeFrame: day
+    resets: 00:00 GMT
+    applies: [Cvent Platform REST API]
+  - tier: Free
+    name: Free tier rate
+    scope: account
+    metric: requests_per_second
+    limit: 2
+    burst: 1
+    timeFrame: second
+    applies: [Cvent Platform REST API]
+  - tier: Standard
+    name: Standard tier daily quota
+    scope: account
+    metric: requests_per_day
+    limit: 15000
+    timeFrame: day
+    resets: 00:00 GMT
+    applies: [Cvent Platform REST API]
+  - tier: Standard
+    name: Standard tier rate
+    scope: account
+    metric: requests_per_second
     limit: 10
-    burst: 20
-    timeFrame: minute
-    applies:
-      - Cvent Registration REST API
-      - Cvent Registration Webhooks
-  - tier: free
-    name: Free Tier Monthly Quota
-    scope: api-key
-    metric: requests_per_month
-    limit: 1000
-    timeFrame: month
-    applies:
-      - Cvent Registration REST API
-      - Cvent Registration Webhooks
-  - tier: professional
-    name: Professional Tier Default
-    scope: api-key
-    metric: requests_per_minute
-    limit: 100
-    burst: 200
-    timeFrame: minute
-    applies:
-      - Cvent Registration REST API
-      - Cvent Registration Webhooks
-  - tier: professional
-    name: Professional Tier Monthly Quota
-    scope: api-key
-    metric: requests_per_month
-    limit: 100000
-    timeFrame: month
-    applies:
-      - Cvent Registration REST API
-      - Cvent Registration Webhooks
-  - tier: enterprise
-    name: Enterprise Negotiated Limit
-    scope: contract
-    metric: requests_per_minute
-    limit: 1000
-    burst: 5000
-    timeFrame: minute
-    applies:
-      - Cvent Registration REST API
-      - Cvent Registration Webhooks
+    burst: 10
+    timeFrame: second
+    applies: [Cvent Platform REST API]
+  - tier: Premium
+    name: Premium tier daily quota
+    scope: account
+    metric: requests_per_day
+    limit: 500000
+    timeFrame: day
+    resets: 00:00 GMT
+    applies: [Cvent Platform REST API]
+  - tier: Premium
+    name: Premium tier rate
+    scope: account
+    metric: requests_per_second
+    limit: 25
+    burst: 25
+    timeFrame: second
+    applies: [Cvent Platform REST API]
 policies:
-  - name: Backoff Strategy
-    description: Clients should implement exponential backoff with jitter, honoring the Retry-After header
-      when present.
-  - name: Burst Handling
-    description: Short bursts above the steady-state limit are tolerated up to the documented burst ceiling
-      before throttling engages.
-  - name: Quota Reset
-    description: Monthly quotas reset at the start of each calendar month in UTC. Per-minute and per-second
-      windows reset on a sliding-window basis.
-  - name: Fair Use
-    description: Even on uncapped enterprise tiers, sustained usage that materially impacts shared infrastructure
-      may be subject to fair-use throttling.
+  - name: Failed requests still count
+    description: >-
+      Every request counts against the quota, including requests that themselves return 429.
+      Stated explicitly in the Handling Rate Limits guide.
+  - name: Backoff strategy
+    description: >-
+      Cvent's published SDK retry policy: exponential backoff, initial interval 2s, max interval
+      16s, exponent 2.0, max elapsed 40s (~5 attempts), then log and stop. Connection errors are
+      retried; 429 is not retried automatically.
+  - name: Quota reset
+    description: Daily quota resets at 12 midnight GMT (+0). Rate is a 1-second window.
+  - name: Limits may change
+    description: >-
+      "Please note that these limits may change as the Cvent API Platform evolves." — official
+      OpenAPI info.description.
+limit_count: 6
 maintainers:
   - FN: Kin Lane
     email: kin@apievangelist.com

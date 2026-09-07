@@ -1,0 +1,56 @@
+generated: '2026-09-07'
+method: derived
+source: openapi/cvent-registration-*-openapi.yml
+status: candidate
+description: >-
+  Cvent publishes NO first-party MCP server. Searched the cvent GitHub organisation (100 most
+  recently pushed repos), the developer portal route index (every /docs/* page in the Next.js
+  build manifest), npm and the web on 2026-09-07 — nothing. Every "Cvent MCP server" that exists
+  is third-party: a community server by cmcintosh, CData's read-only JDBC-backed server, and
+  Zapier's hosted MCP. None is operated or endorsed by Cvent, so none is recorded as a Cvent
+  agent surface. The tool list below is a CANDIDATE derived from real operationIds in Cvent's own
+  contract; it is a design proposal, not something an agent can call today.
+deployment:
+  mode: none
+  endpoint: null
+  install: null
+  package: null
+  auth: oauth
+  verified: searched
+  note: >-
+    mode is `none` because nobody ships a Cvent MCP server. Auth is recorded as oauth because any
+    server would have to carry the platform's OAuth 2.0 client-credentials token, not because a
+    server exists to authenticate against.
+third_party_servers:
+  - name: cvent-mcp-server
+    author: cmcintosh (community)
+    url: https://glama.ai/mcp/servers/cmcintosh/cvent-mcp-server
+    first_party: false
+  - name: Cvent MCP Server by CData
+    author: CData Software
+    url: https://github.com/CDataSoftware/cvent-mcp-server-by-cdata
+    first_party: false
+    note: Read-only; wraps the CData JDBC driver and exposes Cvent as relational SQL models.
+  - name: Zapier MCP — Cvent
+    author: Zapier
+    url: https://zapier.com/mcp/cvent
+    first_party: false
+candidate_tools:
+  - { tool: list_events, rest: [getEvents], category: events, description: List events in the account. }
+  - { tool: get_event, rest: [getEventById], category: events, description: Get one event by id. }
+  - { tool: create_event, rest: [createEventAsync], category: events, consequence: write }
+  - { tool: list_attendees, rest: [listAttendeesPostFilter], category: attendees, description: Filtered list of event attendees. }
+  - { tool: create_attendee, rest: [createAttendee], category: attendees, consequence: write, description: Register an attendee for an event. }
+  - { tool: update_attendee, rest: [updateAttendee], category: attendees, consequence: write, description: Update an attendee, including setting status to Cancelled. }
+  - { tool: list_contacts, rest: [listContacts], category: contacts }
+  - { tool: create_contact, rest: [createContacts], category: contacts, consequence: write }
+  - { tool: list_sessions, rest: [listSessions], category: sessions }
+  - { tool: enroll_in_session, rest: [createSessionEnrollment], category: sessions, consequence: write }
+  - { tool: check_in_attendee, rest: [eventCheckIn], category: onsite, consequence: write }
+  - { tool: list_orders, rest: [getAccountOrders], category: commerce, description: Account-level orders surface added 2026-08-20. }
+  - { tool: list_transactions, rest: [getAccountTransactions], category: commerce }
+  - { tool: get_usage_tier, rest: [getUsageTier], category: platform, description: Read the account's REST usage tier before planning a batch. }
+caveats:
+  - Every candidate tool inherits the backing operation's OAuth scope; a server must request scopes narrowly.
+  - There is no idempotency mechanism, so a retrying agent can double-register an attendee. See conventions/.
+  - 429 is ambiguous (throttle vs daily quota) and carries no Retry-After.

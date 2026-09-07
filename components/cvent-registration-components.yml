@@ -1,0 +1,84 @@
+generated: '2026-09-07'
+method: searched
+source: https://developers.cvent.com/docs/custom-widgets/overview
+description: >-
+  Cvent Custom Widgets — the client-side, embeddable surface of Cvent Registration. Third-party
+  developers build standard HTML Web Components (Custom Elements) that Cvent hosts inside an
+  event registration site, and drive them with a first-party browser SDK that exposes the live
+  registration context. Distinct from the REST SDKs in packages/: those are server-to-server
+  clients; these run in the registrant's browser inside Cvent's own registration pages.
+families:
+- name: Cvent Custom Widgets
+  kind: web-components
+  docs: https://developers.cvent.com/docs/custom-widgets/overview
+  technology: HTML Web Components / Custom Elements
+  hosted_by: Cvent (widget assets are uploaded at widget creation and served in the registration site)
+  required_assets:
+  - name: Widget Element
+    file: widget.js
+    docs: https://developers.cvent.com/docs/custom-widgets/required-assets/custom-widget-element
+    description: The custom element rendered to the registrant inside the registration site.
+  - name: Editor Element
+    file: editor.js
+    docs: https://developers.cvent.com/docs/custom-widgets/required-assets/custom-widget-editor
+    description: The configuration UI the event planner sees when placing the widget.
+  - name: Widget Configuration
+    docs: https://developers.cvent.com/docs/custom-widgets/required-assets/custom-widget-configuration
+    description: Declarative configuration supplied at widget creation alongside editor.js and widget.js.
+  publishing: https://developers.cvent.com/docs/custom-widgets/publishing
+  examples:
+  - { name: Registration widget, docs: 'https://developers.cvent.com/docs/custom-widgets/examples/registration-widget' }
+  - { name: Featured session widget, docs: 'https://developers.cvent.com/docs/custom-widgets/examples/featured-session-widget' }
+  - { name: Featured session logic, docs: 'https://developers.cvent.com/docs/custom-widgets/examples/featured-session-logic' }
+loaders:
+- name: Custom Widget SDK
+  kind: browser-sdk
+  docs: https://developers.cvent.com/docs/custom-widgets/sdk/registration-methods
+  distribution: injected into the widget runtime by Cvent (no registry package)
+  registry: null
+  version: null
+  published: null
+  version_note: >-
+    Not distributed through npm/CDN — the SDK is provided to the widget by the Cvent registration
+    runtime, so there is no pinned version a consumer can read. Recorded as null deliberately.
+  method_groups:
+  - group: Registration methods
+    docs: https://developers.cvent.com/docs/custom-widgets/sdk/registration-methods
+    methods:
+    - name: getSessionStatus
+      description: >-
+        Returns the registration status of a session for a registrant (status + subStatus).
+        Effectively limited to the current registrant.
+    - name: pickSession
+      description: >-
+        Commits a registration action for a session when its status is "actionable"; returns the
+        initialStatus, the attempted action, success, and a failureReason when it fails.
+        Concurrent identical calls return the same result — Cvent's own documented double-click
+        protection, which is the closest thing to idempotency anywhere in the Cvent surface, and
+        it exists only in the browser SDK, not in the REST API.
+    - name: getApplicableProductFeesGenerator
+      description: >-
+        Async generator over product fees applicable to this registrant given registration-type
+        association and admission-item settings. Default page size 10.
+  - group: Context methods
+    docs: https://developers.cvent.com/docs/custom-widgets/sdk/retrieving-event-objects
+    methods:
+    - name: observe
+      description: >-
+        Subscribes a listener to one or more ObserveSubject / ParameterizedObserveSubject values
+        and returns an unobserve function; max 100 subjects, no duplicates. Cvent recommends
+        calling unobserve from the custom element's disconnectedCallback().
+    - name: read
+      description: Reads the current value of one or more subjects without subscribing.
+    - name: getProductFeesGenerator
+      description: Async generator over all event product fees (unfiltered by registrant context).
+  - group: Navigation
+    docs: https://developers.cvent.com/docs/custom-widgets/sdk/navigation
+  - group: Supported expressions
+    docs: https://developers.cvent.com/docs/custom-widgets/sdk/supported-expressions
+limitations:
+  docs: https://developers.cvent.com/docs/custom-widgets/overview#limitations
+  note: Cvent publishes an explicit limitations section on the overview page.
+absent:
+  - No hosted/prebuilt drop-in registration iframe or embed snippet is documented on the developer portal.
+  - No npm-distributed component library; widgets are uploaded to Cvent rather than installed by a consumer.

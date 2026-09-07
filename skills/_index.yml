@@ -1,0 +1,25 @@
+generated: '2026-09-07'
+method: generated
+source: openapi/cvent-registration-*-openapi.yml
+description: >-
+  Packaged Agent Skills for the Cvent Registration surface. Every operationId referenced was
+  verified to exist in the OpenAPI slices cut from Cvent's own published contract; none is
+  invented. Cvent publishes no skills/ or AGENTS.md of its own — searched the cvent GitHub org
+  and the developer portal route index on 2026-09-07.
+provider_published_skills: false
+skills:
+- name: cvent-registration-register-attendee
+  file: cvent-registration-register-attendee.md
+  description: Register a contact as an attendee, verify it, and cancel safely.
+  api: Cvent Registration REST API
+  operations: 10
+- name: cvent-registration-onsite-check-in
+  file: cvent-registration-onsite-check-in.md
+  description: Event and session check-in, badge printing, and undoing a mistaken check-in.
+  api: Cvent Registration REST API
+  operations: 10
+- name: cvent-registration-webhook-subscription
+  file: cvent-registration-webhook-subscription.md
+  description: Subscribe to registration webhooks and reconcile misses via change history.
+  api: Cvent Registration Webhooks
+  operations: 5

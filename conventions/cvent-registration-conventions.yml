@@ -1,0 +1,168 @@
+generated: '2026-09-07'
+method: searched
+source: https://github.com/cvent/rest-sdks/blob/main/cvent-public-spec/openapi.yaml
+sources:
+  - https://github.com/cvent/rest-sdks/blob/main/cvent-public-spec/openapi.yaml
+  - https://developers.cvent.com/docs/rest-api/reference/api-standards
+  - https://developers.cvent.com/docs/rest-api/reference/filters
+  - https://developers.cvent.com/docs/rest-api/guides/handling-rate-limits
+  - https://developers.cvent.com/docs/rest-api/guides/managing-change-history
+description: >-
+  Cross-cutting runtime semantics of the Cvent Platform REST API — what an agent needs to know
+  before it calls. Every claim below is read from Cvent's own contract or developer portal;
+  where a mechanism does not exist that is recorded as an explicit absence rather than omitted.
+base_url:
+  hosts:
+    - { region: North America, url: 'https://api-platform.cvent.com/ea' }
+    - { region: Europe, url: 'https://api-platform-eur.cvent.com/ea' }
+  note: >-
+    Host is account-region dependent and there is no discovery endpoint that tells a client which
+    one it belongs to — an integrator must know their account's data centre up front.
+auth:
+  style: oauth2
+  flows:
+    - flow: client_credentials
+      token_url: https://api-platform.cvent.com/ea/oauth2/token
+      client_auth: HTTP Basic, base64(client_id:client_secret), grant_type=client_credentials
+      token_ttl_seconds: 3600
+      recommended: true
+    - flow: authorization_code
+      authorization_url: https://api-platform.cvent.com/ea/oauth2/authorize
+      restriction: >-
+        Only supported for planner users holding the administrator role. Developer users cannot
+        use authorization code flow. Cvent's own SDKs expose the endpoints but do not implement
+        the browser redirect.
+  request_header: 'Authorization: Bearer {access_token}'
+  scopes: 238 declared (see scopes/cvent-registration-scopes.yml)
+  credential_rotation: https://developers.cvent.com/docs/rest-api/guides/rotating-api-credentials
+idempotency:
+  coverage: none
+  supported: false
+  header: null
+  scope: []
+  retention: null
+  detail: >-
+    No replay-protection mechanism exists. The string "idempoten" does not appear anywhere in the
+    2,051,366-byte contract, nor in any developer-portal guide. None of the 138 mutating
+    operations on the registration surface accepts an Idempotency-Key (or equivalent) header, and
+    no operation documents a client-supplied request id. An agent that times out mid-write on
+    POST /attendees has no safe way to determine whether the attendee was created other than
+    re-reading the collection.
+pagination:
+  style: cursor
+  request_params: [limit, token]
+  response_fields:
+    envelope: paging
+    fields: [currentToken, nextToken, previousToken, limit, totalCount, _links]
+  terminator: >-
+    Absence of nextToken. Cvent warns that an empty final page can occur when results divide
+    evenly, so clients must tolerate an empty data array returned with a valid token.
+  machine_readable: >-
+    Formalised by Cvent's own overlay (overlays/cvent-registration-pagination-overlay.yaml):
+    x-speakeasy-pagination, type cursor, input token, output nextCursor $.paging.nextToken.
+filtering:
+  style: query-expression
+  param: filter
+  grammar: "filter='field' comparisonType 'value'"
+  operators: [in, eq, ne, sw, ew, co, lt, gt, le, ge]
+  quoting: >-
+    Value may be single- or double-quoted. To pass a single quote use double quotes
+    (lastName eq "O'Keenan"); to pass a double quote, double-quote and backslash-escape.
+  per_operation: >-
+    Supported fields and operators differ per operation and are documented in a table inside each
+    operation's filter parameter description — there is no global filterable-field registry.
+  docs: https://developers.cvent.com/docs/rest-api/reference/filters
+  bulk_filter: >-
+    Several large collections are read via POST /{collection}/filter rather than GET, to carry a
+    filter body (e.g. listAttendeesPostFilter, getBadgesPostFilters).
+change_tracking:
+  supported: true
+  mechanism: >-
+    `after` / `before` query parameters on supported collections bound a change window
+    (after = lower time limit, before = upper time limit), letting a client poll for records
+    modified since a watermark.
+  docs: https://developers.cvent.com/docs/rest-api/guides/managing-change-history
+  note: The push equivalent is Cvent Webhooks — see asyncapi/cvent-registration-webhooks.yml.
+field_expansion:
+  supported: false
+  note: No expand / fields / include sparse-fieldset parameter is defined anywhere in the contract.
+metadata:
+  custom_fields: >-
+    Extensibility is via first-class Custom Fields resources rather than a free-form metadata bag.
+    See openapi/cvent-registration-custom-fields-api-openapi.yml.
+request_id_tracing:
+  supported: false
+  note: >-
+    No documented correlation/request-id request or response header. A caller cannot quote a
+    request id to support when reporting a failure.
+versioning:
+  style: uri-path
+  current: ea
+  detail: See lifecycle/cvent-registration-lifecycle.yml for the full compatibility policy.
+error_envelope:
+  media_type: application/json
+  shape: { code: integer, message: string, target: string, details: [ErrorResponseBase] }
+  rfc9457: false
+  detail: See errors/cvent-registration-problem-types.yml.
+rate_limit_signaling:
+  headers: [X-RateLimit-Limit, X-RateLimit-Remaining, X-RateLimit-Reset]
+  status: 429
+  retry_after: false
+  ambiguity: >-
+    429 means either per-second throttling ("Too Many Requests", retry) or daily quota exhaustion
+    ("Limit Exceeded", do not retry) and the two are distinguishable only by the message body.
+  detail: See rate-limits/cvent-registration-rate-limits.yml.
+dry_run_mode:
+  supported: false
+  note: No preview/validate-only/dry-run parameter exists on any operation.
+reversibility:
+  grade: documented
+  detail: >-
+    Registration cancellation IS a first-class, reversible-in-principle state: the AttendeeStatus
+    enum carries "Cancelled" alongside "No Response", "Accepted", "Declined", "Visited",
+    "Waitlisted", "Pending Approval" and "Denied Approval", and Cvent's 2026 changelog documents
+    "Pending Approval -> Cancelled" as a supported transition. Cancellation is therefore performed
+    by PUT /attendees/{id} setting status, not by a dedicated cancel/refund/void operation —
+    there is NO operation named cancel, refund, void, reverse, undo, rollback or restore anywhere
+    on the registration surface. Destructive DELETEs (deleteContactById, deleteSession,
+    deleteSessionEnrollment, deleteExhibitor, deleteEventCheckIn ...) have no documented undelete
+    path and no stated retention window.
+  reversal_operations:
+    - surface: Event registration status
+      write_operation: updateAttendee (PUT /attendees/{id})
+      reversal_operation: updateAttendee (PUT /attendees/{id}) setting status to Cancelled
+      window: null
+      window_documented: false
+      docs: https://developers.cvent.com/docs/rest-api/guides/registration-guide
+    - surface: Session registration
+      write_operation: createSessionEnrollment (POST /sessions/{id}/enrollment/{attendeeId})
+      reversal_operation: deleteSessionEnrollment (DELETE /sessions/{id}/enrollment/{attendeeId})
+      window: null
+      window_documented: false
+    - surface: Event check-in
+      write_operation: eventCheckIn (POST /events/{id}/check-in)
+      reversal_operation: deleteEventCheckIn (DELETE /events/{id}/check-in/{attendeeId})
+      window: null
+      window_documented: false
+    - surface: Session check-in / attendance
+      write_operation: sessionCheckIn (POST /sessions/{id}/check-in)
+      reversal_operation: deleteSessionAttendance (DELETE /sessions/{id}/attendance/{attendeeId})
+      window: null
+      window_documented: false
+  irreversible:
+    - deleteContactById
+    - deleteSession
+    - deleteSpeaker
+    - deleteExhibitor
+    - deleteProgramItem
+    - deleteContactGroup
+    - deleteUser (SCIM)
+  not_reversible_note: >-
+    Payments are a documented exception in the other direction: the registration surface exposes
+    Orders and Transactions as READ-ONLY (8 operations, all GET except createTransaction), so
+    there is no refund operation in this contract to grade at all.
+  windows_documented: false
+  reason_not_verified: >-
+    Cvent publishes reversal PATHS but states no WINDOW for any of them — no "cancel before X",
+    no "restore within N days of delete", no retention period on any DELETE. Grade stays
+    `documented` rather than `verified`; asserting a window would be inventing one.

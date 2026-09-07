@@ -44,7 +44,7 @@ type: Index
 access: 3rd-Party
 position: Consuming
 created: '2024-01-15'
-modified: '2026-04-28'
+modified: '2026-09-07'
 specificationVersion: '0.23'
 tags:
   - Attendee Management
@@ -57,6 +57,9 @@ tags:
   - Payments
   - Registration
   - REST API
+  - SCIM
+  - SDKs
+  - SOAP
   - Ticketing
   - Webhook
 tags_raw:
@@ -70,6 +73,9 @@ tags_raw:
   - Payments
   - Registration
   - REST API
+  - SCIM
+  - SDKs
+  - SOAP
   - Ticketing
   - Webhooks
 apis:
@@ -112,7 +118,7 @@ apis:
   - type: APIReference
     url: https://developers.cvent.com/docs/rest-api/reference/reference
   - type: Authentication
-    url: https://developers.cvent.com/docs/rest-api/explanation/authentication
+    url: https://developers.cvent.com/docs/rest-api/explanation/concepts
   - type: OAuthTokenEndpoint
     url: https://api-platform.cvent.com/ea/oauth2/token
   - type: ChangeLog
@@ -126,6 +132,7 @@ apis:
     the REST API.
   image: https://kinlane-images.s3.amazonaws.com/shared/apis-json/apis-json-logo.jpg
   humanURL: https://developers.cvent.com/docs/webhooks/overview
+  baseURL: https://api-platform.cvent.com
   tags:
   - Attendees
   - Event
@@ -151,6 +158,7 @@ apis:
     url: https://developers.cvent.com/docs/webhooks/technical-requirements
 - aid: cvent-registration:cvent-registration-attendees-api
   name: Cvent Registration Attendees API
+  image: https://kinlane-images.s3.amazonaws.com/shared/apis-json/apis-json-logo.jpg
   description: Event registrations and attendees
   humanURL: https://developers.cvent.com/docs/rest-api/guides/registration-guide
   baseURL: https://api-platform.cvent.com
@@ -161,6 +169,7 @@ apis:
     url: openapi/cvent-registration-attendees-api-openapi.yml
 - aid: cvent-registration:cvent-registration-contacts-api
   name: Cvent Registration Contacts API
+  image: https://kinlane-images.s3.amazonaws.com/shared/apis-json/apis-json-logo.jpg
   description: Contact/address book
   humanURL: https://developers.cvent.com/docs/rest-api/guides/registration-guide
   baseURL: https://api-platform.cvent.com
@@ -171,6 +180,7 @@ apis:
     url: openapi/cvent-registration-contacts-api-openapi.yml
 - aid: cvent-registration:cvent-registration-events-api
   name: Cvent Registration Events API
+  image: https://kinlane-images.s3.amazonaws.com/shared/apis-json/apis-json-logo.jpg
   description: Event lifecycle and configuration
   humanURL: https://developers.cvent.com/docs/rest-api/guides/registration-guide
   baseURL: https://api-platform.cvent.com
@@ -183,6 +193,7 @@ apis:
     url: openapi/cvent-registration-events-api-openapi.yml
 - aid: cvent-registration:cvent-registration-exhibitors-api
   name: Cvent Registration Exhibitors API
+  image: https://kinlane-images.s3.amazonaws.com/shared/apis-json/apis-json-logo.jpg
   description: Exhibitor management
   humanURL: https://developers.cvent.com/docs/rest-api/guides/registration-guide
   baseURL: https://api-platform.cvent.com
@@ -193,6 +204,7 @@ apis:
     url: openapi/cvent-registration-exhibitors-api-openapi.yml
 - aid: cvent-registration:cvent-registration-oauth-api
   name: Cvent Registration OAuth API
+  image: https://kinlane-images.s3.amazonaws.com/shared/apis-json/apis-json-logo.jpg
   description: OAuth 2.0 token issuance
   humanURL: https://developers.cvent.com/docs/rest-api/guides/registration-guide
   baseURL: https://api-platform.cvent.com
@@ -205,6 +217,7 @@ apis:
     url: openapi/cvent-registration-oauth-api-openapi.yml
 - aid: cvent-registration:cvent-registration-sessions-api
   name: Cvent Registration Sessions API
+  image: https://kinlane-images.s3.amazonaws.com/shared/apis-json/apis-json-logo.jpg
   description: Agenda sessions
   humanURL: https://developers.cvent.com/docs/rest-api/guides/registration-guide
   baseURL: https://api-platform.cvent.com
@@ -215,6 +228,7 @@ apis:
     url: openapi/cvent-registration-sessions-api-openapi.yml
 - aid: cvent-registration:cvent-registration-webhooks-api
   name: Cvent Registration Webhooks API
+  image: https://kinlane-images.s3.amazonaws.com/shared/apis-json/apis-json-logo.jpg
   description: Webhook subscriptions
   humanURL: https://developers.cvent.com/docs/rest-api/guides/registration-guide
   baseURL: https://api-platform.cvent.com
@@ -225,6 +239,163 @@ apis:
   properties:
   - type: OpenAPI
     url: openapi/cvent-registration-webhooks-api-openapi.yml
+- aid: cvent-registration:soap-api
+  name: Cvent SOAP API (legacy V200611)
+  image: https://kinlane-images.s3.amazonaws.com/shared/apis-json/apis-json-logo.jpg
+  description: >-
+    The legacy Cvent SOAP API, still served and still publishing its WSDL at
+    api.cvent.com/soap/V200611.ASMX?WSDL (HTTP 200, 330,911 bytes, targetNamespace
+    http://api.cvent.com/2006-11). Cvent maintains a full SOAP-to-REST migration guide with
+    per-object mappings for event, invitee, registration, session, survey, transaction, travel
+    and user, but has not retired the SOAP endpoint.
+  humanURL: https://developers.cvent.com/docs/rest-api/migration-guide/benefits
+  baseURL: https://api.cvent.com/soap/V200611.ASMX
+  tags:
+  - Event
+  - Registration
+  - SOAP
+  properties:
+  - type: WSDL
+    url: wsdl/cvent-registration-soap-v200611.wsdl
+  - type: Documentation
+    url: https://developers.cvent.com/docs/rest-api/migration-guide/benefits
+  - type: Reference
+    url: https://developers.cvent.com/docs/rest-api/migration-guide/object-mappings
+- aid: cvent-registration:cvent-registration-orders-api
+  name: Cvent Registration Orders and Transactions API
+  image: https://kinlane-images.s3.amazonaws.com/shared/apis-json/apis-json-logo.jpg
+  description: >-
+    Account-level orders and transactions for event registration commerce. Added to the Cvent
+    contract in the 2026-08-20 release. Read-only.
+  humanURL: https://developers.cvent.com/docs/rest-api/guides/registration-guide
+  baseURL: https://api-platform.cvent.com
+  tags:
+  - Orders
+  - Payments
+  - Transactions
+  properties:
+  - type: OpenAPI
+    url: openapi/cvent-registration-orders-api-openapi.yml
+- aid: cvent-registration:cvent-registration-surveys-api
+  name: Cvent Registration Surveys API
+  image: https://kinlane-images.s3.amazonaws.com/shared/apis-json/apis-json-logo.jpg
+  description: Post-event and in-event surveys attached to the registration record.
+  humanURL: https://developers.cvent.com/docs/rest-api/guides/registration-guide
+  baseURL: https://api-platform.cvent.com
+  tags:
+  - Surveys
+  properties:
+  - type: OpenAPI
+    url: openapi/cvent-registration-surveys-api-openapi.yml
+- aid: cvent-registration:cvent-registration-speakers-api
+  name: Cvent Registration Speakers API
+  image: https://kinlane-images.s3.amazonaws.com/shared/apis-json/apis-json-logo.jpg
+  description: Speaker records, speaker documents and speaker-to-session assignment.
+  humanURL: https://developers.cvent.com/docs/rest-api/guides/registration-guide
+  baseURL: https://api-platform.cvent.com
+  tags:
+  - Sessions
+  - Speakers
+  properties:
+  - type: OpenAPI
+    url: openapi/cvent-registration-speakers-api-openapi.yml
+- aid: cvent-registration:cvent-registration-seating-api
+  name: Cvent Registration Seating and Badging API
+  image: https://kinlane-images.s3.amazonaws.com/shared/apis-json/apis-json-logo.jpg
+  description: Table assignment, seating, badge print jobs and badge printer pools for on-site check-in.
+  humanURL: https://developers.cvent.com/docs/rest-api/guides/registration-guide
+  baseURL: https://api-platform.cvent.com
+  tags:
+  - On-Site Check-In
+  - Seating
+  properties:
+  - type: OpenAPI
+    url: openapi/cvent-registration-seating-api-openapi.yml
+- aid: cvent-registration:cvent-registration-discounts-api
+  name: Cvent Registration Discounts API
+  image: https://kinlane-images.s3.amazonaws.com/shared/apis-json/apis-json-logo.jpg
+  description: Discount codes and their association to order items.
+  humanURL: https://developers.cvent.com/docs/rest-api/guides/registration-guide
+  baseURL: https://api-platform.cvent.com
+  tags:
+  - Discounts
+  - Payments
+  properties:
+  - type: OpenAPI
+    url: openapi/cvent-registration-discounts-api-openapi.yml
+- aid: cvent-registration:cvent-registration-custom-fields-api
+  name: Cvent Registration Custom Fields API
+  image: https://kinlane-images.s3.amazonaws.com/shared/apis-json/apis-json-logo.jpg
+  description: Custom field definitions and answers on contacts, events and sessions.
+  humanURL: https://developers.cvent.com/docs/rest-api/guides/registration-guide
+  baseURL: https://api-platform.cvent.com
+  tags:
+  - Custom Fields
+  - Registration
+  properties:
+  - type: OpenAPI
+    url: openapi/cvent-registration-custom-fields-api-openapi.yml
+- aid: cvent-registration:cvent-registration-event-travel-api
+  name: Cvent Registration Event Travel API
+  image: https://kinlane-images.s3.amazonaws.com/shared/apis-json/apis-json-logo.jpg
+  description: Registration travel — air, ground and arrival/departure data attached to an attendee.
+  humanURL: https://developers.cvent.com/docs/rest-api/guides/event-travel-guide
+  baseURL: https://api-platform.cvent.com
+  tags:
+  - Event Travel
+  - Registration
+  properties:
+  - type: OpenAPI
+    url: openapi/cvent-registration-event-travel-api-openapi.yml
+  - type: Documentation
+    url: https://developers.cvent.com/docs/rest-api/guides/event-travel-guide
+- aid: cvent-registration:cvent-registration-attendee-activities-api
+  name: Cvent Registration Attendee Activities API
+  image: https://kinlane-images.s3.amazonaws.com/shared/apis-json/apis-json-logo.jpg
+  description: Attendee activities, attendee insights (engagement scores) and attendee messages.
+  humanURL: https://developers.cvent.com/docs/rest-api/explanation/attendee-activities
+  baseURL: https://api-platform.cvent.com
+  tags:
+  - Attendee Management
+  - Attendees
+  properties:
+  - type: OpenAPI
+    url: openapi/cvent-registration-attendee-activities-api-openapi.yml
+  - type: Documentation
+    url: https://developers.cvent.com/docs/rest-api/explanation/attendee-activities
+- aid: cvent-registration:cvent-registration-scim-api
+  name: Cvent Registration SCIM User Provisioning API
+  image: https://kinlane-images.s3.amazonaws.com/shared/apis-json/apis-json-logo.jpg
+  description: >-
+    SCIM 2.0 user provisioning (RFC 7643 / RFC 7644) at /scim/v2 — Users, Groups, Schemas,
+    ResourceTypes and ServiceProviderConfig, using the canonical
+    urn:ietf:params:scim:schemas:core:2.0:User and enterprise extension URNs.
+  humanURL: https://developers.cvent.com/docs/rest-api/guides/user-management
+  baseURL: https://api-platform.cvent.com
+  tags:
+  - Authentication
+  - SCIM
+  properties:
+  - type: OpenAPI
+    url: openapi/cvent-registration-scim-api-openapi.yml
+  - type: Documentation
+    url: https://developers.cvent.com/docs/rest-api/guides/user-management
+- aid: cvent-registration:cvent-registration-usage-api
+  name: Cvent Registration Usage and Quota API
+  image: https://kinlane-images.s3.amazonaws.com/shared/apis-json/apis-json-logo.jpg
+  description: >-
+    Read the account's REST usage tier (Free / Standard / Premium) and current quota consumption
+    before planning a batch.
+  humanURL: https://developers.cvent.com/docs/rest-api/guides/handling-rate-limits
+  baseURL: https://api-platform.cvent.com
+  tags:
+  - Rate Limiting
+  - REST API
+  properties:
+  - type: OpenAPI
+    url: openapi/cvent-registration-usage-api-openapi.yml
+  - type: RateLimits
+    url: https://developers.cvent.com/docs/rest-api/guides/handling-rate-limits
 common:
   - type: AgenticAccess
     url: agentic-access/cvent-registration-agentic-access.yml
@@ -245,7 +416,7 @@ common:
   - type: APIReference
     url: https://developers.cvent.com/docs/rest-api/reference/reference
   - type: Authentication
-    url: https://developers.cvent.com/docs/rest-api/explanation/authentication
+    url: https://developers.cvent.com/docs/rest-api/explanation/concepts
   - type: OAuthTokenEndpoint
     url: https://api-platform.cvent.com/ea/oauth2/token
   - type: StatusPage
@@ -253,9 +424,9 @@ common:
   - type: Support
     url: https://support.cvent.com/
   - type: Pricing
-    url: https://www.cvent.com/en/pricing
+    url: https://www.cvent.com/en/event-management-software/cvent-pricing
   - type: TermsOfService
-    url: https://www.cvent.com/en/terms-of-service
+    url: https://www.cvent.com/en/product-terms-of-use
   - type: PrivacyPolicy
     url: https://www.cvent.com/en/privacy-policy
   - type: Twitter
@@ -264,8 +435,71 @@ common:
     url: https://www.linkedin.com/company/cvent/
   - url: https://www.cvent.com/en/blog/feed.xml
     type: Blog
+  - type: Overlay
+    url: overlays/_index.yml
+  - type: Overlay
+    url: overlays/cvent-registration-public-overlay.yaml
+  - type: WSDL
+    url: wsdl/cvent-registration-soap-v200611.wsdl
+  - type: LLMsTxt
+    url: llms/cvent-registration-llms.txt
+  - type: Packages
+    url: packages/cvent-registration-packages.yml
+  - type: SDKs
+    url: packages/cvent-registration-packages.yml
+  - type: Conformance
+    url: conformance/cvent-registration-conformance.yml
+  - type: Compliance
+    url: conformance/cvent-registration-conformance.yml
+  - type: ErrorCatalog
+    url: errors/cvent-registration-problem-types.yml
+  - type: Lifecycle
+    url: lifecycle/cvent-registration-lifecycle.yml
+  - type: Deprecation
+    url: lifecycle/cvent-registration-lifecycle.yml
+  - type: Conventions
+    url: conventions/cvent-registration-conventions.yml
+  - type: ChangeLog
+    url: changelog/cvent-registration-changelog.yml
+  - type: Components
+    url: components/cvent-registration-components.yml
+  - type: DataModel
+    url: data-model/cvent-registration-data-model.yml
+  - type: Webhooks
+    url: asyncapi/cvent-registration-webhooks.yml
+  - type: AgentSkill
+    url: skills/_index.yml
+  - type: X-MCPServerCandidate
+    url: mcp/cvent-registration-mcp.yml
+  - type: VulnerabilityDisclosure
+    url: security/cvent-registration-vulnerability-disclosure.yml
+  - type: Security
+    url: security/cvent-registration-vulnerability-disclosure.yml
+  - type: Plans
+    url: plans/cvent-registration-plans-pricing.yml
+  - type: RateLimits
+    url: rate-limits/cvent-registration-rate-limits.yml
+  - type: FinOps
+    url: finops/cvent-registration-finops.yml
+  - type: Documentation
+    url: https://developers.cvent.com/docs/rest-api/overview
+  - type: GettingStarted
+    url: https://developers.cvent.com/docs/rest-api/tutorials/developer-quickstart
+  - type: SignUp
+    url: https://developers.cvent.com/applications
+  - type: Login
+    url: https://developers.cvent.com/login
+  - type: HelpCenter
+    url: https://community.cvent.com/
+  - type: SourceCode
+    url: https://github.com/cvent/rest-sdks
 maintainers:
   - FN: Kin Lane
     email: kin@apievangelist.com
 x-parent: cvent
 x-relationship: product
+x-enrichment:
+  date: '2026-09-07'
+  status: enriched
+  artifacts_added: 35
+  pass: local-v3

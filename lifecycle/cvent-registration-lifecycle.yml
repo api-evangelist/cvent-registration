@@ -1,0 +1,88 @@
+generated: '2026-09-07'
+method: searched
+source: https://github.com/cvent/rest-sdks/blob/main/cvent-public-spec/openapi.yaml
+sources:
+  - https://github.com/cvent/rest-sdks/blob/main/cvent-public-spec/openapi.yaml
+  - https://developers.cvent.com/docs/rest-api/changelog
+  - https://status.cvent.com/
+  - https://developers.cvent.com/docs/rest-api/migration-guide/faq
+description: >-
+  Versioning, deprecation and operational-status posture for the Cvent Platform REST API,
+  read from Cvent's own published versioning policy (stated in full in the contract's
+  info.description) and its dated changelog.
+versioning:
+  scheme: uri-path
+  current: ea
+  detail: >-
+    "The current version of the Cvent API is `ea`." Endpoints are {hostName}/{version}/... and
+    only `ea` is supported today. Cvent uses URI-based versioning: when a breaking change is
+    required a new version is published while the existing version is deprecated but remains
+    available for a limited period.
+  backward_compatible_changes:
+    - Adding new resources
+    - Adding new optional request parameters to existing operations
+    - Adding new attributes to requests or responses
+    - Changing the length or format (not type) of resource identifiers
+    - Increasing the length of string fields
+  backward_incompatible_changes:
+    - Adding a new required parameter (query string or payload attribute)
+    - Deleting API resources
+    - Deleting any attribute from API responses
+    - Changing the data type on any parameter or attribute
+  consumer_guidance: >-
+    Cvent explicitly asks clients to tolerate unknown attributes in JSON payloads, because
+    additive changes ship often and without notice.
+deprecation:
+  policy_published: true
+  policy_url: https://developers.cvent.com/docs/rest-api/changelog
+  mechanism: changelog
+  headers: none
+  detail: >-
+    Deprecations are announced as dated "Deprecated" sections in the REST API changelog — 14 such
+    sections appear between 2023 and 2026. There is NO RFC 8594 Sunset or Deprecation response
+    header, and no `deprecated: true` flag on any operation in the published contract, so a
+    running client cannot detect a deprecation at runtime; it has to read the changelog.
+  window: >-
+    Stated qualitatively only: a deprecated version "remains available for a limited period of
+    time". No number of days or months is published.
+migration:
+  from: Cvent SOAP API (V200611)
+  guide: https://developers.cvent.com/docs/rest-api/migration-guide/benefits
+  object_mappings: https://developers.cvent.com/docs/rest-api/migration-guide/object-mappings
+  detail: >-
+    Cvent maintains a full SOAP-to-REST migration guide with ~30 per-object mapping pages
+    (event, invitee, registration, session, survey, transaction, travel, user...). The legacy
+    SOAP endpoint is still live and still serves its WSDL — see wsdl/.
+status_page:
+  url: https://status.cvent.com/
+  status: 200
+  verified: '2026-09-07'
+sla:
+  published: false
+  note: No public SLA document; service commitments are contractual (Enterprise licence).
+support:
+  url: https://support.cvent.com/
+  community: https://community.cvent.com/
+  developer_portal: https://developers.cvent.com/
+deprecated_operations:
+  count: 3
+  method: derived
+  source: openapi/_original/cvent-rest-apis-openapi.yaml
+  note: >-
+    Derived by scanning all 469 operations for `deprecated: true`. Only three are flagged, and
+    one of them is on the registration surface (getProgramItemDocuments, Sessions). The other
+    99 occurrences of `deprecated: true` in the contract are on schema PROPERTIES, not operations.
+  operations:
+  - operationId: getEmailStatus
+    method: GET
+    path: /emails/{emailRequestId}/status
+    tag: Emails
+  - operationId: getProgramItemDocuments
+    method: GET
+    path: /program-items/{programItemId}/docs
+    tag: Sessions
+    in_registration_surface: true
+  - operationId: listWebcastAttendeeLinks
+    method: GET
+    path: /webcasts/{id}/attendee-links
+    tag: Webcasts

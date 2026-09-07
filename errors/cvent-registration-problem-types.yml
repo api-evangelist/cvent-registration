@@ -1,0 +1,101 @@
+generated: '2026-09-07'
+method: derived
+source: openapi/_original/cvent-rest-apis-openapi.yaml
+docs: https://developers.cvent.com/docs/rest-api/reference/reference
+description: >-
+  Error catalogue for the Cvent Registration REST surface, derived from the 4xx/5xx responses
+  declared on the 280 registration-surface operations in Cvent's own OpenAPI. Counts below are
+  the number of registration-surface operations declaring each status.
+format: custom-json
+rfc9457: false
+envelope:
+  media_type: application/json
+  schema: ErrorResponse (allOf ErrorResponseBase)
+  fields:
+    - name: code
+      type: integer
+      required: true
+      description: The HTTP status code representing the error.
+      example: 400
+    - name: message
+      type: string
+      required: true
+      description: A brief description of the error.
+      example: Bad Request
+    - name: target
+      type: string
+      required: false
+      description: The target resource of the error.
+    - name: details
+      type: array
+      required: false
+      description: Additional details of cascading error messages (array of ErrorResponseBase).
+  note: >-
+    Cvent does NOT use RFC 9457 problem+json — there is no application/problem+json media type
+    anywhere in the 2MB contract, and no type/title/status/detail/instance shape. Agents must
+    parse code/message/target/details instead. The one exception is the SCIM surface, which uses
+    the SCIM 2.0 error envelope (urn:ietf:params:scim:api:messages:2.0:Error) with
+    schemas/status/detail/scimType — a genuinely standard error format, just not RFC 9457's.
+problem_types:
+  - status: 400
+    title: Bad request
+    operations: 219
+    remediation: >-
+      Validate required parameters, filter syntax (filter='field' op 'value'), and date-times
+      (ISO 8601 with a Z suffix). A malformed pagination token also returns 400.
+  - status: 401
+    title: Bad or expired token
+    operations: 279
+    remediation: >-
+      The bearer token is missing, malformed or past its 3600-second life. Re-issue via
+      POST /ea/oauth2/token with Basic {base64(client_id:client_secret)}.
+  - status: 403
+    title: You do not have access to the resource
+    operations: 278
+    remediation: >-
+      The token is valid but the granted OAuth scope does not cover this operation. Compare the
+      operation's security[].scopes against the scopes requested at token time
+      (see scopes/cvent-registration-scopes.yml).
+  - status: 404
+    title: Resource not found
+    operations: 214
+    remediation: Confirm the resource id and that the record is visible to the authorising account.
+  - status: 409
+    title: The request conflicts with current state of the target resource
+    operations: 8
+    remediation: >-
+      State conflict. Documented instances include "Registration pack for given exhibitor already
+      exists" and "RegPack cannot be deleted when at least one or more booth staff are already
+      assigned" — reconcile the current state before retrying.
+  - status: 422
+    title: Was not able to process the request
+    operations: 3
+    remediation: Semantically invalid payload; the request parsed but could not be acted on.
+  - status: 429
+    title: Too many requests / Limit Exceeded
+    operations: 278
+    remediation: >-
+      TWO DIFFERENT CONDITIONS SHARE THIS CODE and are only distinguishable by the message body.
+      "Too Many Requests" is per-second throttling — back off exponentially and retry.
+      "Limit Exceeded" is the daily quota — retrying wastes quota; stop until 00:00 GMT.
+      Every request, including the 429 itself, counts against the quota.
+      See rate-limits/cvent-registration-rate-limits.yml.
+domain_error_codes:
+  - schema: BadgePrintJobErrorCode
+    values: [BadgeNotFound, BadgeRenderIssue, Connection, PrinterError, AttendeeDataMissing, Unknown]
+    note: Returned by the on-site badge printing surface.
+  - schema: VideoErrorCode
+    values: [600, 601, 602, 603, 604, 605, 606, 607, 608]
+    note: Video/webcast processing errors (e.g. 601 transcoding failure — unsupported codec).
+  - schema: ErrorScimType
+    values: [invalidFilter, uniqueness, invalidSyntax, invalidValue]
+    note: SCIM 2.0 scimType discriminator on /scim/v2/* errors.
+  - schema: segments-error-response.validationCode
+    values: [ATTENDEES_PER_SEGMENT_LIMIT_REACHED, DUPLICATE_SEGMENT_NAME, ERROR_CHECKING_CONNECTION_TO_LINKEDIN, SEGMENT_CONNECTED_TO_LINKEDIN, SEGMENTS_PER_EVENT_LIMIT_REACHED]
+    note: >-
+      Business validation codes on audience segments. Cvent ships a first-party overlay
+      (overlays/cvent-registration-segments-error-overlay.yaml) purely to repair the broken
+      $ref that made these unreadable in the raw contract.
+gaps:
+  - No machine-readable error-code registry is published; 400/403/404 carry one generic description each.
+  - No Retry-After header on 429, so a client cannot learn the correct wait from the response.
