@@ -58,7 +58,7 @@ tags:
   - Registration
   - REST API
   - SCIM
-  - SDKs
+  - SDK
   - SOAP
   - Ticketing
   - Webhook
@@ -243,11 +243,10 @@ apis:
   name: Cvent SOAP API (legacy V200611)
   image: https://kinlane-images.s3.amazonaws.com/shared/apis-json/apis-json-logo.jpg
   description: >-
-    The legacy Cvent SOAP API, still served and still publishing its WSDL at
-    api.cvent.com/soap/V200611.ASMX?WSDL (HTTP 200, 330,911 bytes, targetNamespace
-    http://api.cvent.com/2006-11). Cvent maintains a full SOAP-to-REST migration guide with
-    per-object mappings for event, invitee, registration, session, survey, transaction, travel
-    and user, but has not retired the SOAP endpoint.
+    The legacy Cvent SOAP API, still served and still publishing its WSDL at api.cvent.com/soap/V200611.ASMX?WSDL
+    (HTTP 200, 330,911 bytes, targetNamespace http://api.cvent.com/2006-11). Cvent maintains a full SOAP-to-REST
+    migration guide with per-object mappings for event, invitee, registration, session, survey, transaction,
+    travel and user, but has not retired the SOAP endpoint.
   humanURL: https://developers.cvent.com/docs/rest-api/migration-guide/benefits
   baseURL: https://api.cvent.com/soap/V200611.ASMX
   tags:
@@ -265,11 +264,15 @@ apis:
   name: Cvent Registration Orders and Transactions API
   image: https://kinlane-images.s3.amazonaws.com/shared/apis-json/apis-json-logo.jpg
   description: >-
-    Account-level orders and transactions for event registration commerce. Added to the Cvent
-    contract in the 2026-08-20 release. Read-only.
+    Account-level orders and transactions for event registration commerce. Added to the Cvent contract
+    in the 2026-08-20 release. Read-only.
   humanURL: https://developers.cvent.com/docs/rest-api/guides/registration-guide
   baseURL: https://api-platform.cvent.com
   tags:
+  - Order
+  - Payments
+  - Transaction
+  tags_raw:
   - Orders
   - Payments
   - Transactions
@@ -302,7 +305,8 @@ apis:
 - aid: cvent-registration:cvent-registration-seating-api
   name: Cvent Registration Seating and Badging API
   image: https://kinlane-images.s3.amazonaws.com/shared/apis-json/apis-json-logo.jpg
-  description: Table assignment, seating, badge print jobs and badge printer pools for on-site check-in.
+  description: >-
+    Table assignment, seating, badge print jobs and badge printer pools for on-site check-in.
   humanURL: https://developers.cvent.com/docs/rest-api/guides/registration-guide
   baseURL: https://api-platform.cvent.com
   tags:
@@ -363,29 +367,12 @@ apis:
     url: openapi/cvent-registration-attendee-activities-api-openapi.yml
   - type: Documentation
     url: https://developers.cvent.com/docs/rest-api/explanation/attendee-activities
-- aid: cvent-registration:cvent-registration-scim-api
-  name: Cvent Registration SCIM User Provisioning API
-  image: https://kinlane-images.s3.amazonaws.com/shared/apis-json/apis-json-logo.jpg
-  description: >-
-    SCIM 2.0 user provisioning (RFC 7643 / RFC 7644) at /scim/v2 — Users, Groups, Schemas,
-    ResourceTypes and ServiceProviderConfig, using the canonical
-    urn:ietf:params:scim:schemas:core:2.0:User and enterprise extension URNs.
-  humanURL: https://developers.cvent.com/docs/rest-api/guides/user-management
-  baseURL: https://api-platform.cvent.com
-  tags:
-  - Authentication
-  - SCIM
-  properties:
-  - type: OpenAPI
-    url: openapi/cvent-registration-scim-api-openapi.yml
-  - type: Documentation
-    url: https://developers.cvent.com/docs/rest-api/guides/user-management
 - aid: cvent-registration:cvent-registration-usage-api
   name: Cvent Registration Usage and Quota API
   image: https://kinlane-images.s3.amazonaws.com/shared/apis-json/apis-json-logo.jpg
   description: >-
-    Read the account's REST usage tier (Free / Standard / Premium) and current quota consumption
-    before planning a batch.
+    Read the account's REST usage tier (Free / Standard / Premium) and current quota consumption before
+    planning a batch.
   humanURL: https://developers.cvent.com/docs/rest-api/guides/handling-rate-limits
   baseURL: https://api-platform.cvent.com
   tags:
@@ -396,6 +383,700 @@ apis:
     url: openapi/cvent-registration-usage-api-openapi.yml
   - type: RateLimits
     url: https://developers.cvent.com/docs/rest-api/guides/handling-rate-limits
+- aid: cvent-registration:cvent-registration-appointments-api
+  name: Cvent Registration Appointments API
+  description: >-
+    An appointment is a meeting scheduled between two or more parties. These APIs allow you to get
+     information about your Cvent Appointments: appointment attendees, their interests, and availabilities.
+
+
+    * **Appointment Events** - Appointment events help planners facilitate meetings between attendees.
+    Attendees express their interest and availability to schedule appointments. Use this API to get information
+    about appointments and appointment attendees.
+
+
+    * **Appointment Attendees** - Appointment attendees are meeting participants. They can be attendees
+    of either events or appointment events. Get information about these participants or use their appointment
+    attendee ID to get their availabilities and interests.
+
+
+    * **Availability** - Appointment availabilities describe an appointment attendees' preference in meeting
+    dates and times. Availability information is only available for *Planner Coordinated Appointments*.
+
+
+    * **Interests** - Appointment interests describe appointment attendees' preferences in meeting with
+    another organization or individual. Interest information is only available for *Planner Coordinated
+    Appointments*.
+
+    * **Available Times** - Available times lists time ranges available  for appointments scheduling.
+
+    * **Locations** - Locations lists details of all locations created for  scheduling appointments.
+
+    * **Appointment Types** - Appointment Types lists details of different  appointment types created.
+  humanURL: https://developers.cvent.com/docs/rest-api/guides/registration-guide
+  baseURL: https://api-platform.cvent.com
+  tags:
+  - Appointments
+  properties:
+  - type: OpenAPI
+    url: openapi/cvent-registration-appointments-api-openapi.yml
+- aid: cvent-registration:cvent-registration-attendee-insights-api
+  name: Cvent Registration Attendee Insights API
+  description: >-
+    The Attendee Insights feature provides valuable information about your event attendees. It assists
+    planners, marketers, and exhibitors in targeting customers effectively, thereby enhancing engagement
+    and conversion rates for marketing campaigns. Utilize these APIs to fetch engagement score data from
+    your event and integrate it into your marketing systems.
+
+
+    **Engagement Score** - Engagement scores are a container that track individual attendees' engagement
+    with your event. Attendees earn points by performing actions, which indicates their relative engagement
+    with your content.
+
+
+    **Actions** - These are distinct, trackable activities that attendees can perform during an event.
+    Points are awarded for these actions and contribute to the engagement score.
+  humanURL: https://developers.cvent.com/docs/rest-api/guides/registration-guide
+  baseURL: https://api-platform.cvent.com
+  tags:
+  - Attendee Insights
+  properties:
+  - type: OpenAPI
+    url: openapi/cvent-registration-attendee-insights-api-openapi.yml
+- aid: cvent-registration:cvent-registration-attendee-messages-api
+  name: Cvent Registration Attendee Messages API
+  description: >-
+    These APIs retrieve and manage attendee messages—communications exchanged between attendees within
+    channels. Channels are virtual spaces created for one-on-one or group conversations, allowing attendees
+    to communicate directly or in groups during an event.
+  humanURL: https://developers.cvent.com/docs/rest-api/guides/registration-guide
+  baseURL: https://api-platform.cvent.com
+  tags:
+  - Attendee Messages
+  properties:
+  - type: OpenAPI
+    url: openapi/cvent-registration-attendee-messages-api-openapi.yml
+- aid: cvent-registration:cvent-registration-audience-segments-api
+  name: Cvent Registration Audience Segments API
+  description: >-
+    Audience Segments allow planners to segment their attendees into groups and
+
+    better manage the attendee experience based on their defined segments. Audience
+
+    Segments APIs will enable you to get, create, and update segment information.
+
+    These APIs will also allow you to get and update attendees associated with an
+
+    audience segment.
+  humanURL: https://developers.cvent.com/docs/rest-api/guides/registration-guide
+  baseURL: https://api-platform.cvent.com
+  tags:
+  - Audience Segments
+  properties:
+  - type: OpenAPI
+    url: openapi/cvent-registration-audience-segments-api-openapi.yml
+- aid: cvent-registration:cvent-registration-authentication-api
+  name: Cvent Registration Authentication API
+  description: Endpoints for obtaining, refreshing, and validating OAuth2 access tokens.
+  humanURL: https://developers.cvent.com/docs/rest-api/guides/registration-guide
+  baseURL: https://api-platform.cvent.com
+  tags:
+  - Authentication
+  properties:
+  - type: OpenAPI
+    url: openapi/cvent-registration-authentication-api-openapi.yml
+- aid: cvent-registration:cvent-registration-badge-print-job-api
+  name: Cvent Registration Badge Print Job API
+  description: >-
+    Badge print jobs can be scheduled to a printer pool, so a printer in the printer pool can consume
+    the job and print the badge.
+  humanURL: https://developers.cvent.com/docs/rest-api/guides/registration-guide
+  baseURL: https://api-platform.cvent.com
+  tags:
+  - Badge Print Job
+  properties:
+  - type: OpenAPI
+    url: openapi/cvent-registration-badge-print-job-api-openapi.yml
+- aid: cvent-registration:cvent-registration-badge-printer-pools-api
+  name: Cvent Registration Badge Printer Pools API
+  description: >-
+    Badge printer pools are set up from Cvent UI. You can use this API to retrieve badge printer pools.
+  humanURL: https://developers.cvent.com/docs/rest-api/guides/registration-guide
+  baseURL: https://api-platform.cvent.com
+  tags:
+  - Badge Printer Pools
+  properties:
+  - type: OpenAPI
+    url: openapi/cvent-registration-badge-printer-pools-api-openapi.yml
+- aid: cvent-registration:cvent-registration-budget-api
+  name: Cvent Registration Budget API
+  description: >-
+    Budget is an event feature used to organize spending and track [allocations](https://support.cvent.com/s/communityarticle/Setting-Up-Budget-Allocations).
+    Use this API to view budget items, cards and card transactions related to the budget module.
+  humanURL: https://developers.cvent.com/docs/rest-api/guides/registration-guide
+  baseURL: https://api-platform.cvent.com
+  tags:
+  - Budget
+  properties:
+  - type: OpenAPI
+    url: openapi/cvent-registration-budget-api-openapi.yml
+- aid: cvent-registration:cvent-registration-bulk-api
+  name: Cvent Registration Bulk API
+  description: >-
+    The Bulk API provides a simple interface to upload large amounts of data into Cvent.  The API processes
+    the uploaded data asynchronously making API calls on behalf of the caller.
+
+
+    Consumers of the bulk API will do the following:
+
+    * [Create a bulk job](#operation/createBulkJob) with or without data
+
+    * *(Optional)* If a bulk job was created without data, then [upload bulk job data](#operation/uploadBulkJobData)
+    as many times as needed
+
+    * *(Optional)* [Run bulk job](#operation/runBulkJob)
+
+    * Use [get bulk job](#operation/getBulkJobById) to track status
+
+    * Use [list bulk job results](#operation/listBulkJobResult) to get details of items uploaded
+
+
+    For more details, see the [Bulk Job User Guide](https://developers.cvent.com/docs/rest-api/guides/bulk-api-user-guide).
+
+
+    **Note:** These bulk jobs have a TTL and will expire once they are complete or never ran. Bulk jobs
+    will expire
+
+    1 week after creation, and this one week is refreshed when data is uploaded and the job is run. The
+    Bulk Job
+
+    will be available for 1 week after completion to get results. Right now we do NOT support bulk GET
+    requests.
+  humanURL: https://developers.cvent.com/docs/rest-api/guides/registration-guide
+  baseURL: https://api-platform.cvent.com
+  tags:
+  - Bulk
+  properties:
+  - type: OpenAPI
+    url: openapi/cvent-registration-bulk-api-openapi.yml
+- aid: cvent-registration:cvent-registration-campaigns-api
+  name: Cvent Registration Campaigns API
+  description: >-
+    Planners use eMarketing campaigns to contact an audience, such as newsletters, press releases, or
+    product updates. Campaign emails are used as newsletters, promotions, advertisements, or marketing
+    messages. Use these APIs to send an email and get historical data about your campaigns.
+  humanURL: https://developers.cvent.com/docs/rest-api/guides/registration-guide
+  baseURL: https://api-platform.cvent.com
+  tags:
+  - Campaigns
+  properties:
+  - type: OpenAPI
+    url: openapi/cvent-registration-campaigns-api-openapi.yml
+- aid: cvent-registration:cvent-registration-card-tokens-api
+  name: Cvent Registration Card Tokens API
+  description: >-
+    **Card Tokenization**: Tokenization is the process Cvent uses to collect sensitive card details and
+
+    personally identifiable information (PII), directly from your customers in a secure manner.
+
+    This guarantees that no sensitive card data touches your server, and allows your integration to
+
+    operate in compliance with PCI standards. A card token is a unique identifier that represents sensitive
+    credit card information.
+
+    It is used as a secure alternative to directly handling credit card details during transactions.
+
+    The token can be used in place of the actual credit card data when making API calls, providing an
+    extra layer of security.
+  humanURL: https://developers.cvent.com/docs/rest-api/guides/registration-guide
+  baseURL: https://api-platform.cvent.com
+  tags:
+  - Card Tokens
+  properties:
+  - type: OpenAPI
+    url: openapi/cvent-registration-card-tokens-api-openapi.yml
+- aid: cvent-registration:cvent-registration-compliance-api
+  name: Cvent Registration Compliance API
+  description: >-
+    These API's provide compliance support for regulated industries.
+
+
+    **Communication Compliance** lets you view communication activities across your account for archival
+    or analysis.
+
+
+    Various written forms of communication are captured. This includes: emails, SMS, session chats, exhibitor
+    chats,
+
+    text discussions, 1:1 attendee messaging, group messaging, or push notifications.
+  humanURL: https://developers.cvent.com/docs/rest-api/guides/registration-guide
+  baseURL: https://api-platform.cvent.com
+  tags:
+  - Compliance
+  properties:
+  - type: OpenAPI
+    url: openapi/cvent-registration-compliance-api-openapi.yml
+- aid: cvent-registration:cvent-registration-emails-api
+  name: Cvent Registration Emails API
+  description: >-
+    Event planners use emails to invite registrants, market their events and request feedback from attendees.
+    Use these APIs to get historical data about your emails and see relevant details like the types of
+    emails sent, the recipient, and delivery status.
+  humanURL: https://developers.cvent.com/docs/rest-api/guides/registration-guide
+  baseURL: https://api-platform.cvent.com
+  tags:
+  - Emails
+  properties:
+  - type: OpenAPI
+    url: openapi/cvent-registration-emails-api-openapi.yml
+- aid: cvent-registration:cvent-registration-event-credits-api
+  name: Cvent Registration Event Credits API
+  description: >-
+    Event Credits reward attendees for participating in your events. Planners can award credits for the
+    entire event, specific sessions, or both. You can also award credits after attendees complete surveys.
+    Use these APIs to retrieve credit details for your attendees.
+  humanURL: https://developers.cvent.com/docs/rest-api/guides/registration-guide
+  baseURL: https://api-platform.cvent.com
+  tags:
+  - Event Credits
+  properties:
+  - type: OpenAPI
+    url: openapi/cvent-registration-event-credits-api-openapi.yml
+- aid: cvent-registration:cvent-registration-event-features-api
+  name: Cvent Registration Event Features API
+  description: EventFeatures related APIs
+  humanURL: https://developers.cvent.com/docs/rest-api/guides/registration-guide
+  baseURL: https://api-platform.cvent.com
+  tags:
+  - Event Features
+  properties:
+  - type: OpenAPI
+    url: openapi/cvent-registration-event-features-api-openapi.yml
+- aid: cvent-registration:cvent-registration-event-role-api
+  name: Cvent Registration Event Role API
+  description: >-
+    Event roles are event specific permission sets for your organization's users. Use these APIs to retrieve,
+    create, update, and delete event role assignments to your organization's users.
+  humanURL: https://developers.cvent.com/docs/rest-api/guides/registration-guide
+  baseURL: https://api-platform.cvent.com
+  tags:
+  - Event Role
+  properties:
+  - type: OpenAPI
+    url: openapi/cvent-registration-event-role-api-openapi.yml
+- aid: cvent-registration:cvent-registration-events-hub-api
+  name: Cvent Registration Events+ Hub API
+  description: >-
+    An Events+ Hub persists basic information needed to assign an owner and optionally customize the public
+    presentation.
+  humanURL: https://developers.cvent.com/docs/rest-api/guides/registration-guide
+  baseURL: https://api-platform.cvent.com
+  tags:
+  - Events+ Hub
+  properties:
+  - type: OpenAPI
+    url: openapi/cvent-registration-events-hub-api-openapi.yml
+- aid: cvent-registration:cvent-registration-exhibitor-api
+  name: Cvent Registration Exhibitor API
+  description: >-
+    * **Exhibitor -** An exhibitor is an organization that is sponsoring or exhibiting at your event.
+    This API allows you to get information about your exhibitors.
+
+
+    * **Registration Pack -** Registration Pack provides capacities of different registration types allocated
+    by the planner to a specific exhibitor.
+
+
+    * **Exhibitor Questions -** Set of questions for an exhibitor.
+
+
+    * **Exhibitor Answers -** Set of answers to exhibitor questions for an exhibitor.
+
+
+    * **Exhibitor Categories -** Set of exhibitor categories for an event. Exhibitor Categories are used
+    in Attendee Hub and Event App to differentiate exhibitors.
+
+
+    * **Sponsorship Levels -** Sponsorship levels are defined by the planner. Use this API to get details
+    of existing sponsorship levels defined within the event. To assign sponsorship levels to exhibitors,
+    use the Exhibitor endpoints.
+  humanURL: https://developers.cvent.com/docs/rest-api/guides/registration-guide
+  baseURL: https://api-platform.cvent.com
+  tags:
+  - Exhibitor
+  properties:
+  - type: OpenAPI
+    url: openapi/cvent-registration-exhibitor-api-openapi.yml
+- aid: cvent-registration:cvent-registration-exhibitor-content-api
+  name: Cvent Registration Exhibitor Content API
+  description: >-
+    Exhibitor Content operations for an exhibitor. This API allows you to upload & get exhibitor content
+    data such as files, weblinks.
+  humanURL: https://developers.cvent.com/docs/rest-api/guides/registration-guide
+  baseURL: https://api-platform.cvent.com
+  tags:
+  - Exhibitor Content
+  properties:
+  - type: OpenAPI
+    url: openapi/cvent-registration-exhibitor-content-api-openapi.yml
+- aid: cvent-registration:cvent-registration-exhibitor-team-api
+  name: Cvent Registration Exhibitor Team API
+  description: >-
+    * **Exhibitor Admin -** Exhibitor Admins are administrators that have access to the exhibitor portal.
+    In the portal, they are able to complete pre-event tasks, manage their team, purchase LeadCapture
+    (if applicable), and download leads. Use this API to get details for existing admins, create new admins,
+    and update admin details.
+
+
+    * **Exhibitor Booth Staff -** Exhibitor booth staff is someone that manages the frontline of the exhibitor's
+    booth onsite or virtually. Booth staff needs to be registered for the event in order to be associated
+    with an exhibitor. Use this API to get details for the existing booth staff(s) for a specific exhibitor,
+    associate new booth staff to the exhibitor, and delete the association of a booth staff if required.
+  humanURL: https://developers.cvent.com/docs/rest-api/guides/registration-guide
+  baseURL: https://api-platform.cvent.com
+  tags:
+  - Exhibitor Team
+  properties:
+  - type: OpenAPI
+    url: openapi/cvent-registration-exhibitor-team-api-openapi.yml
+- aid: cvent-registration:cvent-registration-file-api
+  name: Cvent Registration File API
+  description: >-
+    Allows you to upload files and get file location using the file ID. File ID can be used with other
+    APIs to associate the file to an entity. For example:
+
+    * <a href="#operation/addSessionDoc">Add Document To Session</a>
+
+    * <a href="#operation/addSpeakerDoc">Add Document To Speaker</a>
+
+    * <a href="#operation/assignContactProfileImage">Assign Contact Profile Picture</a>
+
+    * <a href="#operation/updateExhibitorCategoryBanner">Assign Banner to Exhibitor Category</a>
+
+    * <a href="#operation/updateExhibitorBanner">Assign Exhibitor Banner Image</a>
+
+    * <a href="#operation/updateExhibitorLogo">Assign Exhibitor Logo Image</a>
+
+    * <a href="#operation/assignSpeakerProfileImage">Assign Speaker Profile Picture</a>
+  humanURL: https://developers.cvent.com/docs/rest-api/guides/registration-guide
+  baseURL: https://api-platform.cvent.com
+  tags:
+  - File
+  properties:
+  - type: OpenAPI
+    url: openapi/cvent-registration-file-api-openapi.yml
+- aid: cvent-registration:cvent-registration-hooks-api
+  name: Cvent Registration Hooks API
+  description: >-
+    These APIs allow you to create hooks. When triggered, a hook sends a request to your service to
+
+    get updated data related to the related Cvent object.
+
+
+    For more information on using hooks, see the
+
+    [getting started guide](https://developers.cvent.com/docs/cid/attendee-identification-service).
+  humanURL: https://developers.cvent.com/docs/rest-api/guides/registration-guide
+  baseURL: https://api-platform.cvent.com
+  tags:
+  - Hooks
+  properties:
+  - type: OpenAPI
+    url: openapi/cvent-registration-hooks-api-openapi.yml
+- aid: cvent-registration:cvent-registration-housing-api
+  name: Cvent Registration Housing API
+  description: >-
+    RegLink APIs allow you to exchange data with Cvent Passkey events and hotel reservation-booking engines.
+
+    Generally, there are four primary categories of functionality that RegLink APIs support:
+      * **Sync Registrants.** Allow individual registrant information to be sent to Cvent Passkey, streamlining
+    the hotel reservation process for attendees. Attendees can then be directed to Passkey post-registration
+    and reserve a hotel room without re-entering their data again. This is done with the reservation request
+    endpoint.
+      * **Fetch Rooms.** The ability for an external system to fetch Passkey event details and hotel room
+    availability based on various criteria.
+      * **Fetch Reservations.** The ability for an external system to fetch detailed reservation information
+    for individual registrants. This is done with the Reservation endpoint and the Callback system.
+      * **Manage Reservations.** The ability for an external system to create, modify or cancel a registrant's
+    hotel reservation directly or indirectly.
+
+    If you need authentication credentials or have any questions regarding the RegLink APIs, contact the
+    [Cvent Passkey Integrations Team](https://web.cvent.com/survey/c6a60a30-d981-4ae8-af28-686af0eeb9b7/welcome).
+
+
+    * **Passkey.** A software solution allowing your invitees to book room reservations directly with
+    hotels.
+
+    * **Housing Event.** An Passkey event where invitees will be able to register and book rooms.
+
+    * **Reservation Request.** Represents a request to book rooms in the housing event.
+
+    * **RegLink.** A feature that links Passkey events to your registration events, enabling you to sync
+    data between the two events.
+
+    * **Callback.** [Passkey's callback system](https://developers.cvent.com/docs/passkey/REST/callbacks)
+    allows for a push notification to be sent to your system when a reservation is created, modified or
+    cancelled.
+  humanURL: https://developers.cvent.com/docs/rest-api/guides/registration-guide
+  baseURL: https://api-platform.cvent.com
+  tags:
+  - Housing
+  properties:
+  - type: OpenAPI
+    url: openapi/cvent-registration-housing-api-openapi.yml
+- aid: cvent-registration:cvent-registration-housing-hotels-api
+  name: Cvent Registration Housing Hotels API
+  description: APIs for managing hotel-related operations.
+  humanURL: https://developers.cvent.com/docs/rest-api/guides/registration-guide
+  baseURL: https://api-platform.cvent.com
+  tags:
+  - Housing Hotels
+  properties:
+  - type: OpenAPI
+    url: openapi/cvent-registration-housing-hotels-api-openapi.yml
+- aid: cvent-registration:cvent-registration-leads-api
+  name: Cvent Registration Leads API
+  description: >-
+    * **Leads -** Leads include leads gathered by LeadCapture, Appointments, and Inbound Leads. Use this
+    API to get information for the lead and how it was captured.
+
+
+    * **Lead Qualification Question -** Custom questions created by each exhibitor to qualify a lead.
+    Questions and answers are their own endpoints.
+
+
+    * **Eliterature Requests -** List of E-literature requests data sent to lead.
+  humanURL: https://developers.cvent.com/docs/rest-api/guides/registration-guide
+  baseURL: https://api-platform.cvent.com
+  tags:
+  - Leads
+  properties:
+  - type: OpenAPI
+    url: openapi/cvent-registration-leads-api-openapi.yml
+- aid: cvent-registration:cvent-registration-meeting-request-api
+  name: Cvent Registration Meeting Request API
+  description: >-
+    When planning an event, meeting request forms are customizable online questionnaires to capture information
+    about the event and facilitate the approval of events. When a meeting request form is submitted it
+    becomes a meeting request. Use this API to view forms, create meeting requests and track the status
+    of meeting requests. **Legacy meeting request forms are not supported by this API.**
+  humanURL: https://developers.cvent.com/docs/rest-api/guides/registration-guide
+  baseURL: https://api-platform.cvent.com
+  tags:
+  - Meeting Request
+  properties:
+  - type: OpenAPI
+    url: openapi/cvent-registration-meeting-request-api-openapi.yml
+- aid: cvent-registration:cvent-registration-process-form-api
+  name: Cvent Registration Process Form API
+  description: >-
+    Process forms automate data collection and notifications related to planning and executing events.
+    Process form submissions are responses to a specific process form, providing data the form requests.
+    Use these APIs to manage process form submissions in your account.
+  humanURL: https://developers.cvent.com/docs/rest-api/guides/registration-guide
+  baseURL: https://api-platform.cvent.com
+  tags:
+  - Process Form
+  properties:
+  - type: OpenAPI
+    url: openapi/cvent-registration-process-form-api-openapi.yml
+- aid: cvent-registration:cvent-registration-proposal-draft-api
+  name: Cvent Registration Proposal Draft API
+  description: >-
+    Beta - All APIs are in Beta. Proposal Drafts are editable copies of proposals. This API allows you
+    to edit proposal data privately before publishing.
+  humanURL: https://developers.cvent.com/docs/rest-api/guides/registration-guide
+  baseURL: https://api-platform.cvent.com
+  tags:
+  - Proposal Draft
+  properties:
+  - type: OpenAPI
+    url: openapi/cvent-registration-proposal-draft-api-openapi.yml
+- aid: cvent-registration:cvent-registration-rfp-additional-details-api
+  name: Cvent Registration RFP Additional Details API
+  description: >-
+    RFP additional details APIs for managing past event references and other miscellaneous RFP operations.
+  humanURL: https://developers.cvent.com/docs/rest-api/guides/registration-guide
+  baseURL: https://api-platform.cvent.com
+  tags:
+  - RFP Additional Details
+  properties:
+  - type: OpenAPI
+    url: openapi/cvent-registration-rfp-additional-details-api-openapi.yml
+- aid: cvent-registration:cvent-registration-rfp-management-api
+  name: Cvent Registration RFP Management API
+  description: >-
+    RFP (Request for Proposal) management APIs for core RFP operations including CRUD operations for base
+    RFPs.
+  humanURL: https://developers.cvent.com/docs/rest-api/guides/registration-guide
+  baseURL: https://api-platform.cvent.com
+  tags:
+  - RFP Management
+  properties:
+  - type: OpenAPI
+    url: openapi/cvent-registration-rfp-management-api-openapi.yml
+- aid: cvent-registration:cvent-registration-rfp-requirements-api
+  name: Cvent Registration RFP Requirements API
+  description: >-
+    RFP requirements APIs for managing RFP-specific requirements including guest rooms, meeting rooms,
+    custom questions, custom fields, and attachments (CRUD operations).
+  humanURL: https://developers.cvent.com/docs/rest-api/guides/registration-guide
+  baseURL: https://api-platform.cvent.com
+  tags:
+  - RFP Requirements
+  properties:
+  - type: OpenAPI
+    url: openapi/cvent-registration-rfp-requirements-api-openapi.yml
+- aid: cvent-registration:cvent-registration-rfp-suppliers-api
+  name: Cvent Registration RFP Suppliers API
+  description: >-
+    Suppliers are the venues and service providers that receive and respond to RFPs. Use these APIs to
+    manage supplier associations, view recipient history, and create award details.
+  humanURL: https://developers.cvent.com/docs/rest-api/guides/registration-guide
+  baseURL: https://api-platform.cvent.com
+  tags:
+  - RFP Suppliers
+  properties:
+  - type: OpenAPI
+    url: openapi/cvent-registration-rfp-suppliers-api-openapi.yml
+- aid: cvent-registration:cvent-registration-signatures-api
+  name: Cvent Registration Signatures API
+  description: Retrieves Check-In & Check-Out Signatures Of Attendees
+  humanURL: https://developers.cvent.com/docs/rest-api/guides/registration-guide
+  baseURL: https://api-platform.cvent.com
+  tags:
+  - Signatures
+  properties:
+  - type: OpenAPI
+    url: openapi/cvent-registration-signatures-api-openapi.yml
+- aid: cvent-registration:cvent-registration-transactions-api
+  name: Cvent Registration Transactions API
+  description: >-
+    Transactions represent the financial exchanges that occur within your account. Use these APIs to retrieve
+    and manage transaction data, including charges, refunds, and adjustments associated with your events
+    and attendees.
+  humanURL: https://developers.cvent.com/docs/rest-api/guides/registration-guide
+  baseURL: https://api-platform.cvent.com
+  tags:
+  - Transactions
+  properties:
+  - type: OpenAPI
+    url: openapi/cvent-registration-transactions-api-openapi.yml
+- aid: cvent-registration:cvent-registration-travel-accounts-api
+  name: Cvent Registration Travel Accounts API
+  description: The travel account, or corporation that represents the demand-side of travel RFPs.
+  humanURL: https://developers.cvent.com/docs/rest-api/guides/registration-guide
+  baseURL: https://api-platform.cvent.com
+  tags:
+  - Travel Accounts
+  properties:
+  - type: OpenAPI
+    url: openapi/cvent-registration-travel-accounts-api-openapi.yml
+- aid: cvent-registration:cvent-registration-travel-rfps-api
+  name: Cvent Registration Travel RFPs API
+  description: >-
+    The Travel RFP APIs provide access to travel programs and proposals. A travel program
+
+    represents a request for proposal (RFP) that defines the specific travel needs and
+
+    requirements of a travel account. The travel account solicits hotels and other travel
+
+    suppliers to respond to the program with proposals, which provide detailed
+
+    information on rates and amenities.'
+  humanURL: https://developers.cvent.com/docs/rest-api/guides/registration-guide
+  baseURL: https://api-platform.cvent.com
+  tags:
+  - Travel RFPs
+  properties:
+  - type: OpenAPI
+    url: openapi/cvent-registration-travel-rfps-api-openapi.yml
+- aid: cvent-registration:cvent-registration-travel-suppliers-api
+  name: Cvent Registration Travel Suppliers API
+  description: >-
+    The Travel Supplier APIs provide access to Cvent data related to hotels, apartments, and other travel
+    providers. This includes information related to properties, and sleeping rooms.
+  humanURL: https://developers.cvent.com/docs/rest-api/guides/registration-guide
+  baseURL: https://api-platform.cvent.com
+  tags:
+  - Travel Suppliers
+  properties:
+  - type: OpenAPI
+    url: openapi/cvent-registration-travel-suppliers-api-openapi.yml
+- aid: cvent-registration:cvent-registration-user-scim-api
+  name: Cvent Registration User SCIM API
+  description: >-
+    The [SCIM](https://www.simplecloud.info/) standard allows for easier cross-domain identity management.
+    This API allows you to manage your account users and SCIM groups (representing Cvent user roles).
+  humanURL: https://developers.cvent.com/docs/rest-api/guides/registration-guide
+  baseURL: https://api-platform.cvent.com
+  tags:
+  - User SCIM
+  properties:
+  - type: OpenAPI
+    url: openapi/cvent-registration-user-scim-api-openapi.yml
+- aid: cvent-registration:cvent-registration-users-api
+  name: Cvent Registration Users API
+  description: >-
+    Operations for managing account users and user groups, including creation, retrieval, update, and
+    deletion. Use these endpoints to administer user access and roles within your account.
+  humanURL: https://developers.cvent.com/docs/rest-api/guides/registration-guide
+  baseURL: https://api-platform.cvent.com
+  tags:
+  - Users
+  properties:
+  - type: OpenAPI
+    url: openapi/cvent-registration-users-api-openapi.yml
+- aid: cvent-registration:cvent-registration-venue-meeting-rooms-api
+  name: Cvent Registration Venue Meeting Rooms API
+  description: >-
+    Manage meeting rooms for a venue, including creating and updating room details, configuring capacities
+    and amenities, and associating images.
+  humanURL: https://developers.cvent.com/docs/rest-api/guides/registration-guide
+  baseURL: https://api-platform.cvent.com
+  tags:
+  - Venue Meeting Rooms
+  properties:
+  - type: OpenAPI
+    url: openapi/cvent-registration-venue-meeting-rooms-api-openapi.yml
+- aid: cvent-registration:cvent-registration-venue-profiles-api
+  name: Cvent Registration Venue Profiles API
+  description: >-
+    Manage venue profile details including type, contact information, address, and other venue properties.
+  humanURL: https://developers.cvent.com/docs/rest-api/guides/registration-guide
+  baseURL: https://api-platform.cvent.com
+  tags:
+  - Venue Profiles
+  properties:
+  - type: OpenAPI
+    url: openapi/cvent-registration-venue-profiles-api-openapi.yml
+- aid: cvent-registration:cvent-registration-video-api
+  name: Cvent Registration Video API
+  description: >-
+    Videos can be added to Cvent events with renditions at various resolutions, audio files, reactions
+    tracks, and text tracks. Attendee viewership is tracked to get insight into durations, devices used
+    and venue where the video is watched. Use these APIs to view and manage videos, related text tracks,
+    and audio files. Use these APIs also to get insight into video viewership.
+  humanURL: https://developers.cvent.com/docs/rest-api/guides/registration-guide
+  baseURL: https://api-platform.cvent.com
+  tags:
+  - Video
+  properties:
+  - type: OpenAPI
+    url: openapi/cvent-registration-video-api-openapi.yml
+- aid: cvent-registration:cvent-registration-webcasts-api
+  name: Cvent Registration Webcasts API
+  description: >-
+    Webcasts are virtual or livestreaming components of your Cvent events. Use these APIs to integrate
+    your virtual events from outside sources into your Cvent workflows, create and delete webcasts from
+    within Cvent, and retrieve and update webcast details.
+  humanURL: https://developers.cvent.com/docs/rest-api/guides/registration-guide
+  baseURL: https://api-platform.cvent.com
+  tags:
+  - Webcasts
+  properties:
+  - type: OpenAPI
+    url: openapi/cvent-registration-webcasts-api-openapi.yml
 common:
   - type: AgenticAccess
     url: agentic-access/cvent-registration-agentic-access.yml
