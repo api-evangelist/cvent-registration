@@ -202,19 +202,6 @@ apis:
   properties:
   - type: OpenAPI
     url: openapi/cvent-registration-exhibitors-api-openapi.yml
-- aid: cvent-registration:cvent-registration-oauth-api
-  name: Cvent Registration OAuth API
-  image: https://kinlane-images.s3.amazonaws.com/shared/apis-json/apis-json-logo.jpg
-  description: OAuth 2.0 token issuance
-  humanURL: https://developers.cvent.com/docs/rest-api/guides/registration-guide
-  baseURL: https://api-platform.cvent.com
-  tags:
-  - Authentication
-  tags_raw:
-  - OAuth
-  properties:
-  - type: OpenAPI
-    url: openapi/cvent-registration-oauth-api-openapi.yml
 - aid: cvent-registration:cvent-registration-sessions-api
   name: Cvent Registration Sessions API
   image: https://kinlane-images.s3.amazonaws.com/shared/apis-json/apis-json-logo.jpg
@@ -1077,6 +1064,16 @@ apis:
   properties:
   - type: OpenAPI
     url: openapi/cvent-registration-webcasts-api-openapi.yml
+- aid: cvent-registration:cvent-registration-oauth-api
+  name: Cvent Registration O Auth API
+  description: OAuth 2.0 token issuance
+  humanURL: https://developers.cvent.com/docs/rest-api/guides/registration-guide
+  baseURL: https://api-platform.cvent.com
+  tags:
+  - OAuth
+  properties:
+  - type: OpenAPI
+    url: openapi/cvent-registration-oauth-api-openapi.yml
 common:
   - type: AgenticAccess
     url: agentic-access/cvent-registration-agentic-access.yml
