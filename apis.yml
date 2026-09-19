@@ -503,6 +503,8 @@ apis:
   humanURL: https://developers.cvent.com/docs/rest-api/guides/registration-guide
   baseURL: https://api-platform.cvent.com
   tags:
+  - Budgets
+  tags_raw:
   - Budget
   properties:
   - type: OpenAPI
@@ -612,6 +614,8 @@ apis:
   humanURL: https://developers.cvent.com/docs/rest-api/guides/registration-guide
   baseURL: https://api-platform.cvent.com
   tags:
+  - Email
+  tags_raw:
   - Emails
   properties:
   - type: OpenAPI
@@ -945,6 +949,8 @@ apis:
   humanURL: https://developers.cvent.com/docs/rest-api/guides/registration-guide
   baseURL: https://api-platform.cvent.com
   tags:
+  - Transaction
+  tags_raw:
   - Transactions
   properties:
   - type: OpenAPI
@@ -1010,6 +1016,8 @@ apis:
   humanURL: https://developers.cvent.com/docs/rest-api/guides/registration-guide
   baseURL: https://api-platform.cvent.com
   tags:
+  - User
+  tags_raw:
   - Users
   properties:
   - type: OpenAPI
@@ -1070,6 +1078,8 @@ apis:
   humanURL: https://developers.cvent.com/docs/rest-api/guides/registration-guide
   baseURL: https://api-platform.cvent.com
   tags:
+  - Authentication
+  tags_raw:
   - OAuth
   properties:
   - type: OpenAPI
