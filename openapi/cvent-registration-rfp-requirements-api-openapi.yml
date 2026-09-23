@@ -1,6 +1,6 @@
 openapi: 3.2.0
 info:
-  title: Cvent REST Event Travel API
+  title: Cvent REST RFP Requirements API
   description: '# Introduction
 
     The Cvent API Platform is built around REST.'
@@ -12,31 +12,47 @@ servers:
 - url: https://api-platform.cvent.com/ea
 - url: https://api-platform-eur.cvent.com/ea
 tags:
-- name: Event Travel
-  description: Event travel lets planners capture air & hotel requests from attendees and track air actuals, hotel reservations and alternate travel answers at your event. Use these endpoints to retrieve your air, hotel, housing reservation request and alternate travel answers data from your events. **Housing Reservation Request** - An association between an attendee's information in a registration event and a Cvent Passkey event. Also known as a Passkey bridge.
+- name: RFP Requirements
+  description: RFP requirements APIs for managing RFP-specific requirements including guest rooms, meeting rooms, custom questions, custom fields, and attachments (CRUD operations).
 paths:
-  /events/{id}/event-travel/air-actuals:
-    parameters:
-    - $ref: '#/components/parameters/id2'
+  /rfps/{rfpId}/agenda-items:
     get:
-      summary: Get Air Actual
-      description: Get attendee air actual details for an event.
-      operationId: getAirActualDetail
       tags:
-      - Event Travel
+      - RFP Requirements
+      summary: List RFP Agenda Items
+      description: Returns a paginated list of agenda items associated with an RFP.
+      operationId: listRfpAgendaItems
       security:
       - OAuth2.clientCredentials:
-        - event/air-request:read
+        - rfp/rfp-agenda-items:read
       - OAuth2.authorizationCode:
-        - event/air-request:read
+        - rfp/rfp-agenda-items:read
+      parameters:
+      - $ref: '#/components/parameters/rfpId'
+      - $ref: '#/components/parameters/limit'
+      - $ref: '#/components/parameters/token'
+      - name: filter
+        in: query
+        description: 'A filter query string narrows search results and supports the combination of logical and comparison operators.
+
+          The filter adheres to the pattern filter=''field'' comparisonType ''value''.
+
+
+          The following fields are filterable:
+
+          * id (in)
+
+          '
+        schema:
+          type: string
+          example: id in ('209a11d-5bf6-47d2-b81f-89360d7229b6')
       responses:
         '200':
-          description: Successfully retrieved the air actual details.
-          headers: {}
+          description: Successfully retrieved a paginated list of agenda items associated with an RFP.
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/air-actual-detail'
+                $ref: '#/components/schemas/PaginatedRfpAgendaItems'
         '400':
           $ref: '#/components/responses/BadRequest1'
         '401':
@@ -47,37 +63,29 @@ paths:
           $ref: '#/components/responses/NotFound1'
         '429':
           $ref: '#/components/responses/TooManyRequests1'
-      deprecated: false
-      parameters:
-      - $ref: '#/components/parameters/after'
-      - $ref: '#/components/parameters/before'
-      - $ref: '#/components/parameters/limit'
-      - $ref: '#/components/parameters/token'
-      - $ref: '#/components/parameters/expandAirActualQuestionAnswer'
-      - $ref: '#/components/parameters/sortForAirActual'
-      - $ref: '#/components/parameters/filter2'
-  /events/{id}/event-travel/air-requests:
-    parameters:
-    - $ref: '#/components/parameters/id2'
+  /rfps/{rfpId}/agenda-items/schedules:
     get:
-      summary: Get Air Requests
-      description: Get attendee air request details for an event.
-      operationId: getAirRequests
       tags:
-      - Event Travel
+      - RFP Requirements
+      summary: List RFP Agenda Item Schedules
+      description: Returns paginated list of schedules for agenda items added on an RFP.
+      operationId: listRfpAgendaItemSchedules
       security:
       - OAuth2.clientCredentials:
-        - event/air-request:read
+        - rfp/rfp-agenda-items:read
       - OAuth2.authorizationCode:
-        - event/air-request:read
+        - rfp/rfp-agenda-items:read
+      parameters:
+      - $ref: '#/components/parameters/rfpId'
+      - $ref: '#/components/parameters/limit'
+      - $ref: '#/components/parameters/token'
       responses:
         '200':
-          description: Successfully retrieved the air request detail.
-          headers: {}
+          description: Successfully retrieved a paginated list of RFP agenda item schedules.
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/air-reservation-detail'
+                $ref: '#/components/schemas/PaginatedRfpAgendaItemsSchedule'
         '400':
           $ref: '#/components/responses/BadRequest1'
         '401':
@@ -88,36 +96,62 @@ paths:
           $ref: '#/components/responses/NotFound1'
         '429':
           $ref: '#/components/responses/TooManyRequests1'
-      deprecated: false
-      parameters:
-      - $ref: '#/components/parameters/after'
-      - $ref: '#/components/parameters/before'
-      - $ref: '#/components/parameters/limit'
-      - $ref: '#/components/parameters/token'
-      - $ref: '#/components/parameters/sortForAirRequest'
-      - $ref: '#/components/parameters/filter2'
-      - $ref: '#/components/parameters/expandAirRequestQuestionAnswer'
-  /events/{id}/event-travel/alternate-answers:
-    parameters:
-    - $ref: '#/components/parameters/id2'
+  /rfps/{rfpId}/attachments:
     get:
-      summary: Get Alternate Travel Answers
-      description: Get alternate travel answers submitted by attendees who opt out of air or hotel bookings for an event.
-      operationId: getAlternateTravelAnswers
       tags:
-      - Event Travel
+      - RFP Requirements
+      summary: List RFP Attachments
+      description: Returns paginated list of attachments added on an RFP.
+      operationId: listRfpAttachments
       security:
       - OAuth2.clientCredentials:
-        - event/alternate-travel:read
+        - rfp/rfp-attachments:read
       - OAuth2.authorizationCode:
-        - event/alternate-travel:read
+        - rfp/rfp-attachments:read
+      parameters:
+      - $ref: '#/components/parameters/rfpId'
+      - $ref: '#/components/parameters/limit'
+      - $ref: '#/components/parameters/token'
+      - name: filter
+        in: query
+        description: 'A filter query string narrows search results and supports the combination of logical and comparison operators.
+
+          The filter adheres to the pattern filter=''field'' comparisonType ''value''.
+
+
+          These are the comparison types that can be used in filter expressions:
+
+          * equal: eq
+
+          * includes value(s): in
+
+
+          The following fields are filterable:
+
+          * sendInEmail (eq)
+
+          * supplier.id (in)
+
+          * supplierSpecific (eq)
+
+
+          The following operators are available:
+
+          * and
+
+          * or
+
+          '
+        schema:
+          type: string
+          example: supplierSpecific eq 'false' or supplier.id in ('37f2de41-6f50-484a-a55d-3cf0ede2ebac','f56a51a4-84b0-46c9-a612-716dc95a1c96') AND sendInEmail eq 'false'
       responses:
         '200':
-          description: Successfully retrieved the alternate travel answers.
+          description: Successfully retrieved a paginated list of RFP Attachments.
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/alternate-travel-paginated-response'
+                $ref: '#/components/schemas/PaginatedRfpAttachments'
         '400':
           $ref: '#/components/responses/BadRequest1'
         '401':
@@ -128,35 +162,30 @@ paths:
           $ref: '#/components/responses/NotFound1'
         '429':
           $ref: '#/components/responses/TooManyRequests1'
-      deprecated: false
-      parameters:
-      - $ref: '#/components/parameters/after'
-      - $ref: '#/components/parameters/before'
-      - $ref: '#/components/parameters/limit'
-      - $ref: '#/components/parameters/token'
-      - $ref: '#/components/parameters/filter2'
-  /events/{id}/event-travel/hotel-requests:
-    parameters:
-    - $ref: '#/components/parameters/id2'
+  /rfps/{rfpId}/custom-fields/answers:
     get:
-      summary: Get Hotel Requests
-      description: Get attendee hotel requests for an event.
-      operationId: getHotelRequests
       tags:
-      - Event Travel
+      - RFP Requirements
+      summary: List RFP Custom Fields Answers
+      description: Returns a paginated list of answers for each custom field associated with a given RFP.
+      operationId: listRfpCustomFields
       security:
       - OAuth2.clientCredentials:
-        - event/hotel-request:read
+        - rfp/rfp-custom-fields:read
       - OAuth2.authorizationCode:
-        - event/hotel-request:read
+        - rfp/rfp-custom-fields:read
+      parameters:
+      - $ref: '#/components/parameters/rfpId'
+      - $ref: '#/components/parameters/limit'
+      - $ref: '#/components/parameters/token'
+      - $ref: '#/components/parameters/customFieldExpand'
       responses:
         '200':
-          description: Successfully retrieved the hotel request detail.
-          headers: {}
+          description: Successfully retrieved a paginated list of RFP custom field answers.
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/hotel-reservation-detail'
+                $ref: '#/components/schemas/PaginatedRfpCustomField'
         '400':
           $ref: '#/components/responses/BadRequest1'
         '401':
@@ -167,37 +196,73 @@ paths:
           $ref: '#/components/responses/NotFound1'
         '429':
           $ref: '#/components/responses/TooManyRequests1'
-      deprecated: false
-      parameters:
-      - $ref: '#/components/parameters/after'
-      - $ref: '#/components/parameters/before'
-      - $ref: '#/components/parameters/limit'
-      - $ref: '#/components/parameters/token'
-      - $ref: '#/components/parameters/expandHotelRequestQuestionAnswer'
-      - $ref: '#/components/parameters/sortForHotelRequest'
-      - $ref: '#/components/parameters/filter2'
-  /events/{id}/event-travel/housing-reservation-requests:
-    parameters:
-    - $ref: '#/components/parameters/id2'
+  /rfps/{rfpId}/guest-rooms:
     get:
-      summary: Get Housing Requests
-      description: Get attendee housing reservation request details for an event.
-      operationId: getHousingReservationRequests
       tags:
-      - Event Travel
+      - RFP Requirements
+      summary: Get RFP Guest Rooms
+      description: Returns guest room requirements associated with an RFP.
+      operationId: getRfpGuestRooms
       security:
       - OAuth2.clientCredentials:
-        - event/hotel-request:read
+        - rfp/rfp-guest-rooms:read
       - OAuth2.authorizationCode:
-        - event/hotel-request:read
+        - rfp/rfp-guest-rooms:read
+      parameters:
+      - $ref: '#/components/parameters/rfpId'
       responses:
         '200':
-          description: Successfully retrieved the reservation request detail.
-          headers: {}
+          description: Successfully returns the guest room requirements associated with an RFP.
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/reservation-request-paginated-response'
+                $ref: '#/components/schemas/RfpGuestRooms'
+        '401':
+          $ref: '#/components/responses/Unauthorized1'
+        '403':
+          $ref: '#/components/responses/Forbidden1'
+        '404':
+          $ref: '#/components/responses/NotFound1'
+        '429':
+          $ref: '#/components/responses/TooManyRequests1'
+  /rfps/{rfpId}/internal-documents:
+    get:
+      tags:
+      - RFP Requirements
+      summary: List RFP Internal Documents
+      description: Returns paginated list of internal documents added on an RFP.
+      operationId: listRfpInternalDocuments
+      security:
+      - OAuth2.clientCredentials:
+        - rfp/rfp-internal-documents:read
+      - OAuth2.authorizationCode:
+        - rfp/rfp-internal-documents:read
+      parameters:
+      - $ref: '#/components/parameters/rfpId'
+      - $ref: '#/components/parameters/limit'
+      - $ref: '#/components/parameters/token'
+      - name: filter
+        in: query
+        description: 'A filter query string narrows search results and supports the combination of logical and comparison operators.
+
+          The filter adheres to the pattern filter=''field'' comparisonType ''value''.
+
+
+          The following fields are filterable:
+
+          * id (in)
+
+          '
+        schema:
+          type: string
+          example: id in ('209a11d-5bf6-47d2-b81f-89360d7229b6')
+      responses:
+        '200':
+          description: Successfully retrieved a paginated list of RFP internal documents.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedInternalDocuments'
         '400':
           $ref: '#/components/responses/BadRequest1'
         '401':
@@ -208,15 +273,54 @@ paths:
           $ref: '#/components/responses/NotFound1'
         '429':
           $ref: '#/components/responses/TooManyRequests1'
-      deprecated: false
+  /rfps/{rfpId}/questions:
+    parameters:
+    - $ref: '#/components/parameters/rfpId'
+    get:
+      tags:
+      - RFP Requirements
+      summary: List RFP Questions
+      description: Returns a paginated list of standard and custom questions associated with the given RFP. Does not include answer details.
+      operationId: listRfpQuestions
+      security:
+      - OAuth2.clientCredentials:
+        - rfp/rfp-questions:read
+      - OAuth2.authorizationCode:
+        - rfp/rfp-questions:read
       parameters:
-      - $ref: '#/components/parameters/after'
-      - $ref: '#/components/parameters/before'
       - $ref: '#/components/parameters/limit'
       - $ref: '#/components/parameters/token'
-      - $ref: '#/components/parameters/filter2'
+      responses:
+        '200':
+          description: Successfully retrieved a paginated list of RFP questions.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedRfpQuestions'
+        '400':
+          $ref: '#/components/responses/BadRequest1'
+        '401':
+          $ref: '#/components/responses/Unauthorized1'
+        '403':
+          $ref: '#/components/responses/Forbidden1'
+        '404':
+          $ref: '#/components/responses/NotFound1'
+        '429':
+          $ref: '#/components/responses/TooManyRequests1'
 components:
   schemas:
+    Category:
+      title: Category
+      description: A question category.
+      type: object
+      allOf:
+      - $ref: '#/components/schemas/TextField'
+      properties:
+        required:
+          type: boolean
+          default: false
+          description: True indicates the category is mandatory for answer.
+          example: true
     Paging:
       title: Paging
       required:
@@ -246,12 +350,64 @@ components:
           example: 2
         _links:
           $ref: '#/components/schemas/PaginationLinks'
-    uuid-property:
-      title: UUID Property
-      description: A string that has to be a format matching the industry standard uuid
+    RfpAgendaItem:
+      type: object
+      title: RfpAgendaItem
+      description: Agenda item associated with an RFP.
+      required:
+      - id
+      allOf:
+      - $ref: '#/components/schemas/RfpAgendaItemRequest'
+      properties:
+        id:
+          type: string
+          format: uuid
+          readOnly: true
+          description: Unique ID of the agenda item.
+          example: f56a51a4-84b0-46c9-a612-716dc95a1c96
+        agendaBuilderAttachment:
+          type: object
+          description: Attachment whose data was used to create the agenda item.
+          readOnly: true
+          required:
+          - id
+          properties:
+            id:
+              type: string
+              format: uuid
+              description: Unique identifier for the attachment.
+              example: 50dc08af-24a9-4d01-84be-3d43133dc945
+    AgendaItemSetup:
       type: string
-      format: uuid
-      example: 04ca6ae2-0dc3-487b-953e-86d6abbdf7d3
+      title: AgendaItemSetup
+      description: Setup type for the agenda.
+      enum:
+      - BUFFET
+      - CABARET
+      - CHEVRON
+      - CLASSROOM
+      - CONFERENCE
+      - CRESCENT_ROUNDS
+      - EIGHT_BY_TEN
+      - FLOW
+      - HERRINGBONE
+      - HOLLOW_SQUARE
+      - ISLAND
+      - OFFSITE
+      - OTHER
+      - PENINSULA
+      - PLATED
+      - RECEPTION
+      - ROUNDS
+      - ROUNDS_OF_10
+      - ROUNDS_OF_6
+      - ROUNDS_OF_8
+      - SCHOOL_ROOM
+      - TABLETOP
+      - TEN_BY_TEN
+      - THEATER
+      - T_SHAPED
+      - U_SHAPED
     Audit:
       title: Audit
       description: Audit information
@@ -279,225 +435,250 @@ components:
           description: The identifier of the user that last updated this record.
           readOnly: true
           example: hporter
-    HotelRoomRate:
-      title: HotelRoomRate
-      description: Representation of a hotel room rate
+    QuestionClassificationType:
+      type: string
+      title: QuestionClassificationType
+      description: 'Indicates the types of RFP that can be assigned this custom question. `MEETING_ROOM`: Meeting room type RFPs can be assigned this custom question. `GUEST_ROOM`: Guest room type RFPs can be assigned this custom question. `ALL_RFPS`:  All RFPs can be assigned this custom question.'
+      enum:
+      - MEETING_ROOM
+      - GUEST_ROOM
+      - ALL_RFPS
+    numeric-answer-format:
+      type: string
+      description: The answer format that a given number is stored in.
+      enum:
+      - Currency
+      - Decimal
+      - Number
+    GuestRoomOccupancyPerRoomType:
+      title: GuestRoomOccupancyPerRoomType
+      description: Room occupancy for a room type.
       type: object
       properties:
-        roomNight:
+        occupancy:
+          $ref: '#/components/schemas/GuestRoomOccupancy'
+        type:
+          $ref: '#/components/schemas/GuestRoomType'
+    RfpAgendaItemSchedule:
+      type: object
+      title: RfpAgendaItemSchedule
+      description: Schedule information for an RFP agenda item.
+      required:
+      - dayNumber
+      properties:
+        dayNumber:
+          type: integer
+          description: Day number relative to start of event on which the agenda item occurs.
+          example: 1
+        date:
           type: string
-          format: date-time
-          description: The ISO 8601 date-time (in UTC) of the night for which the room has been booked.
-          example: '2023-05-19T00:00:00Z'
-        roomRate:
-          type: number
-          description: The nightly rate at which the room has been booked.
-          example: 100
-    reservation-request-paginated-response:
-      title: HousingReservationPaginatedResponse
-      description: The response from a request to get the list of housing reservation request details for the attendees. This includes the paging object as well as the collection of housing reservation request details.
-      required:
-      - paging
-      - data
-      type: object
-      properties:
-        paging:
-          $ref: '#/components/schemas/Paging'
-        data:
-          type: array
-          items:
-            $ref: '#/components/schemas/HousingReservationResponse'
-          description: Collection of reservation request details for attendees.
-    Gender1:
-      title: Gender
-      description: Gender of the requester.
-      enum:
-      - Male
-      - Female
-      - Non-binary
-      - Rather not say
-      type: string
-      example: Male
-    hotel-reservation-detail:
-      title: HotelReservationPaginatedResponse
-      description: The response from a request to get the list of hotel reservation for the attendees.  This includes the paging object as well as the collection of air actual details.
-      required:
-      - paging
-      - data
-      type: object
-      properties:
-        paging:
-          $ref: '#/components/schemas/Paging'
-        data:
-          type: array
-          items:
-            $ref: '#/components/schemas/HotelReservationDetail'
-          description: Collection of hotel reservation for attendees.
-    HotelReservationDetail:
-      title: HotelReservationDetail
-      description: Representation of a hotel reservation detail response.
-      type: object
-      properties:
-        attendee:
-          $ref: '#/components/schemas/Attendee3'
-        hotelRequestDetails:
-          description: List of all the hotel requests by attendee and its guest.
-          type: array
-          items:
-            $ref: '#/components/schemas/HotelRequest'
-    TicketType:
-      title: TicketType
-      description: Category of the passenger's ticket class for an air booking.
+          format: date
+          readOnly: true
+          description: The ISO 8601 date of the agenda item.
+          example: '2021-07-03'
+    text-answer-format:
+      description: 'Text answer format. Used for `OpenEndedTextOneLine` question types.`CustomFormat`: Answers must follow a planner defined custom format. `EmailAddress`: Answers must follow the pattern of an email address. `General`: Answers can be any string. `USPhoneNumber`: Answers must be formatted as a phone number.'
       type: string
       enum:
-      - Economy/Coach
-      - Business
-      - FirstClass
-      example: Economy/Coach
-    AirRequest:
-      title: AirRequest
-      description: Representation of an air request.
+      - CustomFormat
+      - EmailAddress
+      - General
+      - USPhoneNumber
+    RfpMeal:
+      type: string
+      title: RfpMeal
+      description: Meal type offered during the agenda.
+      enum:
+      - BREAKFAST_BUFFET
+      - BREAKFAST_CONTINENTAL
+      - BREAKFAST_PLATED
+      - BREAK_DRINKS_ONLY
+      - BREAK_SNACKS_AND_DRINKS
+      - CONTACT_ME_ABOUT_F_B_REQUIREMENTS
+      - DINNER_BUFFET
+      - DINNER_PLATED
+      - LUNCH_BOXED
+      - LUNCH_BUFFET
+      - LUNCH_PLATED
+      - RECEPTION_HEAVY_HORS_D_OEUVRES
+      - RECEPTION_LIGHT_APPETIZERS
+    Field:
+      title: Field
+      description: A question field.
+      type: object
+      allOf:
+      - $ref: '#/components/schemas/TextField'
+      properties:
+        type:
+          $ref: '#/components/schemas/FieldType'
+        choices:
+          type: array
+          description: List of choices for this field.
+          items:
+            $ref: '#/components/schemas/Choice'
+          minItems: 1
+          maxItems: 100
+        notApplicableAnswer:
+          $ref: '#/components/schemas/AdditionalChoice'
+        otherAnswer:
+          $ref: '#/components/schemas/AdditionalChoice'
+        required:
+          type: boolean
+          default: false
+          description: True indicates this is a mandatory question field.
+          example: true
+    QuestionCommon:
+      title: QuestionCommon
+      description: Base model with common properties for a question.
       type: object
       allOf:
       - $ref: '#/components/schemas/Audit'
       properties:
-        airRequestId:
+        id:
           type: string
           format: uuid
-          description: ID of the air request.
-          example: 3b2359a7-4583-40ed-8afd-67e5f15373d3
-        requesterId:
+          description: Unique identifier of the question.
+          readOnly: true
+        text:
           type: string
-          format: uuid
-          description: ID of the flight requester. For an event attendee, this field is contact ID. For guest, this field is guest ID. For any other passenger, this fields contains null.
-          example: 3b2359a7-4583-40ed-8afd-67e5f15373d3
-        requesterType:
-          $ref: '#/components/schemas/AirRequesterType'
-        requesterFirstName:
+          description: Text value of the question field. Displays to users in the UI.
+          example: Are you spending any significant time offsite and need transportation?
+        shortText:
           type: string
-          description: First name of the flight requester.
-          example: John
-          maxLength: 50
-        requesterMiddleName:
+          description: Concise version or abbreviation of the question text. Set by the planner to simplify presentation of the question in reports.
+          example: Needs offsite transportation?
+        htmlText:
           type: string
-          description: Middle name of the flight requester.
-          example: Frances
+          description: Html of the question.
+          example: Question Html
+          maxLength: 5000
+        code:
+          type: string
+          description: Question code is unique identifier for every questions within a survey (can be same across surveys). This code is used in reporting and in question and answer data tags for emails. With every new question a random question code is generated.
+          example: 4l6x
           maxLength: 30
-        requesterLastName:
-          type: string
-          description: Last name of the flight requester.
-          example: Doe
-          maxLength: 50
-        requesterSuffix:
-          type: string
-          description: Suffix of the flight requester.
-          enum:
-          - II
-          - III
-          - IV
-          - V
-          - Sr.
-          - Jr.
-          example: Jr.
-        fullName:
-          type: string
-          description: Full name of the requester.
-          example: John Doe
-        redressNumber:
-          type: string
-          description: TSA redress number for the passenger.
-          example: '1234567'
-        knownTravelerNumber:
-          type: string
-          description: TSA known traveller number for the passenger.
-          example: '1234567'
-        outgoingLeg:
-          $ref: '#/components/schemas/LegDetail'
-        incomingLeg:
-          $ref: '#/components/schemas/LegDetail'
-        seatType:
-          $ref: '#/components/schemas/SeatType'
-        ticketType:
-          $ref: '#/components/schemas/TicketType'
-        foodPreference:
-          type: string
-          description: Additional text related to the passenger's meal.
-          example: Please provide vegetarian meal.
-          maxLength: 300
-        specialRequest:
-          type: string
-          description: Additional text associated with air request.
-          example: Please provide blanket
-          maxLength: 300
-        airlinePreference:
-          description: Requester's preferred airlines.
+        type:
+          $ref: '#/components/schemas/QuestionType'
+        choices:
           type: array
+          description: List of choices for the question.
           items:
-            $ref: '#/components/schemas/AirlinePreference'
-          maxItems: 3
-        ageCategory:
-          type: string
-          description: Age category of the requester.
-          enum:
-          - Adult
-          - Senior
-          - Child
-          - Infant
-          example: Adult
-        status:
-          $ref: '#/components/schemas/TravelRequestStatus'
-        dateOfBirth:
-          type: string
-          description: Date of birth of the requester.
-          example: '1980-03-04'
-        gender:
-          $ref: '#/components/schemas/Gender1'
-        plannerMemo:
-          type: string
-          description: Additional note by, or intended for, event planners.
-          example: Some planner related text.
-          maxLength: 300
-        airRequestAnswers:
+            $ref: '#/components/schemas/Choice'
+          maxItems: 100
+        categories:
           type: array
-          description: Answer provided by requester to the air request related question.
+          description: List of categories for the question.
           items:
-            $ref: '#/components/schemas/AttendeeAnswer1'
-    BaseAddress:
-      title: Base Address
-      description: Base Address Model
+            $ref: '#/components/schemas/Category'
+          maxItems: 100
+        subCategories:
+          type: array
+          description: List of sub categories for matrix side-by-side questions.
+          items:
+            $ref: '#/components/schemas/TextField'
+          maxItems: 100
+        notApplicableAnswer:
+          $ref: '#/components/schemas/AdditionalChoice'
+        otherAnswer:
+          $ref: '#/components/schemas/AdditionalChoice'
+        comments:
+          type: string
+          description: Text Value of Comments Input box placeholder.
+          example: Comments Text
+          maxLength: 16000
+        required:
+          type: boolean
+          default: false
+          description: True indicates this is a mandatory question field.
+          example: true
+        fields:
+          type: array
+          description: List of fields for form/matrix questions.
+          items:
+            $ref: '#/components/schemas/Field'
+          maxItems: 100
+        maxScore:
+          type: number
+          description: Max possible score.
+          example: 20
+          minimum: 0
+        totalSum:
+          type: integer
+          description: Total configured sum of all choices for number allocation question.
+          example: 45
+        choiceSortOrder:
+          $ref: '#/components/schemas/choice-sort-order'
+        displayType:
+          $ref: '#/components/schemas/display-type'
+        minSelection:
+          type: integer
+          description: Minimum number of choices that must be selected.
+          example: 1
+          default: 0
+        maxSelection:
+          type: integer
+          description: Maximum number of choices that can be selected.
+          example: 3
+          default: 0
+        minDate:
+          type: string
+          format: date
+          description: The earliest date that can be selected, starting from or after this date.
+          example: '2020-01-01'
+        maxDate:
+          type: string
+          format: date
+          description: The latest date that can be selected, up to or before this date.
+          example: '2020-12-31'
+        showDateSelector:
+          type: boolean
+          description: Indicates if this is a date range question.
+          example: true
+        showCurrentDate:
+          type: boolean
+          description: Indicates if the current date should be shown.
+          example: true
+        dateAnswerFormat:
+          $ref: '#/components/schemas/date-answer-format'
+        numericAnswerFormat:
+          $ref: '#/components/schemas/numeric-answer-format'
+        unitLabel:
+          type: string
+          description: Label to add before or after textbox.
+          example: miles
+        unitPosition:
+          $ref: '#/components/schemas/unit-position'
+        minLength:
+          type: integer
+          description: Minimum number of characters that must be entered.
+          example: 5
+          default: 0
+        maxLength:
+          type: integer
+          description: Maximum number of characters that can be entered.
+          example: 100
+          default: 500
+        textAnswerFormat:
+          $ref: '#/components/schemas/text-answer-format'
+        customAnswerFormat:
+          type: object
+          description: An object that contains custom answer format data.
+          properties:
+            id:
+              type: integer
+              description: The unique identifier of the custom answer format for the account.
+              example: 104
+    Choice:
+      title: Choice
+      description: A question choice.
       type: object
+      allOf:
+      - $ref: '#/components/schemas/TextField'
       properties:
-        address1:
+        label:
           type: string
-          maxLength: 40
-          description: The first line of an address.
-          example: Cvent Inc.
-        address2:
-          type: string
-          maxLength: 40
-          description: The second line of an address.
-          example: 4001 West Parmer Lane
-        address3:
-          type: string
-          maxLength: 40
-          description: The third line of an address.
-          example: PO Box 123
-        city:
-          type: string
-          maxLength: 40
-          description: The name of the city.
-          example: Austin
-        countryCode:
-          type: string
-          maxLength: 3
-          minLength: 2
-          description: ISO 3166 two-letter (alpha-2) country code.
-          example: US
-        postalCode:
-          type: string
-          maxLength: 25
-          description: Postal code (also known as zipcode) of the address.
-          example: '78727'
+          description: Label of choice.
+          example: Choice A
     ErrorResponse:
       title: ErrorResponse
       description: Represents an error response with additional details of cascading error messages.
@@ -513,131 +694,113 @@ components:
           items:
             $ref: '#/components/schemas/ErrorResponseBase'
           description: Additional details of cascading error messages.
-    AirlinePreference:
-      title: Airline Preference
-      description: Representation of airlines based on preference
-      type: object
-      properties:
-        airlineName:
-          type: string
-          description: Name of preferred airline.
-          example: Emirates
-        rewardsCode:
-          type: string
-          description: Loyalty program number for the preferred airline.
-          example: SKYWARD12345
-    AirActual:
-      title: AirActual
-      description: Representation of an air actual.
-      type: object
-      allOf:
-      - $ref: '#/components/schemas/Audit'
-      properties:
-        airActualId:
-          type: string
-          format: uuid
-          description: ID of the air actual.
-          example: 04ca6ae2-0dc3-487b-953e-86d6abbdf7d3
-        requesterId:
-          type: string
-          format: uuid
-          description: ID of the flight requester. For an event attendee, this field is contact ID. For guest, this field is guest ID. For any other passenger, this fields contains null.
-          example: 04ca6ae2-0dc3-487b-953e-86d6abbdf7d3
-        status:
-          $ref: '#/components/schemas/TravelRequestStatus'
-        requesterType:
-          $ref: '#/components/schemas/AirRequesterType'
-        name:
-          type: string
-          description: Name of the attendee booked for the flight.
-          example: John Doe
-        confirmationNumber:
-          type: string
-          description: Confirmation Number of the flight.
-          example: 123-456-XYZ
-        totalAmount:
-          type: number
-          description: Total cost of the flight.
-          example: 500
-        currencyCode:
-          type: string
-          description: ISO 4217 currency code for the cost of the flight.
-          example: USD
-          maxLength: 3
-        note:
-          type: string
-          description: Additional note associated to the air actual.
-          maxLength: 300
-          example: Additional note here.
-        recordLocatorGDS:
-          type: string
-          description: The unique reservation number associated with the Global Distribution System (GDS) where the flight was booked.
-          example: ABC123
-        noteGDS:
-          type: string
-          description: Additional note from the GDS associated to the air actual.
-          example: GDS note.
-        journeyType:
-          $ref: '#/components/schemas/JourneyType'
-        flightDetail:
-          description: List of all the flight details taken by attendee and its guest
-          type: array
-          items:
-            $ref: '#/components/schemas/FlightDetail'
-        airActualAnswers:
-          type: array
-          description: Answer provided by requester to the air actual related question.
-          items:
-            $ref: '#/components/schemas/AttendeeAnswer1'
-    JourneyType:
-      title: JourneyType
-      description: Type of journey for an air booking.
+    GuestRoomOccupancy:
+      title: GuestRoomOccupancy
+      description: 'Guest room occupancy. `SINGLE`: Single occupant. `DOUBLE`: Two occupants. `TRIPLE`: Three occupants. `QUAD`: Four occupants. '
       type: string
       enum:
-      - Oneway
-      - RoundTrip
-      example: RoundTrip
-    Address7:
-      title: Address
-      description: Address of the hotel.
-      type: object
-      allOf:
-      - $ref: '#/components/schemas/BaseAddress'
-      properties:
-        region:
-          type: string
-          description: The name of the state/province/region of the address.
-          readOnly: true
-          example: Texas
-        regionCode:
-          type: string
-          description: The abbreviation of the state/province/region of the address.
-          minLength: 2
-          maxLength: 10
-          example: TX
-        country:
-          type: string
-          description: Name of the country.
-          readOnly: true
-          example: United States of America
-    AirReservationDetail:
-      title: AirReservationDetail
-      description: Representation of an air reservation detail response.
+      - SINGLE
+      - DOUBLE
+      - TRIPLE
+      - QUAD
+      example: SINGLE
+    PaginatedRfpCustomField:
+      title: PaginatedRfpCustomField
+      description: Paginated list of RFP custom fields associated to a RFP.
       type: object
       properties:
-        attendee:
-          $ref: '#/components/schemas/Attendee3'
-        airRequestDetails:
-          description: List of all air request by attendee and its guest.
+        paging:
+          $ref: '#/components/schemas/Paging'
+        data:
+          description: List of RFP custom fields linked to an RFP.
           type: array
           items:
-            $ref: '#/components/schemas/AirRequest'
-    lastModified:
-      type: string
-      format: date-time
-      description: The ISO 8601 zoned date time when this record was updated.
-      readOnly: true
-      example: '2019-02-12T03:00:00Z'
+            $ref: '#/components/schemas/CustomFieldAnswers'
+    RfpAttachment:
+      type: object
+      title: RfpAttachment
+      description: This object contains Rfp specific attachments attributes.
+      required:
+      - id
+      properties:
+        id:
+          type: string
+          format: uuid
+          description: Unique identifier for this attachment record.
+          example: f56a51a4-84b0-46c9-a612-716dc95a1c96
+          readOnly: true
+        created:
+          type: string
+          format: date-time
+          description: ISO 8601 date-time the attachment was uploaded.
+          example: '2021-01-13T14:06:20.080Z'
+          readOnly: true
+        size:
+          type: integer
+          format: int64
+          description: The size of attachment in bytes.
+          example: 777835
+          readOnly: true
+        type:
+          $ref: '#/components/schemas/DocumentType-1'
+        secure:
+          type: boolean
+          description: True indicates the attachment is uploaded behind a secured URL.
+          example: true
+          readOnly: true
+        name:
+          type: string
+          description: Display name of the attachment.
+          example: BudgetCostSavings
+          readOnly: true
+        uniqueName:
+          type: string
+          description: Name of the attachment. Must be unique in the account.
+          example: 183f9efaa4c14070985782ee31abbf3c.jpg
+          readOnly: true
+        mimeType:
+          type: string
+          description: The content type of the attachment
+          example: image/jpeg
+          readOnly: true
+        source:
+          $ref: '#/components/schemas/AttachmentSource'
+        relativePath:
+          type: string
+          description: The file path pointing to where the attachment is stored in Cvent. This path is relative to the base URL of the storage system and omits the root address.
+          example: 0B7DEF22676A4434982BDAD2D6EC591F/files/supplier/0713cef78d4e4d818899d4522022d5ad/73ab2e3054fd4321a5e0f846a7adb0d7.jpg
+          readOnly: true
+        sendInEmail:
+          type: boolean
+          description: True indicates the attachment should be sent in emails that notify suppliers about RFPs.
+          example: false
+        deletionAllowed:
+          type: boolean
+          description: True indicates this attachment can be deleted.
+          example: true
+        url:
+          type: string
+          format: uri
+          description: URL of the attachment if `secure` is false. This field is null if `secure` is true.
+          example: https://custom.t2.cvent.com/0B7DEF22676A4434982BDAD2D6EC591F/files/supplier/0713cef78d4e4d818899d4522022d5ad/73ab2e3054fd4321a5e0f846a7adb0d7.jpg
+          readOnly: true
+        supplier:
+          type: object
+          description: Supplier associated with the attachment.
+          properties:
+            id:
+              type: string
+              format: uuid
+              description: ID of the supplier.
+              example: C20A0114-2635-48C3-9F59-9386361B517B
+        supplierSpecific:
+          type: boolean
+          description: True indicates the attachment is only shown in the UI to the supplier whose ID is present in supplier.id field.
+          example: true
+        selectedForSupplier:
+          type: boolean
+          description: True indicates the attachment is selected for the supplier whose ID is present in supplier.id field.
+          example: true
     PaginationLinks:
       title: PaginationLinks
       type: object
@@ -649,479 +812,531 @@ components:
           $ref: '#/components/schemas/Link'
         prev:
           $ref: '#/components/schemas/Link'
-    SeatType:
-      title: SeatType
-      description: Preferred or assigned seat type for an air booking.
+    choice-sort-order:
       type: string
+      description: 'The sort order for the choices. `AToZ`: sorted alphabetically in ascending order. `AsEntered`: Sorted in the order they were added, oldest choices first. `Random`: Random sort.'
       enum:
-      - Aisle
-      - Window
-      example: Window
-    AirActualDetail:
-      title: AirActualDetail
-      description: Representation of an air actual detail response.
+      - AToZ
+      - AsEntered
+      - Random
+    RfpAgendaItemScheduleWithId:
       type: object
-      properties:
-        attendee:
-          $ref: '#/components/schemas/Attendee3'
-        airActualDetails:
-          description: List of air actual details for the attendee and its guest.
-          type: array
-          items:
-            $ref: '#/components/schemas/AirActual'
-          minItems: 0
-          maxItems: 200
-    TravelRequestStatus:
-      title: TravelRequestStatus
-      enum:
-      - SUBMITTED
-      - PROCESSING
-      - APPROVED
-      - RESERVED
-      - DENIED
-      - NOT_AVAILABLE
-      - CANCELLED
-      - PENDING
-      - TICKETED
-      - WAITLISTED
-      type: string
-      description: Status of the travel request done by attendee.
-      example: SUBMITTED
-    FlightDetail:
-      title: FlightDetail
-      description: Representation of a flight's details.
-      type: object
-      properties:
-        airline:
-          type: string
-          description: Name of the airline.
-          example: Emirates
-        flightNumber:
-          type: string
-          description: Number assigned to a particular flight by the airline.
-          example: EK 516
-        origin:
-          type: string
-          description: Origin airport of the flight.
-          example: Delhi - Indira Gandhi Intl - (DEL)
-        originCode:
-          type: string
-          description: IATA airport code of the origin airport.
-          maxLength: 3
-          minLength: 3
-          example: DEL
-        destination:
-          type: string
-          description: Destination airport of the flight.
-          example: New York - John F Kennedy Intl - (JFK)
-        destinationCode:
-          type: string
-          description: IATA airport code of the destination airport.
-          maxLength: 3
-          minLength: 3
-          example: JFK
-        departing:
-          type: string
-          format: date-time
-          description: The ISO 8601 zoned date time (in UTC) of flight departure.
-          example: '2023-05-19T00:00:00Z'
-        arriving:
-          type: string
-          format: date-time
-          description: The ISO 8601 zoned date time (in UTC) of flight arrival.
-          example: '2023-05-19T00:00:00Z'
-        seatNumber:
-          type: string
-          description: Seat number assigned to the passenger.
-          example: 21A
-        ticketClass:
-          type: string
-          description: Category of the passenger's ticket.
-          example: coach
-        flightConfirmationNumber:
-          type: string
-          description: The airline's flight confirmation number.
-          example: 123-456-XYZ
-        flightGDSRecordLocator:
-          type: string
-          description: The unique reservation number associated with the Global Distribution System (GDS) where the flight was booked.
-          example: ABC123
-        journeySegment:
-          type: string
-          description: Journey Segment
-          enum:
-          - LeavingEvent
-          - GoingToEvent
-          - NotApplicable
-          example: LeavingEvent
-    HotelRequest:
-      title: HotelRequest
-      description: Representation of a hotel request.
-      type: object
+      title: RfpAgendaItemScheduleWithId
+      description: Contains RFP specific agenda items schedule information with agenda item id.
       allOf:
-      - $ref: '#/components/schemas/Audit'
-      properties:
-        hotelRequestId:
-          type: string
-          format: uuid
-          description: ID of the hotel request.
-          example: 3b2359a7-4583-40ed-8afd-67e5f15373d3
-        requesterId:
-          type: string
-          format: uuid
-          description: ID of the flight requester. For an event attendee, this field is contact ID. For guest, this field is guest ID.
-          example: 3b2359a7-4583-40ed-8afd-67e5f15373d3
-        requesterType:
-          type: string
-          description: Attendee type of the hotel requester. Contact means the requester is an independent attendee. Guest means the attendee is accompanying another attendee.
-          enum:
-          - Contact
-          - Guest
-          example: Contact
-        requesterFirstName:
-          type: string
-          description: First name of the hotel requester.
-          example: John
-          maxLength: 30
-        requesterLastName:
-          type: string
-          description: Last name of the hotel requester.
-          example: Doe
-          maxLength: 50
-        hotelName:
-          type: string
-          description: Name of the hotel.
-          example: Fairmont Chicago
-          maxLength: 100
-        hotelCode:
-          type: string
-          description: Code of the hotel.
-          example: 6BNMSHJFSRP
-          maxLength: 30
-        roomName:
-          type: string
-          description: Name of the room.
-          example: Deluxe Room
-          maxLength: 50
-        roomCode:
-          type: string
-          description: Code of the room.
-          example: 6BNMSHJFSR
-          maxLength: 10
-        quantity:
-          type: integer
-          description: Number of hotel requests made by requester.
-          example: 1
-        roommateRequested:
-          type: string
-          description: Name of the roommate requested by requester.
-          example: Will Doe
-        specialRequest:
-          type: string
-          description: Any special requests the requester asks of the hotel.
-          maxLength: 300
-          example: Please provide early check-in.
-        rewardsCode:
-          type: string
-          description: Requesters' reward code for the hotel's loyalty program.
-          example: ROYALTY
-          maxLength: 50
-        checkinDate:
-          type: string
-          format: date-time
-          description: The ISO 8601 zoned date time (in UTC) when the guest will check in to the hotel.
-          example: '2023-05-19T00:00:00Z'
-        checkoutDate:
-          type: string
-          format: date-time
-          description: The ISO 8601 zoned date time (in UTC) when the guest will check out of the hotel.
-          example: '2023-05-20T00:00:00Z'
-        smoking:
-          type: boolean
-          description: True indicates smoking should be allowed in the room.
-        cancelled:
-          type: boolean
-          description: True indicates this hotel request is cancelled.
-        status:
-          $ref: '#/components/schemas/TravelRequestStatus'
-        confirmationNumber:
-          type: string
-          description: The hotel's confirmation number.
-          example: CONFIRM_123
-        isADAAccessible:
-          type: boolean
-          description: True indicate the room should meet the Americans with Disabilities Act (ADA) accessibility requirements.
-        shareRoom:
-          type: boolean
-          description: True indicates the requester wants a roommate.
-        roommateLeader:
-          type: boolean
-          description: True indicates the requester is the roommate in charge of the room.
-        gender:
-          $ref: '#/components/schemas/Gender1'
-        totalAmount:
-          type: number
-          description: Total cost of the hotel stay.
-          example: 500
-        currencyCode:
-          type: string
-          description: ISO 4217 currency code for the cost of the hotel stay.
-          example: USD
-          maxLength: 3
-        roomCharge:
-          type: boolean
-          description: Specifies if the planner will charge for the hotel.
-        roomTaxBillingInstructions:
-          type: string
-          description: Specifies who the hotel will charge for the room rate's tax.
-          example: tax instructions
-        incidentalBillingInstructions:
-          type: string
-          description: Specifies who the hotel will charge incidental (extra) room expenses, like room service or long-distance calling.
-          example: billing instructions
-        plannerMemo:
-          type: string
-          description: Additional note by, or intended for, event planners.
-          maxLength: 300
-          example: Planner's notes here.
-        earliestShoulderDate:
-          type: string
-          format: date-time
-          description: The ISO 8601 zoned date time (in UTC) when the requester is requesting for an earliest shoulder date.
-          example: '2023-05-19T00:00:00Z'
-        latestShoulderDate:
-          type: string
-          format: date-time
-          description: The ISO 8601 zoned date time (in UTC) when the requester is requesting for an latest shoulder date.
-          example: '2023-05-19T00:00:00Z'
-        roomTaxBillingExceptions:
-          type: string
-          description: Specifies who the hotel will charge for the room rate's tax.
-          example: exceptions noted here.
-        incidentalBillingExceptions:
-          type: string
-          description: Specifies who the hotel will charge incidental (extra) room expenses, like room service or long-distance calling.
-          example: exceptions noted here.
-        hotelAddress:
-          $ref: '#/components/schemas/Address7'
-        hotelRoomRates:
-          type: array
-          description: Collection of hotel room rates the requester has taken.
-          items:
-            $ref: '#/components/schemas/HotelRoomRate'
-        hotelRequestAnswers:
-          type: array
-          description: Answer provided by requester to the hotel request related question.
-          items:
-            $ref: '#/components/schemas/AttendeeAnswer1'
-    HousingReservationResponse:
-      title: HousingReservationResponse
-      description: Representation of the reservation request response.
-      type: object
-      properties:
-        attendee:
-          $ref: '#/components/schemas/Attendee3'
-        reservationRequest:
-          $ref: '#/components/schemas/HousingReservation'
-        lastModified:
-          $ref: '#/components/schemas/lastModified'
-    HousingReservation:
-      title: HousingReservation
-      description: Representation of the housing reservation details.
-      type: object
+      - $ref: '#/components/schemas/RfpAgendaItemSchedule'
       properties:
         id:
           type: string
-          format: string
-          description: Reservation request ID, also known as a bridge ID.
-          example: D6A63423-G796
-        bookingSite:
-          title: Link
-          required:
-          - href
-          type: object
-          description: Represents a link to a related resource.
-          properties:
-            href:
-              type: string
-              description: URL of the booking site for this reservation request.
-              example: https://book.passkey.com/entry?token=eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJwYXlsb2FkIjp7ImVudHJ5IjoiUkVHSVNUUkFUSU9OIiwicGFyYW1zIjpbeyJuYW1lIjoiYnJpZGdlSWQiLCJ2YWx1ZSI6IlQ3VFdNTEhQLUdFNEQifV19fQ.7sH1gO_1Aambk-SRRlO2c7ac2DOpqLmCB-zsxB71q_A
-    AlternateTravelDetail:
-      title: AlternateTravelDetail
-      description: Details of an alternate travel answer submitted by an attendee who opted out of air or hotel bookings.
-      type: object
-      allOf:
-      - $ref: '#/components/schemas/Audit'
-      properties:
-        attendee:
-          $ref: '#/components/schemas/Attendee3'
-        requesterId:
-          type: string
           format: uuid
-          description: ID of the entity this alternate travel belongs to. For an event attendee, this field is contact ID. For guest, this field is guest ID.
-          example: 3b2359a7-4583-40ed-8afd-67e5f15373d3
-        requesterType:
-          type: string
-          description: Attendee type of the entity this alternate travel belongs to. Contact means the requester is an independent attendee. Guest means the attendee is accompanying another attendee.
-          enum:
-          - Contact
-          - Guest
-          example: Contact
-        travelType:
-          type: string
-          description: Type of travel alternate question
-          enum:
-          - AirRequest
-          - HotelRequest
-          - AirActual
-          - GroupFlight
-          example: AirRequest
-        question:
-          $ref: '#/components/schemas/AlternateQuestion'
-        answer:
-          $ref: '#/components/schemas/AlternateAnswer'
-    LegDetail:
-      title: LegDetail
-      description: Representation of a leg detail in air request.
-      type: object
-      properties:
-        origin:
-          type: string
-          description: Name of the airport where the flight of the passenger's journey originates.
-          example: Delhi - Indira Gandhi Intl - (DEL)
-        destination:
-          type: string
-          description: Name of the airport where the flight of the passenger's journey ends.
-          example: Dubai - International (DXB)
-        date:
-          type: string
-          format: date-time
-          description: The ISO 8601 zoned date time (in UTC) of the flight origin.
-          example: '2023-05-19T00:00:00Z'
-        time:
-          type: string
-          description: General time of day or specific time when the flight of the passenger's journey starts.
-          example: Morning
-    AlternateAnswer:
-      title: AlternateAnswer
-      description: Represents the answer(s) to an alternate travel question submitted by an attendee.
-      type: object
-      properties:
-        value:
-          type: array
-          description: The set of answers to a single alternate travel question.
-          maxItems: 50
-          items:
-            type: string
-            description: A single answer to the alternate travel question.
-            example: '1234'
-          example:
-          - '1234'
-    AirRequesterType:
-      title: AirRequesterType
-      description: Representation of an attendee type of the flight requester. Contact means the requester is an independent attendee. Guest means the attendee is accompanying another attendee. Unknown means attendee has requested a flight for passenger other than its guest.
-      type: string
-      enum:
-      - Contact
-      - Guest
-      - Unknown
-      example: Contact
-    Attendee3:
-      title: Attendee
-      description: Representation of the attendee
-      type: object
-      properties:
-        id:
-          $ref: '#/components/schemas/uuid-property'
-    AlternateQuestion:
-      title: AlternateQuestion
-      description: Represents a reference to an alternate travel question entity, containing only the question ID and text.
+          readOnly: true
+          description: Unique ID of the agenda item.
+          example: 50dc08af-24a9-4d01-84be-3d43133dc945
+    TextField:
+      title: TextField
+      description: A survey text field.
       type: object
       properties:
         id:
           type: string
           format: uuid
-          description: Unique identifier for the question entity.
-          example: 04ca6ae2-0dc3-487b-953e-86d6abbdf7d3
+          description: Text field ID.
+          readOnly: true
         text:
           type: string
-          description: Text of the alternate travel question.
-          example: Why are you not booking a hotel with us?
-    air-actual-detail:
-      title: AirActualPaginatedResponse
-      description: The response from a request to get the list of air actual for the attendees.  This includes the paging object as well as the collection of air actual details.
+          description: Text value of the field. Displays to users in the UI.
+          example: Are you spending any significant time offsite and need transportation?
+        shortText:
+          type: string
+          description: Concise version or abbreviation of the question text. Set by the planner to simplify presentation of the question in reports.
+          example: Needs offsite transportation?
+    PaginatedRfpAttachments:
+      title: PaginatedRFPAttachments
+      description: Paginated list of RFP attachments.
+      type: object
       required:
       - paging
       - data
-      type: object
       properties:
         paging:
           $ref: '#/components/schemas/Paging'
         data:
           type: array
           items:
-            $ref: '#/components/schemas/AirActualDetail'
-          description: Collection of air actuals for attendees.
+            $ref: '#/components/schemas/RfpAttachment'
+          description: List of attachments added on an RFP.
+    AttachmentSource:
+      type: string
+      title: AttachmentSource
+      description: The source from where the attachment was uploaded.
+      enum:
+      - FILE_COPY_ADMIN_LIBRARY
+      - FILE_UPLOAD_LINK_URL
+      - FILE_UPLOAD_TO_CUSTOM_DRIVE
+      - FILE_UPLOAD_TO_TEMP_LOCATION
+      - USER_DOCUMENT_LINK_URL
+    PaginatedInternalDocuments:
+      title: PaginatedInternalDocuments
+      description: Paginated list of internal documents attached to an RFP.
+      type: object
+      properties:
+        paging:
+          $ref: '#/components/schemas/Paging'
+        data:
+          description: List of internal documents linked to an RFP.
+          type: array
+          items:
+            $ref: '#/components/schemas/RfpInternalDocument'
+    RoomBlock:
+      title: RoomBlock
+      description: Contains details related to room allotment for a day.
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+          description: Unique identifier for the room block.
+          readOnly: true
+          example: 1f6193da-e12b-4638-b1e2-13dd60d0adeb
+        date:
+          type: string
+          format: date
+          description: The ISO 8601 date when the rooms are required.
+          readOnly: true
+          example: '2025-10-13'
+        dayNumber:
+          type: integer
+          description: Counter for day number.
+          example: 3
+        totalRooms:
+          type: integer
+          description: Total number of rooms required for the day.
+          readOnly: true
+          example: 24
+          minimum: 0
+          maximum: 49995
+        details:
+          type: array
+          description: Contains detail of quantity required for each room type.
+          items:
+            $ref: '#/components/schemas/RoomBlockDetails'
           minItems: 0
-          maxItems: 200
-    air-reservation-detail:
-      title: AirReservationPaginatedResponse
-      description: The response from a request to get the list of air reservation for the attendees.  This includes the paging object as well as the collection of air actual details.
-      required:
-      - paging
-      - data
+          maxItems: 5
+    PaginatedRfpAgendaItems:
+      title: PaginatedRfpAgendaItems
+      description: Paginated list of agenda items associated with an RFP.
       type: object
       properties:
         paging:
           $ref: '#/components/schemas/Paging'
         data:
+          description: List of agenda items associated with an RFP.
           type: array
           items:
-            $ref: '#/components/schemas/AirReservationDetail'
-          description: Collection of air reservations for attendees.
-    AttendeeAnswer1:
-      title: AttendeeAnswer
-      description: Answer for the question answered by attendee.
-      required:
-      - question
-      - value
+            $ref: '#/components/schemas/RfpAgendaItem'
+    AdditionalChoice:
+      title: additionalChoice
+      description: Contains text of additional choice i.e notApplicableAnswer choice or otherAnswer choice.
       type: object
       properties:
-        question:
-          type: object
-          description: The reference to the question entity. Contains only the ID of the question entity.
+        text:
+          type: string
+          description: Display text of additional choice.
+          example: Dietary Restriction - Other
+        shortText:
+          type: string
+          description: Name of additional choice text in reporting.
+          example: Dietary Preference - Other Allergies
+    CustomFieldAnswers:
+      title: RfpCustomField
+      description: This object contains RFP custom fields attributes only.
+      type: object
+      properties:
+        customField:
+          title: ExpandableCustomObject
           properties:
             id:
               type: string
-              description: Question ID
               format: uuid
-              example: 04ca6ae2-0dc3-487b-953e-86d6abbdf7d3
-        value:
+              description: Unique identifier for custom field.
+              example: 50dc08af-24a9-4d01-84be-3d43133dc945
+          type: object
+          readOnly: true
+          description: 'An object containing custom field data. By default, contains only the field ID.
+
+
+            This is an **expandable** object. When requested via the `expand` query parameter with value `customField`, this object expands to include all properties of a custom field definition.
+
+
+            See the `expand` parameter documentation and refer to the [Get Custom Field](#tag/Custom-Fields/operation/getCustomField) API for the complete expanded schema.'
+        answers:
           type: array
-          description: The set of answers to a question.
+          description: List of answers for the RFP custom field.
+          maxItems: 100
           items:
             type: string
-            description: A question answer
-            example: '1234'
-    alternate-travel-paginated-response:
-      title: AlternateTravelPaginatedResponse
-      description: Paginated response containing alternate travel answers submitted by attendees who opt out of air or hotel bookings.
-      type: object
+            description: Answer String
+            example: Choice 1
       required:
-      - paging
-      - data
+      - customField
+      - answers
+    QuestionType:
+      title: QuestionType
+      enum:
+      - CommentBox
+      - DateTime
+      - FileUpload
+      - Form
+      - LargeChoices
+      - MatrixMultiChoice
+      - MatrixRating
+      - MatrixSideBySide
+      - MatrixSingleChoice
+      - MatrixSpreadSheet
+      - MultiChoice
+      - NetPromoter
+      - Number
+      - NumberAllocation
+      - OpenEndedDateTime
+      - OpenEndedNumeric
+      - OpenEndedTextCommentBox
+      - OpenEndedTextOneLine
+      - RankOrder
+      - Rating
+      - SingleChoice
+      - Text
+      type: string
+      description: The type of question. See [this article](https://support.cvent.com/s/communityarticle/Survey-Adding-Questions) for details on each enum.
+      example: SingleChoice
+    RfpInternalDocument:
+      type: object
+      title: RfpInternalDocument
+      description: This object contains RFP specific internal documents attributes only.
+      required:
+      - id
+      properties:
+        id:
+          type: string
+          format: uuid
+          description: Unique ID of the file.
+          example: f56a51a4-84b0-46c9-a612-716dc95a1c96
+        created:
+          type: string
+          format: date-time
+          description: ISO 8601 date-time the document was uploaded.
+          example: '2021-01-13T14:06:20.080Z'
+        name:
+          type: string
+          description: Display name of the document.
+          example: BudgetCostSavings
+        uniqueName:
+          type: string
+          description: Name of the document. Must be unique in the account.
+          example: 183f9efaa4c14070985782ee31abbf3c.jpg
+          readOnly: true
+        size:
+          type: integer
+          format: int64
+          description: The size of document in bytes.
+          example: 777835
+          readOnly: true
+        url:
+          type: string
+          format: uri
+          description: URL of the document if `secure` is false. This field is null if `secure` is true.
+          example: https://custom.cvent.com/0B7DEF22676A4434982BDAD2D6EC591F/files/supplier/0713cef78d4e4d818899d4522022d5ad/73ab2e3054fd4321a5e0f846a7adb0d7.jpg
+        type:
+          $ref: '#/components/schemas/DocumentType-1'
+        mimeType:
+          type: string
+          description: The content type of the document.
+          example: image/jpeg
+    DocumentType-1:
+      type: string
+      title: DocumentType
+      readOnly: true
+      description: The document type.
+      enum:
+      - AI
+      - AVI
+      - BMP
+      - DOC
+      - DOCX
+      - EML
+      - EPS
+      - FLV
+      - GIF
+      - HTM
+      - HTML
+      - ICS
+      - JFIF
+      - JPEG
+      - JPG
+      - LINK
+      - MOV
+      - MP4
+      - MSG
+      - ONE
+      - OST
+      - PDF
+      - PNG
+      - PPT
+      - PPTX
+      - PST
+      - SVG
+      - TIF
+      - TIFF
+      - TXT
+      - WMV
+      - XLS
+      - XLSX
+    RfpQuestion:
+      title: RfpQuestion
+      description: Question associated with an RFP.
+      type: object
+      allOf:
+      - $ref: '#/components/schemas/QuestionCommon'
+      properties:
+        supplierTypes:
+          type: array
+          description: List of supplier types that can view the question on the RFP.
+          items:
+            $ref: '#/components/schemas/SupplierType'
+          uniqueItems: true
+          example:
+          - CVB
+          - HOTEL
+        classificationType:
+          $ref: '#/components/schemas/QuestionClassificationType'
+        order:
+          type: integer
+          description: Determines the display order for questions on the RFP. Questions with smaller values appear first.
+          example: 1
+          minimum: 1
+        standardQuestion:
+          $ref: '#/components/schemas/StandardQuestion'
+        aiQuestionGenerationSource:
+          type: string
+          maxLength: 100
+          readOnly: true
+          description: Represents the AI generation source for the custom question on RFP. This field is set during question creation and cannot be modified afterwards.
+          example: MCP-Visual Studio Code/1.107.1
+    SupplierType:
+      title: SupplierType
+      description: 'Type of supplier. `CONVENTION_AND_CONFERENCE_CENTER`: Supplier of large event venues such as convention centers, conference centers, and exposition halls. `CVB`: CVBs (Convention and Visitors Bureau) are suppliers that assist in the promotion and facilitation of tourism, conventions, and events in their respective areas. `HOTEL`: Suppliers that are hotels or resorts. `OTHER`: Suppliers that do not fall under other categories.'
+      type: string
+      enum:
+      - CONVENTION_AND_CONFERENCE_CENTER
+      - CVB
+      - HOTEL
+      - OTHER
+    PaginatedRfpAgendaItemsSchedule:
+      title: PaginatedRfpAgendaItemsSchedule
+      description: Paginated list of agenda items schedule attached to an RFP.
+      type: object
       properties:
         paging:
-          type: object
-          description: Represents pagination information for the list of results.
-          allOf:
-          - $ref: '#/components/schemas/Paging'
+          $ref: '#/components/schemas/Paging'
         data:
+          description: List of agenda items schedule attached to an RFP.
           type: array
-          maxItems: 200
-          description: Collection of alternate travel answers for attendees.
           items:
-            $ref: '#/components/schemas/AlternateTravelDetail'
+            $ref: '#/components/schemas/RfpAgendaItemScheduleWithId'
+    RfpAgendaItemRequest:
+      type: object
+      title: RfpAgendaItemRequest
+      description: Request body for creating or updating an RFP agenda item.
+      required:
+      - number
+      - schedules
+      allOf:
+      - $ref: '#/components/schemas/Audit'
+      properties:
+        name:
+          type: string
+          description: The name of the agenda item.
+          minLength: 0
+          maxLength: 50
+          example: Agenda Item 1
+        type:
+          $ref: '#/components/schemas/AgendaItemType'
+        setup:
+          $ref: '#/components/schemas/AgendaItemSetup'
+        note:
+          type: string
+          description: The note sent along with agenda item.
+          minLength: 0
+          maxLength: 2500
+          example: This is a sample comment for this agenda item.
+        startTime:
+          type: string
+          description: The start time of the agenda item in 24-hour format (HH:mm:ss). This represents the local time at event location. For RFPs spanning multiple time zones, this time applies uniformly in each location's respective timezone (e.g., 13:00:00 means 1 PM local time at every venue).
+          example: '10:00:00'
+        endTime:
+          type: string
+          description: The end time of the agenda item in 24-hour format (HH:mm:ss). This represents the local time at event location. For RFPs spanning multiple time zones, this time applies uniformly in each location's respective timezone (e.g., 14:00:00 means 2 PM local time at every venue).
+          example: '10:30:00'
+        roomSize:
+          type: integer
+          minimum: 0
+          description: The required room size. It is specified in the default measurement unit of the RFP. Use <a href="#tag/RFP/operation/getRFP">GET RFP</a> API to get the default measurement unit.
+          example: 1000
+        attendeeCount:
+          type: integer
+          minimum: 1
+          maximum: 49999
+          description: Expected number of people attending the agenda.
+          example: 10000
+        roomInfoRequired:
+          type: boolean
+          description: True indicates room information like type, description is required.
+          example: false
+        twentyFourHourHold:
+          type: boolean
+          description: True indicates that twenty four hour hold is required.
+          example: true
+        locatedAtPrimaryEventVenue:
+          type: boolean
+          description: True indicates that agenda location is at primary event venue.
+          example: false
+        rfpMeal:
+          $ref: '#/components/schemas/RfpMeal'
+        number:
+          type: integer
+          description: The sequence number of the agenda item.
+          minimum: 1
+          maximum: 49999
+          example: 5
+        schedules:
+          type: array
+          minItems: 1
+          maxItems: 150
+          description: List of dates when this agenda item is scheduled.
+          items:
+            $ref: '#/components/schemas/RfpAgendaItemSchedule'
+    display-type:
+      type: string
+      description: 'The type of display for the field. `Bar`: It is associated with choice questions type. `DropDown`: It is associated with drop down type questions. `Horizontal`: It is associated with horizontal type questions. `List`: It is associated with list type questions. `MultiSelectBox`: It is associated with multi select box type questions. `Vertical`: It is associated with vertical type questions.'
+      enum:
+      - Bar
+      - DropDown
+      - Horizontal
+      - List
+      - MultiSelectBox
+      - Vertical
+    AgendaItemType:
+      type: string
+      title: AgendaItemType
+      description: Type of the agenda.
+      enum:
+      - BREAK
+      - BREAKFAST
+      - BREAKOUT
+      - DINNER
+      - EXHIBIT
+      - GENERAL_SESSION
+      - HOSPITALITY_DESK
+      - HOSPITALITY_SUITE
+      - LUNCH
+      - MEETING
+      - OFFICE
+      - OTHER
+      - RECEPTION
+      - REGISTRATION
+      - SETUP
+      - SNACK
+      - SPEAKER_ROOM
+      - STORAGE_ROOM
+      - TEARDOWN
+    FieldType:
+      title: FieldType
+      enum:
+      - DateTime
+      - MultiChoice
+      - Number
+      - SingleChoice
+      - Text
+      type: string
+      description: 'Determines the required format for a field. `DateTime`: Data is in date-time format. `MultiChoice`: Data is one or more options from a list. `Number`: Data is a number. `SingleChoice`: Data is a a single option from a list. `Text`: Data is free-text input.'
+    unit-position:
+      type: string
+      description: Unit position used for text box question type.
+      enum:
+      - Left
+      - Right
+    RfpGuestRooms:
+      title: RfpGuestRooms
+      description: Guest Room Requirements
+      type: object
+      properties:
+        totalRooms:
+          description: Sum of the number of rooms required each night across all the nights for the event.
+          type: integer
+          readOnly: true
+          example: 24
+          minimum: 0
+          maximum: 9999000
+        peakRooms:
+          description: The number of rooms required during peak nights.
+          type: integer
+          readOnly: true
+          example: 24
+          minimum: 0
+          maximum: 49995
+        occupancies:
+          description: Occupancies for every room type.
+          type: array
+          items:
+            $ref: '#/components/schemas/GuestRoomOccupancyPerRoomType'
+          minItems: 0
+          maxItems: 5
+        checkInDate:
+          type: string
+          format: date
+          description: The ISO 8601 check-in date.
+          example: '2025-10-13'
+        roomBlocks:
+          description: List of room blocks required.
+          type: array
+          items:
+            $ref: '#/components/schemas/RoomBlock'
+          minItems: 0
+          maxItems: 200
+        additionalInformation:
+          type: string
+          description: Additional Info (if any).
+          example: 2 Executive suites are mandatory.
+          minLength: 0
+          maxLength: 2500
+    StandardQuestion:
+      title: StandardQuestion
+      description: Standard questions are selected from a predefined list of Cvent questions that can be used in an RFP.
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+          description: Unique identifier for standard question.
+          example: 50dc08af-24a9-4d01-84be-3d43133dc945
+    date-answer-format:
+      type: string
+      description: 'The answer format that a given date is stored in. `Date`: Answer format is stored in Date format. `DateTime`: Answer format is stored in DateTime format. `Time`: Answer format is stored in Time format.'
+      enum:
+      - Date
+      - DateTime
+      - Time
+      default: DateTime
+    GuestRoomType:
+      title: GuestRoomType
+      description: 'Guest room type. `ANY`: Room can be any type. `SINGLE`: Room with one bed. `DOUBLE`: Room with two beds. `SUITE`: Room is an entire suite. `STAFF`: Room is for staff.'
+      type: string
+      enum:
+      - ANY
+      - SINGLE
+      - DOUBLE
+      - SUITE
+      - STAFF
+      example: DOUBLE
     ErrorResponseBase:
       title: ErrorResponseBase
       type: object
@@ -1153,6 +1368,31 @@ components:
           type: string
           description: A url provided that can be followed for linking
           example: ?token=90c5f062-76ad-4ea4-aa53-00eb698d9262
+    RoomBlockDetails:
+      title: RoomBlockDetails
+      description: Contains details related to room allotment for a room type.
+      type: object
+      properties:
+        quantity:
+          type: integer
+          description: Quantity of rooms required.
+          minimum: 0
+          maximum: 9999
+          example: 24
+        type:
+          $ref: '#/components/schemas/GuestRoomType'
+    PaginatedRfpQuestions:
+      title: PaginatedRfpQuestions
+      description: Paginated response containing questions associated to an RFP.
+      type: object
+      properties:
+        paging:
+          $ref: '#/components/schemas/Paging'
+        data:
+          description: List of questions associated to an RFP.
+          type: array
+          items:
+            $ref: '#/components/schemas/RfpQuestion'
   responses:
     TooManyRequests1:
       description: Too many requests
@@ -1200,49 +1440,16 @@ components:
             code: 400
             message: Bad Request
   parameters:
-    expandHotelRequestQuestionAnswer:
-      name: expand
-      in: query
-      required: false
-      description: "A list of fields to be expanded, returning additional information alongside the specified fields. The expanded entity is retrieved and displayed inline for each specified expansion field. The respective scopes for each expansion are required.\n\nThe following fields are expandable:\n  * hotelRequestDetails.hotelRequestAnswers.question (<a href=\"#operation/getEventQuestions\">List Event Questions</a>)\n"
-      schema:
-        example: hotelRequestDetails.hotelRequestAnswers.question
-        type: array
-        items:
-          type: string
-          enum:
-          - hotelRequestDetails.hotelRequestAnswers.question
-    expandAirRequestQuestionAnswer:
-      name: expand
-      in: query
-      required: false
-      description: "A list of fields to be expanded, returning additional information alongside the specified fields. The expanded entity is retrieved and displayed inline for each specified expansion field. The respective scopes for each expansion are required.\n\nThe following fields are expandable:\n  * airRequestDetails.airRequestAnswers.question (<a href=\"#operation/getEventQuestions\">List Event Questions</a>)\n"
-      schema:
-        example: airRequestDetails.airRequestAnswers.question
-        type: array
-        items:
-          type: string
-          enum:
-          - airRequestDetails.airRequestAnswers.question
-    sortForAirActual:
-      name: sort
-      required: false
-      in: query
-      style: form
-      explode: false
-      description: "The sort order passed as a parameter, used to control the order of the\nsearch results as a priority ordered list of sorts\n\nThere are two orders:\n  * ascending: ASC\n  * descending: DESC\n\nThe following fields are sortable:\n  * airActualDetails.name\n  * airActualDetails.lastModified\nwhere i <= limit\n"
+    rfpId:
+      name: rfpId
+      description: The unique identifier of the RFP we are requesting
+      style: simple
+      in: path
+      required: true
       schema:
         type: string
-        example: airActualDetails.name:DESC,airActualDetails.lastModified:ASC
-    before:
-      name: before
-      required: false
-      in: query
-      description: Used to query records that have been added or updated before this time point.
-      schema:
-        type: string
-        format: date-time
-        example: '2017-01-02T02:00:00Z'
+        format: uuid
+      example: 04ca6ae2-0dc3-487b-953e-86d6abbdf7d3
     limit:
       name: limit
       in: query
@@ -1255,64 +1462,6 @@ components:
         type: integer
         default: 100
         example: 100
-    filter2:
-      name: filter
-      in: query
-      required: false
-      description: 'Use filter query parameters to limit results
-
-        to data that matches your criteria. See
-
-        [Filters](https://developers.cvent.com/docs/rest-api/reference/filters) for details.
-
-
-        Supported fields and operators are listed below:
-
-
-        | Field            | Operators                          | Notes                                          |
-
-        |------------------|-------------------------------------|------------------------------------------------|
-
-        | attendee.id      | `eq`, `ne`                          | Limit: 17 fields can be passed in a filter     |
-
-
-        The following logical operators are supported for combining filters:
-
-        * or
-
-        '
-      schema:
-        type: string
-        example: (attendee.id eq '76f2b9e2-fcce-4d93-be29-a008b76a050c') OR (attendee.id eq '16322408-bae8-4b29-a559-702d2023e13a')
-    expandAirActualQuestionAnswer:
-      name: expand
-      in: query
-      required: false
-      description: "A list of fields to be expanded, returning additional information alongside the specified fields. The expanded entity is retrieved and displayed inline for each specified expansion field. The respective scopes for each expansion are required.\n\nThe following fields are expandable:\n  * airActualDetails.airActualAnswers.question (<a href=\"#operation/getEventQuestions\">List Event Questions</a>)\n"
-      schema:
-        example: airActualDetails.airActualAnswers.question
-        type: array
-        items:
-          type: string
-          enum:
-          - airActualDetails.airActualAnswers.question
-    id2:
-      in: path
-      name: id
-      description: ID of an event.
-      required: true
-      schema:
-        $ref: '#/components/schemas/uuid-property'
-    sortForAirRequest:
-      name: sort
-      required: false
-      in: query
-      style: form
-      explode: false
-      description: "The sort order passed as a parameter, used to control the order of the\nsearch results as a priority ordered list of sorts\n\nThere are two orders:\n  * ascending: ASC\n  * descending: DESC\n\nThe following fields are sortable:\n  * airRequestDetails.requesterFirstName\n  * airRequestDetails.requesterLastName\n  * airRequestDetails.lastModified\n"
-      schema:
-        type: string
-        example: airRequestDetails.requesterFirstName:DESC,airRequestDetails.requesterLastName:ASC
     token:
       name: token
       in: query
@@ -1326,25 +1475,20 @@ components:
       schema:
         type: string
         example: 0e28af57-511f-47ab-ae46-46cd1ca51a1a
-    sortForHotelRequest:
-      name: sort
-      required: false
+    customFieldExpand:
+      name: expand
       in: query
-      style: form
       explode: false
-      description: "The sort order passed as a parameter, used to control the order of the\nsearch results as a priority ordered list of sorts\n\nThere are two orders:\n  * ascending: ASC\n  * descending: DESC\n\nThe following fields are sortable:\n  * hotelRequestDetails.requesterFirstName\n  * hotelRequestDetails.requesterLastName\n  * hotelRequestDetails.lastModified\n"
-      schema:
-        type: string
-        example: hotelRequestDetails.requesterFirstName:DESC,hotelRequestDetails.requesterLastName:ASC
-    after:
-      name: after
       required: false
-      description: Used to query records that have been added or updated after this time point. Default to the beginning of time of the data store.
-      in: query
+      description: "This endpoint allows you to request additional information as an expanded response using the expand query parameter. The expanded entity is retrieved and displayed inline for each specified expand value.\n\nAn object contains the ID of a related object in its response properties. For example, the RFP custom field\nwill have the custom field ID associated with the RFP custom field. You can expand these objects in-line using the expand query parameter.\n\nYou can expand multiple objects at the same time by identifying multiple items in the expand array.\n\nThe respective scopes for each expansion are required.\n\nThe following fields are expandable:\n  * customField\n    * **Scope**: event/custom-fields:read\n    * **Reference**: <a href=\"#tag/Custom-Fields/operation/getCustomField\">Get Custom Field</a>\n"
+      example:
+      - customField
       schema:
-        type: string
-        format: date-time
-        example: '2017-01-02T02:00:00Z'
+        type: array
+        items:
+          type: string
+          enum:
+          - customField
   securitySchemes:
     OAuth2.authorizationCode:
       type: oauth2

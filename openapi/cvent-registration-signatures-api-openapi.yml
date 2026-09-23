@@ -1,6 +1,6 @@
 openapi: 3.2.0
 info:
-  title: Cvent REST Usage API
+  title: Cvent REST Signatures API
   description: '# Introduction
 
     The Cvent API Platform is built around REST.'
@@ -12,73 +12,50 @@ servers:
 - url: https://api-platform.cvent.com/ea
 - url: https://api-platform-eur.cvent.com/ea
 tags:
-- name: Usage
-  description: Use these APIs view your REST API usage and limits metrics. For more details on limits - Rate Limits
+- name: Signatures
+  description: Retrieves Check-In & Check-Out Signatures Of Attendees
 paths:
-  /usage:
+  /signatures:
     get:
+      summary: List Signatures
+      description: Retrieves a paginated list of check-in & check-out signatures associated with the account.
+      operationId: getSignatures
       tags:
-      - Usage
-      operationId: getUsage
-      summary: Get Current Usage
-      description: 'Returns API call usage for the last seven days, or between some date range (up to the past seven days) for
-
-        the current caller''s account.'
+      - Signatures
       security:
-      - OAuth2.clientCredentials: []
+      - OAuth2.clientCredentials:
+        - onsite/signatures:read
+      - OAuth2.authorizationCode:
+        - onsite/signatures:read
       parameters:
-      - name: before
+      - $ref: '#/components/parameters/after'
+      - $ref: '#/components/parameters/before'
+      - $ref: '#/components/parameters/limit'
+      - $ref: '#/components/parameters/token'
+      - $ref: '#/components/parameters/sort3'
+      - name: filter
         in: query
-        description: 'Returns usage for the seven days before (inclusive) the date provided. If after is also provided, then
-
-          only the dates between (inclusive) those dates are returned. before must be a valid ISO8601 date stamp.
-
-          before and after must not be more then seven days apart.
-
-          '
         required: false
+        description: "A filter string passed in the body of the request, narrows search results and supports the combination of logical and comparison operators.\nThe filter adheres to the pattern filter='field' comparisonType 'value'.\n\nThere are six comparison types that can be used in filter expressions:\n  * equal: eq\n  * not equal: ne\n  * greater than: gt\n  * greater or equal: ge\n  * less than: lt\n  * less than or equal: le\n\nThe following fields are filterable:\n  * id (eq|ne)\n  * event.id (eq|ne)\n  * session.id (eq|ne)\n  * attendee.id (eq|ne)\n  * type (eq|ne)\n  * created (eq|ne|lt|le|gt|ge)\n  * lastModified (eq|ne|lt|le|gt|ge)\n\nThe following operators are available:\n  * and\n  * or\n"
         schema:
           type: string
-      - name: after
-        in: query
-        description: 'Returns usage for the seven days after (inclusive) the date provided. If before is also provided, then
-
-          only the dates between (inclusive) those dates are returned. after must be a valid ISO8601 date stamp.
-
-          after and before must not be more then seven days apart.
-
-          '
-        required: false
-        schema:
-          type: string
+          example: event.id eq 'a81bc81b-dead-4e5d-abff-90865d1e13b1' or session.id eq 'de14c31b-aaad-2e5d-asgf-89865d1e13b1'
       responses:
         '200':
-          $ref: '#/components/responses/usage-paginated-response'
+          description: Successfully retrieved signatures.
+          headers: {}
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/signatures-response'
         '400':
           $ref: '#/components/responses/BadRequest1'
         '401':
           $ref: '#/components/responses/Unauthorized1'
         '403':
           $ref: '#/components/responses/Forbidden1'
-        '429':
-          $ref: '#/components/responses/TooManyRequests1'
-  /usage/tier:
-    get:
-      tags:
-      - Usage
-      operationId: getUsageTier
-      summary: Get Current Usage Tier
-      description: Returns the current usage tier of the caller's account.
-      security:
-      - OAuth2.clientCredentials: []
-      - OAuth2.authorizationCode: []
-      responses:
-        '200':
-          $ref: '#/components/responses/PublicUsagePlanResponse'
-        '401':
-          $ref: '#/components/responses/Unauthorized1'
-        '403':
-          $ref: '#/components/responses/Forbidden1'
+        '404':
+          $ref: '#/components/responses/NotFound1'
         '429':
           $ref: '#/components/responses/TooManyRequests1'
       externalDocs:
@@ -130,92 +107,33 @@ components:
           items:
             $ref: '#/components/schemas/ErrorResponseBase'
           description: Additional details of cascading error messages.
-    Usage:
-      title: Usage
-      description: A usage object represents the usage of a resource on a given day
-      required:
-      - date
-      - used
-      - remaining
-      - total
+    Audit:
+      title: Audit
+      description: Audit information
       type: object
-      allOf:
-      - $ref: '#/components/schemas/UsageQuotaFields'
       properties:
-        date:
+        created:
           type: string
-          description: The date the usage occurred, as an ISO8601 date
-          example: '2020-01-01'
-    UsageQuotaFields:
-      title: Usage Quota Fields
-      description: Fields representing usage quota information. Usage quota represents the number of API requests that can be made in a given usage period. Usage periods reset daily at midnight UTC.
-      type: object
-      required:
-      - used
-      - remaining
-      - total
-      properties:
-        used:
-          type: integer
-          description: The number of API requests that have been made in the current usage period. Usage periods reset daily at midnight UTC.
-          example: 40000
-        remaining:
-          type: integer
-          description: The number of API requests remaining in the current usage period. Usage periods reset daily at midnight UTC.
-          example: 260000
-        total:
-          type: integer
-          description: The total number of API requests allowed in the current usage period. Usage periods reset daily at midnight UTC.
-          example: 300000
-    usage-paginated-response:
-      title: Usage Paginated Response
-      description: The list of usage for the caller's account in the date range specified.
-      required:
-      - data
-      type: object
-      properties:
-        paging:
-          $ref: '#/components/schemas/Paging'
-        data:
-          type: array
-          items:
-            $ref: '#/components/schemas/Usage'
-          description: Collection of usage objects.
-    public-usage-plan:
-      title: Public Usage Plan
-      description: Object representing an API Platform Usage Tier, including information when the usage plan is scheduled to revert to a previous plan, if any.
-      type: object
-      allOf:
-      - $ref: '#/components/schemas/UsagePlan'
-      properties:
-        switchBackPlan:
-          $ref: '#/components/schemas/SwitchBackTargetUsagePlan'
-    UsagePlan:
-      title: Usage Plan
-      description: Object representing an API Platform Usage Tier
-      required:
-      - name
-      - quota
-      - burstLimit
-      - rateLimit
-      type: object
-      properties:
-        name:
+          format: date-time
+          description: The ISO 8601 zoned date time when this record was created.
+          readOnly: true
+          example: '2017-01-02T02:00:00Z'
+        createdBy:
           type: string
-          description: The name of the usage tier
-          example: API_Platform_Free_Tier
-        quota:
-          type: number
-          description: The daily quota of the usage tier. If this value is null, this means the usage tier is unlimited.
-          example: 1000
-        burstLimit:
-          type: number
-          description: The burst limit capacity of the usage tier
-          example: 1
-        rateLimit:
-          type: number
-          description: The per-second steady rate-limit of the usage tier
-          example: 2
+          description: The identifier of the user that created this record.
+          readOnly: true
+          example: hporter
+        lastModified:
+          type: string
+          format: date-time
+          description: The ISO 8601 zoned date time when this record was updated.
+          readOnly: true
+          example: '2019-02-12T03:00:00Z'
+        lastModifiedBy:
+          type: string
+          description: The identifier of the user that last updated this record.
+          readOnly: true
+          example: hporter
     PaginationLinks:
       title: PaginationLinks
       type: object
@@ -227,6 +145,78 @@ components:
           $ref: '#/components/schemas/Link'
         prev:
           $ref: '#/components/schemas/Link'
+    signatures-response:
+      title: SignaturesResponse
+      description: Paginated Response of Attendee Signatures.
+      type: object
+      properties:
+        paging:
+          $ref: '#/components/schemas/Paging'
+        data:
+          type: array
+          items:
+            $ref: '#/components/schemas/AttendeeSignatureResponse'
+          maxItems: 200
+          description: Collection of signatures.
+    AttendeeSignatureResponse:
+      title: AttendeeSignatureResponse
+      description: Attendee's Signature Response.
+      type: object
+      required:
+      - id
+      - event
+      - attendee
+      - type
+      - checkinSignatureUrl
+      allOf:
+      - $ref: '#/components/schemas/Audit'
+      properties:
+        id:
+          description: Internal ID generated by the system.
+          type: string
+          format: uuid
+          example: 04ca6ae2-0dc3-487b-953e-86d6abbdf7d3
+        event:
+          description: Event information associated with the signature.
+          type: object
+          properties:
+            id:
+              description: ID of the event.
+              type: string
+              format: uuid
+              example: b62809dd-7556-49d2-884a-591bbf96cf1a
+        session:
+          description: Session information associated with the signature.
+          type: object
+          properties:
+            id:
+              description: ID of the session.
+              type: string
+              format: uuid
+              example: 4d44b9e4-8c1a-403d-a20a-0b981f539935
+        attendee:
+          description: Attendee information associated with the signature.
+          type: object
+          properties:
+            id:
+              description: ID of the attendee.
+              type: string
+              format: uuid
+              example: ce359543-61f5-492d-b8de-875c3473e8ae
+        type:
+          description: 'Type of entity this signature is associated with. Possible values are: `EVENT`, `SESSION`.'
+          type: string
+          enum:
+          - EVENT
+          - SESSION
+        checkinSignatureUrl:
+          description: Check-in signature image S3 url
+          type: string
+          example: https://custom.t2.cvent.com/files/contact/signatures/checkinSignature.jpg
+        checkoutSignatureUrl:
+          description: Check-out signature image S3 url
+          type: string
+          example: https://custom.t2.cvent.com/files/contact/signatures/checkoutSignature.jpg
     ErrorResponseBase:
       title: ErrorResponseBase
       type: object
@@ -258,30 +248,7 @@ components:
           type: string
           description: A url provided that can be followed for linking
           example: ?token=90c5f062-76ad-4ea4-aa53-00eb698d9262
-    SwitchBackTargetUsagePlan:
-      title: Switch Back Target Usage Plan
-      description: Object representing the target usage plan and the date when the current plan is scheduled to revert to it. This object is only present when a switch-back is scheduled.
-      type: object
-      required:
-      - name
-      - time
-      properties:
-        name:
-          type: string
-          description: Name of the target usage plan to switch back to. This field is only present when the usage plan is scheduled to revert to a previous plan.
-          example: API_Platform_Standard_Tier
-        time:
-          type: string
-          format: date-time
-          description: The date and time when the usage plan is scheduled to revert to a previous plan. This field is only present when the usage plan is scheduled to revert to a previous plan. The date and time cannot be more than 14 days from the current date.
-          example: '2023-10-01T12:00:00Z'
   responses:
-    PublicUsagePlanResponse:
-      description: The Usage Tier assigned to the account
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/public-usage-plan'
     TooManyRequests1:
       description: Too many requests
       content:
@@ -291,6 +258,15 @@ components:
           example:
             code: 429
             message: Limit Exceeded
+    NotFound1:
+      description: Resource not found
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+          example:
+            code: 404
+            message: Not found
     Forbidden1:
       description: You do not have access to the resource
       content:
@@ -300,12 +276,6 @@ components:
           example:
             code: 403
             message: Access Forbidden
-    usage-paginated-response:
-      description: Usage metrics for the dates requested
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/usage-paginated-response'
     Unauthorized1:
       description: Bad or expired token
       content:
@@ -324,6 +294,60 @@ components:
           example:
             code: 400
             message: Bad Request
+  parameters:
+    before:
+      name: before
+      required: false
+      in: query
+      description: Used to query records that have been added or updated before this time point.
+      schema:
+        type: string
+        format: date-time
+        example: '2017-01-02T02:00:00Z'
+    sort3:
+      name: sort
+      required: false
+      in: query
+      style: form
+      explode: false
+      description: "The sort order passed as a parameter, used to control the order of the\nsearch results as a priority ordered list of sorts\n\nThere are two orders:\n  * ascending: ASC\n  * descending: DESC\n\nThe following fields are sortable:\n  * event.id\n  * session.id\n  * attendee.id\n  * type\n  * created\n  * lastModified (default)\n"
+      schema:
+        type: string
+        example: event.id:ASC,lastModified:DESC
+    limit:
+      name: limit
+      in: query
+      description: The maximum number of records to return per page.
+      style: form
+      explode: true
+      schema:
+        maximum: 200
+        minimum: 1
+        type: integer
+        default: 100
+        example: 100
+    after:
+      name: after
+      required: false
+      description: Used to query records that have been added or updated after this time point. Default to the beginning of time of the data store.
+      in: query
+      schema:
+        type: string
+        format: date-time
+        example: '2017-01-02T02:00:00Z'
+    token:
+      name: token
+      in: query
+      description: 'The continuation token returned from a previous class. This must be a valid UUID v4 if provided.
+
+        This will override any other pageable parameters provided.
+
+        '
+      style: form
+      explode: true
+      schema:
+        type: string
+        example: 0e28af57-511f-47ab-ae46-46cd1ca51a1a
   securitySchemes:
     OAuth2.authorizationCode:
       type: oauth2

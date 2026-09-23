@@ -1,6 +1,6 @@
 openapi: 3.2.0
 info:
-  title: Cvent REST Usage API
+  title: Cvent REST Exhibitor Team API
   description: '# Introduction
 
     The Cvent API Platform is built around REST.'
@@ -12,73 +12,311 @@ servers:
 - url: https://api-platform.cvent.com/ea
 - url: https://api-platform-eur.cvent.com/ea
 tags:
-- name: Usage
-  description: Use these APIs view your REST API usage and limits metrics. For more details on limits - Rate Limits
+- name: Exhibitor Team
+  description: '* **Exhibitor Admin -** Exhibitor Admins are administrators that have access to the exhibitor portal.'
 paths:
-  /usage:
+  /events/{id}/exhibitors/{exhibitorId}/admins:
     get:
+      summary: List Exhibitor Admins
+      description: Retrieves a paginated list of exhibitor admins for an exhibitor within an event.
+      operationId: listExhibitorAdmins
       tags:
-      - Usage
-      operationId: getUsage
-      summary: Get Current Usage
-      description: 'Returns API call usage for the last seven days, or between some date range (up to the past seven days) for
-
-        the current caller''s account.'
+      - Exhibitor Team
       security:
-      - OAuth2.clientCredentials: []
+      - OAuth2.clientCredentials:
+        - exhibitor/exhibitor-admins:read
+      - OAuth2.authorizationCode:
+        - exhibitor/exhibitor-admins:read
       parameters:
-      - name: before
-        in: query
-        description: 'Returns usage for the seven days before (inclusive) the date provided. If after is also provided, then
-
-          only the dates between (inclusive) those dates are returned. before must be a valid ISO8601 date stamp.
-
-          before and after must not be more then seven days apart.
-
-          '
-        required: false
-        schema:
-          type: string
-      - name: after
-        in: query
-        description: 'Returns usage for the seven days after (inclusive) the date provided. If before is also provided, then
-
-          only the dates between (inclusive) those dates are returned. after must be a valid ISO8601 date stamp.
-
-          after and before must not be more then seven days apart.
-
-          '
-        required: false
-        schema:
-          type: string
+      - $ref: '#/components/parameters/id6'
+      - $ref: '#/components/parameters/exhibitorId'
+      - $ref: '#/components/parameters/limit'
+      - $ref: '#/components/parameters/token'
       responses:
         '200':
-          $ref: '#/components/responses/usage-paginated-response'
+          description: Successfully retrieved exhibitor admins.
+          headers: {}
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/exhibitor-admins-list-response'
         '400':
           $ref: '#/components/responses/BadRequest1'
         '401':
           $ref: '#/components/responses/Unauthorized1'
         '403':
           $ref: '#/components/responses/Forbidden1'
+        '404':
+          $ref: '#/components/responses/NotFound1'
         '429':
           $ref: '#/components/responses/TooManyRequests1'
-  /usage/tier:
-    get:
+      externalDocs:
+        description: More about OAuth2 authorization code support for administrators
+        url: '#oauth2-auth-code-planner-admin'
+    post:
+      summary: Create Exhibitor Admin
+      description: Creates an exhibitor admin for the given exhibitor.
+      operationId: postExhibitorAdmin
       tags:
-      - Usage
-      operationId: getUsageTier
-      summary: Get Current Usage Tier
-      description: Returns the current usage tier of the caller's account.
+      - Exhibitor Team
       security:
-      - OAuth2.clientCredentials: []
-      - OAuth2.authorizationCode: []
+      - OAuth2.clientCredentials:
+        - exhibitor/exhibitor-admins:write
+      - OAuth2.authorizationCode:
+        - exhibitor/exhibitor-admins:write
+      parameters:
+      - $ref: '#/components/parameters/id6'
+      - $ref: '#/components/parameters/exhibitorId'
+      requestBody:
+        description: Exhibitor Admin details
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/exhibitor-admin-request'
       responses:
-        '200':
-          $ref: '#/components/responses/PublicUsagePlanResponse'
+        '201':
+          description: Successfully created an Exhibitor Admin.
+          headers: {}
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/exhibitor-admin-response'
+        '400':
+          $ref: '#/components/responses/BadRequest1'
         '401':
           $ref: '#/components/responses/Unauthorized1'
         '403':
           $ref: '#/components/responses/Forbidden1'
+        '404':
+          $ref: '#/components/responses/NotFound1'
+        '429':
+          $ref: '#/components/responses/TooManyRequests1'
+      externalDocs:
+        description: More about OAuth2 authorization code support for administrators
+        url: '#oauth2-auth-code-planner-admin'
+  /events/{id}/exhibitors/{exhibitorId}/admins/{adminId}:
+    get:
+      summary: Get Exhibitor Admin
+      description: Gets the details of a single exhibitor admin, such as name or contact email.
+      operationId: getExhibitorAdmin
+      tags:
+      - Exhibitor Team
+      security:
+      - OAuth2.clientCredentials:
+        - exhibitor/exhibitor-admins:read
+      - OAuth2.authorizationCode:
+        - exhibitor/exhibitor-admins:read
+      parameters:
+      - $ref: '#/components/parameters/id6'
+      - $ref: '#/components/parameters/exhibitorId'
+      - $ref: '#/components/parameters/adminId'
+      responses:
+        '200':
+          description: Successfully retrieved details for an exhibitor admin.
+          headers: {}
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/exhibitor-admin-response'
+        '400':
+          $ref: '#/components/responses/BadRequest1'
+        '401':
+          $ref: '#/components/responses/Unauthorized1'
+        '403':
+          $ref: '#/components/responses/Forbidden1'
+        '404':
+          $ref: '#/components/responses/NotFound1'
+        '429':
+          $ref: '#/components/responses/TooManyRequests1'
+      externalDocs:
+        description: More about OAuth2 authorization code support for administrators
+        url: '#oauth2-auth-code-planner-admin'
+    put:
+      summary: Update Exhibitor Admin
+      description: Updates a single exhibitor admin.
+      operationId: updateExhibitorAdmin
+      tags:
+      - Exhibitor Team
+      security:
+      - OAuth2.clientCredentials:
+        - exhibitor/exhibitor-admins:write
+      - OAuth2.authorizationCode:
+        - exhibitor/exhibitor-admins:write
+      parameters:
+      - $ref: '#/components/parameters/id6'
+      - $ref: '#/components/parameters/exhibitorId'
+      - $ref: '#/components/parameters/adminId'
+      requestBody:
+        description: Exhibitor Admin details
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/exhibitor-admin-request'
+      responses:
+        '200':
+          description: Successfully updated the Exhibitor Admin.
+          headers: {}
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/exhibitor-admin-response'
+        '400':
+          $ref: '#/components/responses/BadRequest1'
+        '401':
+          $ref: '#/components/responses/Unauthorized1'
+        '403':
+          $ref: '#/components/responses/Forbidden1'
+        '404':
+          $ref: '#/components/responses/NotFound1'
+        '429':
+          $ref: '#/components/responses/TooManyRequests1'
+      externalDocs:
+        description: More about OAuth2 authorization code support for administrators
+        url: '#oauth2-auth-code-planner-admin'
+  /events/{id}/exhibitors/{exhibitorId}/booth-staff:
+    get:
+      summary: List Booth Staff
+      description: Gets a list of booth staff members for a given event and exhibitor id.
+      operationId: listBoothStaff
+      tags:
+      - Exhibitor Team
+      security:
+      - OAuth2.clientCredentials:
+        - exhibitor/booth-staff:read
+      - OAuth2.authorizationCode:
+        - exhibitor/booth-staff:read
+      parameters:
+      - $ref: '#/components/parameters/id6'
+      - $ref: '#/components/parameters/exhibitorId'
+      - $ref: '#/components/parameters/limit'
+      - $ref: '#/components/parameters/token'
+      responses:
+        '200':
+          description: Successfully retrieved booth staff list.
+          headers: {}
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/booth-staff-list-response'
+        '400':
+          $ref: '#/components/responses/BadRequest1'
+        '401':
+          $ref: '#/components/responses/Unauthorized1'
+        '403':
+          $ref: '#/components/responses/Forbidden1'
+        '404':
+          $ref: '#/components/responses/NotFound1'
+        '429':
+          $ref: '#/components/responses/TooManyRequests1'
+      externalDocs:
+        description: More about OAuth2 authorization code support for administrators
+        url: '#oauth2-auth-code-planner-admin'
+    post:
+      summary: Create Booth Staff
+      description: Associates a registered attendee as a booth staff to a specific exhibitor id within an event.
+      operationId: associateBoothStaff
+      tags:
+      - Exhibitor Team
+      security:
+      - OAuth2.clientCredentials:
+        - exhibitor/booth-staff:write
+      - OAuth2.authorizationCode:
+        - exhibitor/booth-staff:write
+      parameters:
+      - $ref: '#/components/parameters/id6'
+      - $ref: '#/components/parameters/exhibitorId'
+      requestBody:
+        description: Booth Staff details
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/booth-staff-request'
+      responses:
+        '201':
+          description: Successfully associated booth staff
+          headers: {}
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/booth-staff-response'
+        '400':
+          $ref: '#/components/responses/BadRequest1'
+        '401':
+          $ref: '#/components/responses/Unauthorized1'
+        '403':
+          $ref: '#/components/responses/Forbidden1'
+        '404':
+          $ref: '#/components/responses/NotFound1'
+        '429':
+          $ref: '#/components/responses/TooManyRequests1'
+      externalDocs:
+        description: More about OAuth2 authorization code support for administrators
+        url: '#oauth2-auth-code-planner-admin'
+  /events/{id}/exhibitors/{exhibitorId}/booth-staff/{boothstaffId}:
+    get:
+      summary: Get Booth Staff member
+      description: Retrieves the attendee id associated with an exhibitor booth staff member.
+      operationId: getBoothStaff
+      tags:
+      - Exhibitor Team
+      security:
+      - OAuth2.clientCredentials:
+        - exhibitor/booth-staff:read
+      - OAuth2.authorizationCode:
+        - exhibitor/booth-staff:read
+      parameters:
+      - $ref: '#/components/parameters/id6'
+      - $ref: '#/components/parameters/exhibitorId'
+      - $ref: '#/components/parameters/boothstaffId'
+      responses:
+        '200':
+          description: Successfully retrieved details for a booth staff member.
+          headers: {}
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/booth-staff-response'
+        '400':
+          $ref: '#/components/responses/BadRequest1'
+        '401':
+          $ref: '#/components/responses/Unauthorized1'
+        '403':
+          $ref: '#/components/responses/Forbidden1'
+        '404':
+          $ref: '#/components/responses/NotFound1'
+        '429':
+          $ref: '#/components/responses/TooManyRequests1'
+      externalDocs:
+        description: More about OAuth2 authorization code support for administrators
+        url: '#oauth2-auth-code-planner-admin'
+    delete:
+      summary: Delete Booth Staff member
+      description: Disassociate a single booth staff member from a single exhibitor.
+      operationId: deleteBoothStaff
+      tags:
+      - Exhibitor Team
+      security:
+      - OAuth2.clientCredentials:
+        - exhibitor/booth-staff:delete
+      - OAuth2.authorizationCode:
+        - exhibitor/booth-staff:delete
+      parameters:
+      - $ref: '#/components/parameters/id6'
+      - $ref: '#/components/parameters/exhibitorId'
+      - $ref: '#/components/parameters/boothstaffId'
+      responses:
+        '204':
+          description: Successfully deleted booth staff member.
+          headers: {}
+        '401':
+          $ref: '#/components/responses/Unauthorized1'
+        '403':
+          $ref: '#/components/responses/Forbidden1'
+        '404':
+          $ref: '#/components/responses/NotFound1'
         '429':
           $ref: '#/components/responses/TooManyRequests1'
       externalDocs:
@@ -115,6 +353,45 @@ components:
           example: 2
         _links:
           $ref: '#/components/schemas/PaginationLinks'
+    Audit:
+      title: Audit
+      description: Audit information
+      type: object
+      properties:
+        created:
+          type: string
+          format: date-time
+          description: The ISO 8601 zoned date time when this record was created.
+          readOnly: true
+          example: '2017-01-02T02:00:00Z'
+        createdBy:
+          type: string
+          description: The identifier of the user that created this record.
+          readOnly: true
+          example: hporter
+        lastModified:
+          type: string
+          format: date-time
+          description: The ISO 8601 zoned date time when this record was updated.
+          readOnly: true
+          example: '2019-02-12T03:00:00Z'
+        lastModifiedBy:
+          type: string
+          description: The identifier of the user that last updated this record.
+          readOnly: true
+          example: hporter
+    Event4:
+      description: The Associated Event.
+      title: Event
+      type: object
+      required:
+      - id
+      properties:
+        id:
+          type: string
+          format: uuid
+          example: 3db28cfc-db22-11eb-8d19-0242ac130003
+          description: Event id
     ErrorResponse:
       title: ErrorResponse
       description: Represents an error response with additional details of cascading error messages.
@@ -130,92 +407,32 @@ components:
           items:
             $ref: '#/components/schemas/ErrorResponseBase'
           description: Additional details of cascading error messages.
-    Usage:
-      title: Usage
-      description: A usage object represents the usage of a resource on a given day
-      required:
-      - date
-      - used
-      - remaining
-      - total
+    booth-staff-response:
+      title: Booth Staff
+      type: object
+      description: Booth staff with an associated ID.
+      allOf:
+      - $ref: '#/components/schemas/booth-staff-request'
+      properties:
+        id:
+          type: string
+          format: uuid
+          example: 4e0f5152-515e-11ee-be56-0242ac120002
+          description: ID of an exhibitor booth staff member.
+          readOnly: true
+    exhibitor-admin-response:
+      title: Exhibitor Admin
       type: object
       allOf:
-      - $ref: '#/components/schemas/UsageQuotaFields'
+      - $ref: '#/components/schemas/exhibitor-admin-request'
       properties:
-        date:
+        id:
           type: string
-          description: The date the usage occurred, as an ISO8601 date
-          example: '2020-01-01'
-    UsageQuotaFields:
-      title: Usage Quota Fields
-      description: Fields representing usage quota information. Usage quota represents the number of API requests that can be made in a given usage period. Usage periods reset daily at midnight UTC.
-      type: object
-      required:
-      - used
-      - remaining
-      - total
-      properties:
-        used:
-          type: integer
-          description: The number of API requests that have been made in the current usage period. Usage periods reset daily at midnight UTC.
-          example: 40000
-        remaining:
-          type: integer
-          description: The number of API requests remaining in the current usage period. Usage periods reset daily at midnight UTC.
-          example: 260000
-        total:
-          type: integer
-          description: The total number of API requests allowed in the current usage period. Usage periods reset daily at midnight UTC.
-          example: 300000
-    usage-paginated-response:
-      title: Usage Paginated Response
-      description: The list of usage for the caller's account in the date range specified.
-      required:
-      - data
-      type: object
-      properties:
-        paging:
-          $ref: '#/components/schemas/Paging'
-        data:
-          type: array
-          items:
-            $ref: '#/components/schemas/Usage'
-          description: Collection of usage objects.
-    public-usage-plan:
-      title: Public Usage Plan
-      description: Object representing an API Platform Usage Tier, including information when the usage plan is scheduled to revert to a previous plan, if any.
-      type: object
-      allOf:
-      - $ref: '#/components/schemas/UsagePlan'
-      properties:
-        switchBackPlan:
-          $ref: '#/components/schemas/SwitchBackTargetUsagePlan'
-    UsagePlan:
-      title: Usage Plan
-      description: Object representing an API Platform Usage Tier
-      required:
-      - name
-      - quota
-      - burstLimit
-      - rateLimit
-      type: object
-      properties:
-        name:
-          type: string
-          description: The name of the usage tier
-          example: API_Platform_Free_Tier
-        quota:
-          type: number
-          description: The daily quota of the usage tier. If this value is null, this means the usage tier is unlimited.
-          example: 1000
-        burstLimit:
-          type: number
-          description: The burst limit capacity of the usage tier
-          example: 1
-        rateLimit:
-          type: number
-          description: The per-second steady rate-limit of the usage tier
-          example: 2
+          format: uuid
+          example: 04ca6ae2-0dc3-487b-953e-86d6abbdf7d3
+          description: Exhibitor Admin id
+          readOnly: true
+      description: Existing Exhibitor Admin with an id property
     PaginationLinks:
       title: PaginationLinks
       type: object
@@ -227,6 +444,130 @@ components:
           $ref: '#/components/schemas/Link'
         prev:
           $ref: '#/components/schemas/Link'
+    Exhibitor:
+      description: The Associated Exhibitor.
+      title: Exhibitor
+      type: object
+      required:
+      - id
+      properties:
+        id:
+          type: string
+          format: uuid
+          example: 4888db54-db22-11eb-8d19-0242ac130003
+          description: Exhibitor id
+    booth-staff-request:
+      title: Booth Staff
+      description: A JSON schema representing booth staff.
+      required:
+      - attendee
+      - event
+      - exhibitor
+      type: object
+      allOf:
+      - $ref: '#/components/schemas/Audit'
+      properties:
+        attendee:
+          $ref: '#/components/schemas/Attendee1'
+        event:
+          $ref: '#/components/schemas/Event4'
+        exhibitor:
+          $ref: '#/components/schemas/Exhibitor'
+    exhibitor-admin-request:
+      title: Exhibitor Admin
+      type: object
+      description: An object representing the exhibitor admin.
+      allOf:
+      - $ref: '#/components/schemas/OSSAudit'
+      required:
+      - exhibitor
+      - email
+      - firstName
+      - lastName
+      properties:
+        exhibitor:
+          $ref: '#/components/schemas/Exhibitor'
+        firstName:
+          type: string
+          description: The first name of the exhibitor admin
+          minLength: 1
+          maxLength: 30
+          example: John
+        lastName:
+          type: string
+          description: The last name of the exhibitor admin
+          minLength: 1
+          maxLength: 30
+          example: Eddy
+        email:
+          type: string
+          format: email
+          description: The email address of the exhibitor admin
+          example: john.eddy@test.com
+    Attendee1:
+      description: The associated Attendee.
+      title: Attendee
+      type: object
+      required:
+      - id
+      properties:
+        id:
+          type: string
+          format: uuid
+          example: 04ca6ae2-0dc3-487b-953e-86d6abbdf7d3
+          description: Attendee id
+    booth-staff-list-response:
+      title: BoothStaffListResponse
+      type: object
+      description: Represents the booth staff list response, with paging information and a list of booth staff.
+      properties:
+        paging:
+          $ref: '#/components/schemas/Paging'
+        data:
+          type: array
+          items:
+            $ref: '#/components/schemas/booth-staff-response'
+          description: List of booth staff.
+    OSSAudit:
+      title: OSS-Audit
+      description: OSS Audit information
+      type: object
+      properties:
+        created:
+          type: string
+          format: date-time
+          description: The ISO 8601 zoned date time when this record was created.
+          readOnly: true
+          example: '2017-01-02T02:00:00Z'
+        createdBy:
+          type: string
+          description: The identifier of the user that created this record.
+          readOnly: true
+          example: hporter
+        lastModified:
+          type: string
+          format: date-time
+          description: The ISO 8601 zoned date time when this record was updated.
+          readOnly: true
+          example: '2019-02-12T03:00:00Z'
+        lastModifiedBy:
+          type: string
+          description: The identifier of the user that last updated this record.This filed is deprecated.
+          deprecated: true
+          readOnly: true
+          example: hporter
+    exhibitor-admins-list-response:
+      title: ExhibitorAdminsListResponse
+      type: object
+      description: Exhibitor Admins List Response schema
+      properties:
+        paging:
+          $ref: '#/components/schemas/Paging'
+        data:
+          type: array
+          items:
+            $ref: '#/components/schemas/exhibitor-admin-response'
+          description: List of exhibitor admins.
     ErrorResponseBase:
       title: ErrorResponseBase
       type: object
@@ -258,30 +599,7 @@ components:
           type: string
           description: A url provided that can be followed for linking
           example: ?token=90c5f062-76ad-4ea4-aa53-00eb698d9262
-    SwitchBackTargetUsagePlan:
-      title: Switch Back Target Usage Plan
-      description: Object representing the target usage plan and the date when the current plan is scheduled to revert to it. This object is only present when a switch-back is scheduled.
-      type: object
-      required:
-      - name
-      - time
-      properties:
-        name:
-          type: string
-          description: Name of the target usage plan to switch back to. This field is only present when the usage plan is scheduled to revert to a previous plan.
-          example: API_Platform_Standard_Tier
-        time:
-          type: string
-          format: date-time
-          description: The date and time when the usage plan is scheduled to revert to a previous plan. This field is only present when the usage plan is scheduled to revert to a previous plan. The date and time cannot be more than 14 days from the current date.
-          example: '2023-10-01T12:00:00Z'
   responses:
-    PublicUsagePlanResponse:
-      description: The Usage Tier assigned to the account
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/public-usage-plan'
     TooManyRequests1:
       description: Too many requests
       content:
@@ -291,6 +609,15 @@ components:
           example:
             code: 429
             message: Limit Exceeded
+    NotFound1:
+      description: Resource not found
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+          example:
+            code: 404
+            message: Not found
     Forbidden1:
       description: You do not have access to the resource
       content:
@@ -300,12 +627,6 @@ components:
           example:
             code: 403
             message: Access Forbidden
-    usage-paginated-response:
-      description: Usage metrics for the dates requested
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/usage-paginated-response'
     Unauthorized1:
       description: Bad or expired token
       content:
@@ -324,6 +645,68 @@ components:
           example:
             code: 400
             message: Bad Request
+  parameters:
+    adminId:
+      in: path
+      name: adminId
+      description: ID of an exhibitor admin.
+      required: true
+      schema:
+        type: string
+        format: uuid
+        example: 04ca6ae2-0dc3-487b-953e-86d6abbdf7d3
+    boothstaffId:
+      in: path
+      name: boothstaffId
+      description: ID of a booth staff member.
+      required: true
+      schema:
+        type: string
+        format: uuid
+        example: 4e0f5152-515e-11ee-be56-0242ac120002
+    limit:
+      name: limit
+      in: query
+      description: The maximum number of records to return per page.
+      style: form
+      explode: true
+      schema:
+        maximum: 200
+        minimum: 1
+        type: integer
+        default: 100
+        example: 100
+    token:
+      name: token
+      in: query
+      description: 'The continuation token returned from a previous class. This must be a valid UUID v4 if provided.
+
+        This will override any other pageable parameters provided.
+
+        '
+      style: form
+      explode: true
+      schema:
+        type: string
+        example: 0e28af57-511f-47ab-ae46-46cd1ca51a1a
+    exhibitorId:
+      in: path
+      name: exhibitorId
+      description: ID of an exhibitor.
+      required: true
+      schema:
+        type: string
+        format: uuid
+        example: 4888db54-db22-11eb-8d19-0242ac130003
+    id6:
+      in: path
+      name: id
+      description: ID of an event.
+      required: true
+      schema:
+        type: string
+        format: uuid
+        example: 3db28cfc-db22-11eb-8d19-0242ac130003
   securitySchemes:
     OAuth2.authorizationCode:
       type: oauth2

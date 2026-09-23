@@ -1,6 +1,6 @@
 openapi: 3.2.0
 info:
-  title: Cvent REST Usage API
+  title: Cvent REST Travel Accounts API
   description: '# Introduction
 
     The Cvent API Platform is built around REST.'
@@ -12,48 +12,35 @@ servers:
 - url: https://api-platform.cvent.com/ea
 - url: https://api-platform-eur.cvent.com/ea
 tags:
-- name: Usage
-  description: Use these APIs view your REST API usage and limits metrics. For more details on limits - Rate Limits
+- name: Travel Accounts
+  description: The travel account, or corporation that represents the demand-side of travel RFPs.
 paths:
-  /usage:
+  /travel-accounts:
     get:
+      summary: List Travel Accounts
+      operationId: ListTravelAccounts
+      description: Gets a paginated list of travel accounts.
       tags:
-      - Usage
-      operationId: getUsage
-      summary: Get Current Usage
-      description: 'Returns API call usage for the last seven days, or between some date range (up to the past seven days) for
-
-        the current caller''s account.'
+      - Travel Accounts
       security:
-      - OAuth2.clientCredentials: []
+      - OAuth2.clientCredentials:
+        - business-transient/travel-accounts:read
+      - OAuth2.clientCredentials:
+        - business-travel/travel-accounts:read
       parameters:
-      - name: before
-        in: query
-        description: 'Returns usage for the seven days before (inclusive) the date provided. If after is also provided, then
-
-          only the dates between (inclusive) those dates are returned. before must be a valid ISO8601 date stamp.
-
-          before and after must not be more then seven days apart.
-
-          '
-        required: false
-        schema:
-          type: string
-      - name: after
-        in: query
-        description: 'Returns usage for the seven days after (inclusive) the date provided. If before is also provided, then
-
-          only the dates between (inclusive) those dates are returned. after must be a valid ISO8601 date stamp.
-
-          after and before must not be more then seven days apart.
-
-          '
-        required: false
-        schema:
-          type: string
+      - $ref: '#/components/parameters/after'
+      - $ref: '#/components/parameters/before'
+      - $ref: '#/components/parameters/limit'
+      - $ref: '#/components/parameters/token'
+      - $ref: '#/components/parameters/travel-account-filter'
       responses:
         '200':
-          $ref: '#/components/responses/usage-paginated-response'
+          description: Successfully retrieved a paginated list of travel accounts.
+          headers: {}
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/travel-account-paginated-response'
         '400':
           $ref: '#/components/responses/BadRequest1'
         '401':
@@ -62,30 +49,134 @@ paths:
           $ref: '#/components/responses/Forbidden1'
         '429':
           $ref: '#/components/responses/TooManyRequests1'
-  /usage/tier:
+  /travel-accounts/supplier-accounts:
     get:
+      summary: List Supplier Accounts
+      operationId: ListSupplierAccounts
+      description: Gets a paginated list of supplier travel accounts.
       tags:
-      - Usage
-      operationId: getUsageTier
-      summary: Get Current Usage Tier
-      description: Returns the current usage tier of the caller's account.
+      - Travel Accounts
       security:
-      - OAuth2.clientCredentials: []
-      - OAuth2.authorizationCode: []
+      - OAuth2.clientCredentials:
+        - business-transient/travel-supplier-accounts:read
+      parameters:
+      - $ref: '#/components/parameters/after'
+      - $ref: '#/components/parameters/before'
+      - $ref: '#/components/parameters/limit'
+      - $ref: '#/components/parameters/token'
+      - $ref: '#/components/parameters/travel-supplier-account-filter'
       responses:
         '200':
-          $ref: '#/components/responses/PublicUsagePlanResponse'
+          description: Successfully retrieved a paginated list of travel supplied accounts.
+          headers: {}
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/travel-account-supplier-account-paginated-response'
+        '400':
+          $ref: '#/components/responses/BadRequest1'
         '401':
           $ref: '#/components/responses/Unauthorized1'
         '403':
           $ref: '#/components/responses/Forbidden1'
         '429':
           $ref: '#/components/responses/TooManyRequests1'
-      externalDocs:
-        description: More about OAuth2 authorization code support for administrators
-        url: '#oauth2-auth-code-planner-admin'
+  /travel-accounts/{travelAccountId}:
+    parameters:
+    - $ref: '#/components/parameters/travelAccountId'
+    get:
+      summary: Get Travel Account
+      description: Returns the details of a single travel account based on the specified travel account ID.
+      operationId: getTravelAccount
+      tags:
+      - Travel Accounts
+      security:
+      - OAuth2.clientCredentials:
+        - business-transient/travel-accounts:read
+      - OAuth2.clientCredentials:
+        - business-travel/travel-accounts:read
+      responses:
+        '200':
+          description: Successfully retrieved a Travel Account.
+          headers: {}
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/travel-account'
+        '400':
+          $ref: '#/components/responses/BadRequest1'
+        '401':
+          $ref: '#/components/responses/Unauthorized1'
+        '403':
+          $ref: '#/components/responses/Forbidden1'
+        '404':
+          $ref: '#/components/responses/NotFound1'
+        '429':
+          $ref: '#/components/responses/TooManyRequests1'
+  /travel-accounts/{travelAccountId}/supplier-accounts:
+    parameters:
+    - $ref: '#/components/parameters/travelAccountId'
+    get:
+      summary: Get Supplier Account
+      description: Returns the details of a single supplied travel account based on the specified travel account ID.
+      operationId: getSupplierAccount
+      tags:
+      - Travel Accounts
+      security:
+      - OAuth2.clientCredentials:
+        - business-transient/travel-supplier-accounts:read
+      responses:
+        '200':
+          description: Successfully retrieved a supplier travel account.
+          headers: {}
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/travel-account-supplier-account'
+        '400':
+          $ref: '#/components/responses/BadRequest1'
+        '401':
+          $ref: '#/components/responses/Unauthorized1'
+        '403':
+          $ref: '#/components/responses/Forbidden1'
+        '404':
+          $ref: '#/components/responses/NotFound1'
+        '429':
+          $ref: '#/components/responses/TooManyRequests1'
 components:
   schemas:
+    travel-account:
+      title: Travel Account
+      description: Travel account details.
+      type: object
+      allOf:
+      - $ref: '#/components/schemas/Audit'
+      properties:
+        id:
+          title: Account ID
+          description: A uuid used to uniquely identify the travel account.
+          type: string
+          format: uuid
+          example: 04ca6ae2-0dc3-487b-953e-86d6abbdf7d3
+        name:
+          title: Account Name
+          type: string
+          maxLength: 50
+          description: The name of the travel account.
+          example: Test Corporation
+        type:
+          $ref: '#/components/schemas/TravelAccountType'
+        certified:
+          title: Certified?
+          description: Is this a certified travel account?
+          type: boolean
+          example: true
+        addresses:
+          title: Addresses
+          type: array
+          items:
+            $ref: '#/components/schemas/Address8'
+          description: List of addresses associated with the travel account.
     Paging:
       title: Paging
       required:
@@ -115,6 +206,55 @@ components:
           example: 2
         _links:
           $ref: '#/components/schemas/PaginationLinks'
+    travel-account-supplier-account-paginated-response:
+      title: Supplier travel account paginated response
+      description: A paginated list of supplier travel accounts.
+      type: object
+      properties:
+        paging:
+          $ref: '#/components/schemas/Paging'
+        data:
+          type: array
+          items:
+            $ref: '#/components/schemas/travel-account-supplier-account'
+          description: Collection of suppliers travel accounts and their related details.
+    Audit:
+      title: Audit
+      description: Audit information
+      type: object
+      properties:
+        created:
+          type: string
+          format: date-time
+          description: The ISO 8601 zoned date time when this record was created.
+          readOnly: true
+          example: '2017-01-02T02:00:00Z'
+        createdBy:
+          type: string
+          description: The identifier of the user that created this record.
+          readOnly: true
+          example: hporter
+        lastModified:
+          type: string
+          format: date-time
+          description: The ISO 8601 zoned date time when this record was updated.
+          readOnly: true
+          example: '2019-02-12T03:00:00Z'
+        lastModifiedBy:
+          type: string
+          description: The identifier of the user that last updated this record.
+          readOnly: true
+          example: hporter
+    ManagementLevelType1:
+      title: Management Level Type
+      enum:
+      - global
+      - national
+      - regional
+      - local
+      type: string
+      description: The management level of the travel account.  Defined by the supply-side.
+      example: global
     ErrorResponse:
       title: ErrorResponse
       description: Represents an error response with additional details of cascading error messages.
@@ -130,92 +270,6 @@ components:
           items:
             $ref: '#/components/schemas/ErrorResponseBase'
           description: Additional details of cascading error messages.
-    Usage:
-      title: Usage
-      description: A usage object represents the usage of a resource on a given day
-      required:
-      - date
-      - used
-      - remaining
-      - total
-      type: object
-      allOf:
-      - $ref: '#/components/schemas/UsageQuotaFields'
-      properties:
-        date:
-          type: string
-          description: The date the usage occurred, as an ISO8601 date
-          example: '2020-01-01'
-    UsageQuotaFields:
-      title: Usage Quota Fields
-      description: Fields representing usage quota information. Usage quota represents the number of API requests that can be made in a given usage period. Usage periods reset daily at midnight UTC.
-      type: object
-      required:
-      - used
-      - remaining
-      - total
-      properties:
-        used:
-          type: integer
-          description: The number of API requests that have been made in the current usage period. Usage periods reset daily at midnight UTC.
-          example: 40000
-        remaining:
-          type: integer
-          description: The number of API requests remaining in the current usage period. Usage periods reset daily at midnight UTC.
-          example: 260000
-        total:
-          type: integer
-          description: The total number of API requests allowed in the current usage period. Usage periods reset daily at midnight UTC.
-          example: 300000
-    usage-paginated-response:
-      title: Usage Paginated Response
-      description: The list of usage for the caller's account in the date range specified.
-      required:
-      - data
-      type: object
-      properties:
-        paging:
-          $ref: '#/components/schemas/Paging'
-        data:
-          type: array
-          items:
-            $ref: '#/components/schemas/Usage'
-          description: Collection of usage objects.
-    public-usage-plan:
-      title: Public Usage Plan
-      description: Object representing an API Platform Usage Tier, including information when the usage plan is scheduled to revert to a previous plan, if any.
-      type: object
-      allOf:
-      - $ref: '#/components/schemas/UsagePlan'
-      properties:
-        switchBackPlan:
-          $ref: '#/components/schemas/SwitchBackTargetUsagePlan'
-    UsagePlan:
-      title: Usage Plan
-      description: Object representing an API Platform Usage Tier
-      required:
-      - name
-      - quota
-      - burstLimit
-      - rateLimit
-      type: object
-      properties:
-        name:
-          type: string
-          description: The name of the usage tier
-          example: API_Platform_Free_Tier
-        quota:
-          type: number
-          description: The daily quota of the usage tier. If this value is null, this means the usage tier is unlimited.
-          example: 1000
-        burstLimit:
-          type: number
-          description: The burst limit capacity of the usage tier
-          example: 1
-        rateLimit:
-          type: number
-          description: The per-second steady rate-limit of the usage tier
-          example: 2
     PaginationLinks:
       title: PaginationLinks
       type: object
@@ -227,6 +281,118 @@ components:
           $ref: '#/components/schemas/Link'
         prev:
           $ref: '#/components/schemas/Link'
+    travel-account-supplier-account:
+      title: Supplier Travel Account
+      description: Details for the supplier travel account. These details are supplier specific and only visible for supply-side clients.
+      type: object
+      properties:
+        travelAccount:
+          description: The travel account that the supplier account is associated with.
+          type: object
+          properties:
+            id:
+              title: Account ID
+              description: A uuid used to uniquely identify the travel account.
+              type: string
+              format: uuid
+              example: 04ca6ae2-0dc3-487b-953e-86d6abbdf7d3
+        name:
+          title: Account Name
+          type: string
+          maxLength: 50
+          description: The name of the travel account.
+          example: Test Corporation
+        managementLevel:
+          $ref: '#/components/schemas/ManagementLevelType1'
+        active:
+          title: Active?
+          type: boolean
+          example: true
+          description: Is this account active for the supplier's hotels.
+        crmId:
+          title: Customer Relationship Management (CRM) ID
+          type: string
+          maxLength: 100
+          description: ID of the travel account in the suppliers Customer Relationship Management system. Defined by supplier.
+          example: ABC123
+        chainDefinedId:
+          title: Chain Defined Account ID
+          type: string
+          maxLength: 50
+          description: Travel account ID defined at the supplier chain level.
+          example: '1000000299'
+        chainDefinedType:
+          type: string
+          maxLength: 50
+          description: Travel account type defined at the supplier chain level.
+          example: RFP
+    Address8:
+      title: Address
+      description: Address details.
+      type: object
+      properties:
+        address1:
+          description: Address line 1.
+          type: string
+          maxLength: 45
+          example: 717 N Harwood St
+        address2:
+          description: Address line 2.
+          type: string
+          maxLength: 45
+          example: Suite 2800
+        city:
+          description: City name.
+          type: string
+          maxLength: 50
+          example: Dallas
+        region:
+          description: Region name.
+          type: string
+          maxLength: 50
+          example: Texas
+        regionCode:
+          description: Region code.
+          type: string
+          maxLength: 3
+          example: TX
+        postalCode:
+          description: Postal code.
+          type: string
+          maxLength: 16
+          example: '75201'
+        country:
+          description: Country name.
+          type: string
+          maxLength: 50
+          example: United States
+        countryCode:
+          description: ISO 3166 alpha-2 country code.
+          type: string
+          maxLength: 2
+          minLength: 2
+          example: US
+    travel-account-paginated-response:
+      title: Travel account paginated response
+      description: A paginated list of travel accounts.
+      type: object
+      properties:
+        paging:
+          $ref: '#/components/schemas/Paging'
+        data:
+          type: array
+          items:
+            $ref: '#/components/schemas/travel-account'
+          description: Collection of travel accounts and their related details.
+    TravelAccountType:
+      title: Travel Account Type
+      enum:
+      - corporate
+      - leisure
+      - consortia
+      type: string
+      description: Code representing the travel account type.
+      example: corporate
     ErrorResponseBase:
       title: ErrorResponseBase
       type: object
@@ -258,30 +424,7 @@ components:
           type: string
           description: A url provided that can be followed for linking
           example: ?token=90c5f062-76ad-4ea4-aa53-00eb698d9262
-    SwitchBackTargetUsagePlan:
-      title: Switch Back Target Usage Plan
-      description: Object representing the target usage plan and the date when the current plan is scheduled to revert to it. This object is only present when a switch-back is scheduled.
-      type: object
-      required:
-      - name
-      - time
-      properties:
-        name:
-          type: string
-          description: Name of the target usage plan to switch back to. This field is only present when the usage plan is scheduled to revert to a previous plan.
-          example: API_Platform_Standard_Tier
-        time:
-          type: string
-          format: date-time
-          description: The date and time when the usage plan is scheduled to revert to a previous plan. This field is only present when the usage plan is scheduled to revert to a previous plan. The date and time cannot be more than 14 days from the current date.
-          example: '2023-10-01T12:00:00Z'
   responses:
-    PublicUsagePlanResponse:
-      description: The Usage Tier assigned to the account
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/public-usage-plan'
     TooManyRequests1:
       description: Too many requests
       content:
@@ -291,6 +434,15 @@ components:
           example:
             code: 429
             message: Limit Exceeded
+    NotFound1:
+      description: Resource not found
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+          example:
+            code: 404
+            message: Not found
     Forbidden1:
       description: You do not have access to the resource
       content:
@@ -300,12 +452,6 @@ components:
           example:
             code: 403
             message: Access Forbidden
-    usage-paginated-response:
-      description: Usage metrics for the dates requested
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/usage-paginated-response'
     Unauthorized1:
       description: Bad or expired token
       content:
@@ -324,6 +470,142 @@ components:
           example:
             code: 400
             message: Bad Request
+  parameters:
+    travel-supplier-account-filter:
+      name: filter
+      in: query
+      required: false
+      description: 'A filter query string narrows search results and supports the combination of logical and comparison operators. The filter adheres to the pattern filter=''field'' comparisonType ''value''.
+
+
+        There are eight comparison types that can be used in filter expressions:
+
+        * equal: eq
+
+        * not equal: ne
+
+        * greater than: gt
+
+        * greater or equal: ge
+
+        * less than: lt
+
+        * less than or equal: le
+
+        * starts with: sw
+
+        * contains a value: contains
+
+
+        The following fields are filterable:
+
+        * id (eq|ne)
+
+        * name (eq|ne|sw|contains)
+
+        * crmId (eq|ne)
+
+        * created (eq|ne|lt|le|gt|ge)
+
+        * lastModified (eq|ne|lt|le|gt|ge)
+
+        '
+      schema:
+        type: string
+        example: name eq ABC123
+    travelAccountId:
+      name: travelAccountId
+      description: A uuid used to uniquely identify the travel account.
+      required: true
+      in: path
+      schema:
+        title: Travel Account ID
+        type: string
+        format: uuid
+        example: 04ca6ae2-0dc3-487b-953e-86d6abbdf7d3
+    limit:
+      name: limit
+      in: query
+      description: The maximum number of records to return per page.
+      style: form
+      explode: true
+      schema:
+        maximum: 200
+        minimum: 1
+        type: integer
+        default: 100
+        example: 100
+    before:
+      name: before
+      required: false
+      in: query
+      description: Used to query records that have been added or updated before this time point.
+      schema:
+        type: string
+        format: date-time
+        example: '2017-01-02T02:00:00Z'
+    travel-account-filter:
+      name: filter
+      in: query
+      required: false
+      description: 'A filter query string narrows search results and supports the combination of logical and comparison operators. The filter adheres to the pattern filter=''field'' comparisonType ''value''.
+
+
+        There are eight comparison types that can be used in filter expressions:
+
+        * equal: eq
+
+        * not equal: ne
+
+        * greater than: gt
+
+        * greater or equal: ge
+
+        * less than: lt
+
+        * less than or equal: le
+
+        * starts with: sw
+
+        * contains a value: contains
+
+
+        The following fields are filterable:
+
+        * id (eq|ne)
+
+        * name (eq|ne|sw|contains)
+
+        * created (eq|ne|lt|le|gt|ge)
+
+        * lastModified (eq|ne|lt|le|gt|ge)
+
+        '
+      schema:
+        type: string
+        example: name eq ABC123
+    token:
+      name: token
+      in: query
+      description: 'The continuation token returned from a previous class. This must be a valid UUID v4 if provided.
+
+        This will override any other pageable parameters provided.
+
+        '
+      style: form
+      explode: true
+      schema:
+        type: string
+        example: 0e28af57-511f-47ab-ae46-46cd1ca51a1a
+    after:
+      name: after
+      required: false
+      description: Used to query records that have been added or updated after this time point. Default to the beginning of time of the data store.
+      in: query
+      schema:
+        type: string
+        format: date-time
+        example: '2017-01-02T02:00:00Z'
   securitySchemes:
     OAuth2.authorizationCode:
       type: oauth2

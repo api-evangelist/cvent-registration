@@ -1,69 +1,44 @@
 openapi: 3.2.0
 info:
-  title: Cvent Registration Sessions API
-  version: '1.0'
-  description: 'Operations tagged Sessions across 2 of this provider''s published API definitions: cvent-registration-openapi.yml, cvent-rest-apis-openapi.yaml. Each path carries the servers of the definition it was published in.'
+  title: Cvent REST Exhibitor API
+  description: '# Introduction
+
+    The Cvent API Platform is built around REST.'
+  contact:
+    name: Cvent Development Platform
+    url: https://developers.cvent.com/
+  version: ea
 servers:
-- url: https://api-platform.cvent.com
-  description: Cvent Platform REST API (US/global)
-- url: https://api-platform-eur.cvent.com
-  description: Cvent Platform REST API (EMEA)
 - url: https://api-platform.cvent.com/ea
 - url: https://api-platform-eur.cvent.com/ea
 tags:
-- name: Sessions
-  description: Agenda sessions
+- name: Exhibitor
+  description: '* **Exhibitor -** An exhibitor is an organization that is sponsoring or exhibiting at your event.'
 paths:
-  /ea/events/{eventId}/sessions:
-    parameters:
-    - $ref: '#/components/parameters/EventId'
+  /events/{id}/exhibitor-categories:
     get:
+      summary: List Exhibitor Categories
+      description: Retrieves a paginated list of exhibitor categories associated with a single event.
+      operationId: getExhibitorCategories
       tags:
-      - Sessions
-      summary: List sessions
-      responses:
-        '200':
-          description: Sessions
-          content:
-            application/json:
-              schema:
-                type: array
-                items:
-                  $ref: '#/components/schemas/Session'
-      security:
-      - OAuth2ClientCredentials: []
-      operationId: getEaEventsByEventIdSessions
-      x-operation-id-source: derived
-    servers:
-    - url: https://api-platform.cvent.com
-      description: Cvent Platform REST API (US/global)
-    - url: https://api-platform-eur.cvent.com
-      description: Cvent Platform REST API (EMEA)
-  /events/{id}/session-locations:
-    parameters:
-    - $ref: '#/components/parameters/eventId1'
-    get:
+      - Exhibitor
       security:
       - OAuth2.clientCredentials:
-        - event/sessions:read
+        - exhibitor/exhibitor-categories:read
       - OAuth2.authorizationCode:
-        - event/sessions:read
-      summary: List Session Locations
-      description: Gets a paginated list of session locations.
-      operationId: getSessionLocation
-      tags:
-      - Sessions
+        - exhibitor/exhibitor-categories:read
       parameters:
+      - $ref: '#/components/parameters/id6'
       - $ref: '#/components/parameters/limit'
       - $ref: '#/components/parameters/token'
       responses:
         '200':
-          description: Successfully retrieved paginated list of session locations.
+          description: Successfully retrieved exhibitor categories.
           headers: {}
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/session-locations-paginated-response'
+                $ref: '#/components/schemas/exhibitor-categories-paginated-response'
         '400':
           $ref: '#/components/responses/BadRequest1'
         '401':
@@ -78,31 +53,33 @@ paths:
         description: More about OAuth2 authorization code support for administrators
         url: '#oauth2-auth-code-planner-admin'
     post:
+      summary: Create Exhibitor Category
+      description: Creates a single exhibitor category entity for an event.
+      operationId: createExhibitorCategory
+      tags:
+      - Exhibitor
       security:
       - OAuth2.clientCredentials:
-        - event/sessions:write
+        - exhibitor/exhibitor-categories:write
       - OAuth2.authorizationCode:
-        - event/sessions:write
-      summary: Add Session Location
-      description: Add a session location to the specified event.
-      operationId: addSessionLocation
-      tags:
-      - Sessions
+        - exhibitor/exhibitor-categories:write
+      parameters:
+      - $ref: '#/components/parameters/id6'
       requestBody:
-        description: Details of the session location you're creating.
+        description: Exhibitor Category details
         required: true
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/session-location'
+              $ref: '#/components/schemas/exhibitor-category-request'
       responses:
         '201':
-          description: Successfully created a session location
+          description: Successfully Created the exhibitor category.
           headers: {}
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/session-location'
+                $ref: '#/components/schemas/exhibitor-category-response'
         '400':
           $ref: '#/components/responses/BadRequest1'
         '401':
@@ -116,227 +93,370 @@ paths:
       externalDocs:
         description: More about OAuth2 authorization code support for administrators
         url: '#oauth2-auth-code-planner-admin'
-    servers:
-    - url: https://api-platform.cvent.com/ea
-    - url: https://api-platform-eur.cvent.com/ea
-  /program-items:
-    post:
+  /events/{id}/exhibitor-categories/{exhibitorCategoryId}:
+    put:
+      summary: Update Exhibitor Category
+      description: Updates data for a single exhibitor category entity.
+      operationId: updateExhibitorCategory
+      tags:
+      - Exhibitor
       security:
       - OAuth2.clientCredentials:
-        - event/program-items:write
+        - exhibitor/exhibitor-categories:write
       - OAuth2.authorizationCode:
-        - event/program-items:write
-      summary: Create Program Item
-      description: Create a session program item based on the details provided in the body of the request. A session program item is a specific part of a session's schedule, like a talk, workshop, or panel discussion. Max 25 program items per session.
-      operationId: createProgramItem
-      tags:
-      - Sessions
+        - exhibitor/exhibitor-categories:write
+      parameters:
+      - $ref: '#/components/parameters/id6'
+      - $ref: '#/components/parameters/exhibitorCategoryId'
       requestBody:
-        description: Session program item to be created.
+        description: Exhibitor Category details
         required: true
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/program-item'
+              $ref: '#/components/schemas/exhibitor-category-request'
       responses:
-        '201':
-          description: Successfully created the session program item.
+        '200':
+          description: Successfully updated the exhibitor category.
           headers: {}
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/program-item'
+                $ref: '#/components/schemas/exhibitor-category-response'
         '400':
           $ref: '#/components/responses/BadRequest1'
         '401':
           $ref: '#/components/responses/Unauthorized1'
         '403':
           $ref: '#/components/responses/Forbidden1'
+        '404':
+          $ref: '#/components/responses/NotFound1'
         '429':
           $ref: '#/components/responses/TooManyRequests1'
-    get:
+      externalDocs:
+        description: More about OAuth2 authorization code support for administrators
+        url: '#oauth2-auth-code-planner-admin'
+    delete:
+      summary: Delete Exhibitor Category
+      description: Deletes a single exhibitor Category entity.
+      operationId: deleteExhibitorCategory
+      tags:
+      - Exhibitor
       security:
       - OAuth2.clientCredentials:
-        - event/program-items:read
+        - exhibitor/exhibitor-categories:delete
       - OAuth2.authorizationCode:
-        - event/program-items:read
-      summary: List Program Items
-      description: Gets a paginated list of session program items.
-      operationId: listProgramItems
-      tags:
-      - Sessions
+        - exhibitor/exhibitor-categories:delete
       parameters:
+      - $ref: '#/components/parameters/id6'
+      - $ref: '#/components/parameters/exhibitorCategoryId'
+      responses:
+        '204':
+          description: Successfully deleted exhibitor category.
+          headers: {}
+        '401':
+          $ref: '#/components/responses/Unauthorized1'
+        '403':
+          $ref: '#/components/responses/Forbidden1'
+        '404':
+          $ref: '#/components/responses/NotFound1'
+        '429':
+          $ref: '#/components/responses/TooManyRequests1'
+      externalDocs:
+        description: More about OAuth2 authorization code support for administrators
+        url: '#oauth2-auth-code-planner-admin'
+  /events/{id}/exhibitor-categories/{exhibitorCategoryId}/banner-files/{fileId}:
+    put:
+      summary: Assign Banner to Category
+      description: 'Assign a banner image to an exhibitor category with a file UUID from file upload endpoint. This will replace the current banner image if one is assigned.
+
+
+        **Note:** For category banner images we recommend images that are 900x300 pixels and 5MiB or smaller. File types supported are : JPEG, JPG, PNG, GIF.'
+      operationId: updateExhibitorCategoryBanner
+      tags:
+      - Exhibitor
+      security:
+      - OAuth2.clientCredentials:
+        - exhibitor/exhibitor-categories:write
+      - OAuth2.authorizationCode:
+        - exhibitor/exhibitor-categories:write
+      parameters:
+      - $ref: '#/components/parameters/id6'
+      - $ref: '#/components/parameters/exhibitorCategoryId'
+      - $ref: '#/components/parameters/fileId1'
+      responses:
+        '200':
+          description: Successfully updated the exhibitor category banner image.
+          headers: {}
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/exhibitor-category-banner-file'
+        '400':
+          $ref: '#/components/responses/BadRequest1'
+        '401':
+          $ref: '#/components/responses/Unauthorized1'
+        '403':
+          $ref: '#/components/responses/Forbidden1'
+        '404':
+          $ref: '#/components/responses/NotFound1'
+        '429':
+          $ref: '#/components/responses/TooManyRequests1'
+      externalDocs:
+        description: More about OAuth2 authorization code support for administrators
+        url: '#oauth2-auth-code-planner-admin'
+    delete:
+      summary: Delete Banner from Category
+      description: Deletes an exhibitor Category banner image.
+      operationId: deleteExhibitorCategoryImage
+      tags:
+      - Exhibitor
+      security:
+      - OAuth2.clientCredentials:
+        - exhibitor/exhibitor-categories:write
+      - OAuth2.authorizationCode:
+        - exhibitor/exhibitor-categories:write
+      parameters:
+      - $ref: '#/components/parameters/id6'
+      - $ref: '#/components/parameters/exhibitorCategoryId'
+      - $ref: '#/components/parameters/fileId1'
+      responses:
+        '204':
+          description: Successfully deleted exhibitor category banner image.
+          headers: {}
+        '401':
+          $ref: '#/components/responses/Unauthorized1'
+        '403':
+          $ref: '#/components/responses/Forbidden1'
+        '404':
+          $ref: '#/components/responses/NotFound1'
+        '429':
+          $ref: '#/components/responses/TooManyRequests1'
+      externalDocs:
+        description: More about OAuth2 authorization code support for administrators
+        url: '#oauth2-auth-code-planner-admin'
+  /events/{id}/exhibitor-categories/{exhibitorCategoryId}/exhibitors:
+    get:
+      summary: List Category's Exhibitors
+      description: Get a paginated list of exhibitors assigned to the provided exhibitor-category Id.
+      operationId: listExhibitors
+      tags:
+      - Exhibitor
+      security:
+      - OAuth2.clientCredentials:
+        - exhibitor/exhibitor-categories:read
+      - OAuth2.authorizationCode:
+        - exhibitor/exhibitor-categories:read
+      parameters:
+      - $ref: '#/components/parameters/id6'
+      - $ref: '#/components/parameters/exhibitorCategoryId'
       - $ref: '#/components/parameters/limit'
       - $ref: '#/components/parameters/token'
+      responses:
+        '200':
+          description: Successfully retrieved a Paginated list of exhibitors assigned to the exhibitor-category.
+          headers: {}
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/exhibitor-id-list-response'
+        '400':
+          $ref: '#/components/responses/BadRequest1'
+        '401':
+          $ref: '#/components/responses/Unauthorized1'
+        '403':
+          $ref: '#/components/responses/Forbidden1'
+        '404':
+          $ref: '#/components/responses/NotFound1'
+        '429':
+          $ref: '#/components/responses/TooManyRequests1'
+      externalDocs:
+        description: More about OAuth2 authorization code support for administrators
+        url: '#oauth2-auth-code-planner-admin'
+  /events/{id}/exhibitor-categories/{exhibitorCategoryId}/exhibitors/{exhibitorId}:
+    parameters:
+    - $ref: '#/components/parameters/id6'
+    - $ref: '#/components/parameters/exhibitorCategoryId'
+    - $ref: '#/components/parameters/exhibitorId'
+    put:
+      summary: Assign Exhibitor to Category
+      description: Assign an exhibitor ID to an exhibitor-category Id.
+      operationId: addExhibitorToExhibitorCategory
+      tags:
+      - Exhibitor
+      security:
+      - OAuth2.clientCredentials:
+        - exhibitor/exhibitor-categories:write
+      - OAuth2.authorizationCode:
+        - exhibitor/exhibitor-categories:write
+      responses:
+        '204':
+          description: Successfully added an exhibitor to the exhibitor-category.
+        '400':
+          $ref: '#/components/responses/BadRequest1'
+        '401':
+          $ref: '#/components/responses/Unauthorized1'
+        '403':
+          $ref: '#/components/responses/Forbidden1'
+        '404':
+          $ref: '#/components/responses/NotFound1'
+        '429':
+          $ref: '#/components/responses/TooManyRequests1'
+      externalDocs:
+        description: More about OAuth2 authorization code support for administrators
+        url: '#oauth2-auth-code-planner-admin'
+    delete:
+      summary: Delete Exhibitor from Category
+      description: delete an exhibitor from an exhibitor-category
+      operationId: removeExhibitorFromExhibitorCategory
+      tags:
+      - Exhibitor
+      security:
+      - OAuth2.clientCredentials:
+        - exhibitor/exhibitor-categories:delete
+      - OAuth2.authorizationCode:
+        - exhibitor/exhibitor-categories:delete
+      responses:
+        '204':
+          description: Successfully removed the exhibitor
+        '401':
+          $ref: '#/components/responses/Unauthorized1'
+        '403':
+          $ref: '#/components/responses/Forbidden1'
+        '404':
+          $ref: '#/components/responses/NotFound1'
+        '429':
+          $ref: '#/components/responses/TooManyRequests1'
+      externalDocs:
+        description: More about OAuth2 authorization code support for administrators
+        url: '#oauth2-auth-code-planner-admin'
+  /events/{id}/exhibitor-questions:
+    get:
+      summary: List Exhibitor Questions
+      description: Gets a list of exhibitor questions for a given event id.
+      operationId: getExhibitorQuestions
+      tags:
+      - Exhibitor
+      security:
+      - OAuth2.clientCredentials:
+        - exhibitor/exhibitor-questions:read
+      - OAuth2.authorizationCode:
+        - exhibitor/exhibitor-questions:read
+      parameters:
+      - $ref: '#/components/parameters/id6'
+      responses:
+        '200':
+          description: Successfully retrieved exhibitor questions.
+          headers: {}
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/exhibitor-questions-response'
+        '401':
+          $ref: '#/components/responses/Unauthorized1'
+        '403':
+          $ref: '#/components/responses/Forbidden1'
+        '404':
+          $ref: '#/components/responses/NotFound1'
+        '429':
+          $ref: '#/components/responses/TooManyRequests1'
+      externalDocs:
+        description: More about OAuth2 authorization code support for administrators
+        url: '#oauth2-auth-code-planner-admin'
+  /events/{id}/exhibitors:
+    get:
+      summary: List Exhibitors
+      description: Retrieves a paginated list of exhibitors associated with a single event.
+      operationId: getExhibitors
+      tags:
+      - Exhibitor
+      security:
+      - OAuth2.clientCredentials:
+        - exhibitor/exhibitors:read
+      - OAuth2.authorizationCode:
+        - exhibitor/exhibitors:read
+      parameters:
+      - $ref: '#/components/parameters/id6'
+      - $ref: '#/components/parameters/limit'
+      - $ref: '#/components/parameters/token'
+      - $ref: '#/components/parameters/before'
+      - $ref: '#/components/parameters/after'
       - name: filter
         in: query
         required: false
-        description: 'Use filter query parameters to limit results
+        description: 'A filter query string narrows search results and supports the combination of logical and comparison operators.
 
-          to data that matches your criteria. See
-
-          [Filters](https://developers.cvent.com/docs/rest-api/reference/filters) for details.
+          The filter adheres to the pattern filter=''field'' comparisonType ''value''.
 
 
-          Supported fields and operators are listed below:
+          These are the comparison types that can be used in filter expressions:
+
+          * equal: eq
+
+          * includes value(s): in
 
 
-          | Field      | Operators  |
+          The following fields are filterable:
 
-          |------------|------------|
+          * hidden (eq)
 
-          | id         | `eq`, `in` |
+          * deleted (eq)
 
-          | session.id | `eq`, `in` |
-
-          | event.id   | `eq`       |
-
-
-          The following logical operators are supported for combining filters:
-
-          * and
-
-          * or
+          * id (in)
 
           '
         schema:
           type: string
-          example: session.id in ('04ca6ae2-0dc3-487b-953e-86d6abbdf7d3', '34ca65e2-1dc3-487b-589e-839d8bbdf7d3')
+          example: id in ('{UUID}', '{UUID}') AND deleted eq 'true' AND hidden eq 'true'
       responses:
         '200':
-          description: Successfully retrieved a paginated list of session program items.
+          description: Successfully retrieved exhibitors.
           headers: {}
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/program-item-paginated-response'
+                $ref: '#/components/schemas/exhibitors-paginated-response'
         '400':
           $ref: '#/components/responses/BadRequest1'
         '401':
           $ref: '#/components/responses/Unauthorized1'
         '403':
           $ref: '#/components/responses/Forbidden1'
+        '404':
+          $ref: '#/components/responses/NotFound1'
         '429':
           $ref: '#/components/responses/TooManyRequests1'
-    servers:
-    - url: https://api-platform.cvent.com/ea
-    - url: https://api-platform-eur.cvent.com/ea
-  /program-items/docs/filter:
+      externalDocs:
+        description: More about OAuth2 authorization code support for administrators
+        url: '#oauth2-auth-code-planner-admin'
     post:
+      summary: Create Exhibitor
+      description: Creates a single exhibitor entity for an event.
+      operationId: createExhibitor
+      tags:
+      - Exhibitor
       security:
       - OAuth2.clientCredentials:
-        - event/program-items:read
+        - exhibitor/exhibitors:write
       - OAuth2.authorizationCode:
-        - event/program-items:read
-      summary: Filter Program Item Documents
-      description: Gets a paginated list of session program item documents using a filter in the body of the request.
-      operationId: filterProgramItemDocuments
-      tags:
-      - Sessions
-      requestBody:
-        description: "A filter query string narrows search results and supports the combination of logical and comparison operators.\nThe filter adheres to the pattern filter='field' comparisonType 'value'.\n\nThese are the comparison types that can be used in filter expressions:\n  * equal: eq\n  * includes value(s): in\n\nThe following fields are filterable:\n  * document.id (eq|in)\n  * programItem.id (eq|in)\n  * session.id (eq|in)\n  * event.id (eq)\n\nThe following operators are available:\n  * and\n  * or\n"
-        required: false
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/filter'
+        - exhibitor/exhibitors:write
       parameters:
-      - $ref: '#/components/parameters/after'
-      - $ref: '#/components/parameters/before'
-      - $ref: '#/components/parameters/limit'
-      - $ref: '#/components/parameters/token'
-      responses:
-        '200':
-          description: Successfully retrieved a paginated list of session program item documents.
-          headers: {}
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/program-item-document-paginated-response'
-        '400':
-          $ref: '#/components/responses/BadRequest1'
-        '401':
-          $ref: '#/components/responses/Unauthorized1'
-        '403':
-          $ref: '#/components/responses/Forbidden1'
-        '429':
-          $ref: '#/components/responses/TooManyRequests1'
-    servers:
-    - url: https://api-platform.cvent.com/ea
-    - url: https://api-platform-eur.cvent.com/ea
-  /program-items/filter:
-    post:
-      security:
-      - OAuth2.clientCredentials:
-        - event/program-items:read
-      - OAuth2.authorizationCode:
-        - event/program-items:read
-      summary: List Program Items
-      description: Gets a paginated list of session program items by sending a filter in the body of the request. This method will return the same data as GET List Program Items but allows for longer filters.
-      operationId: listProgramItemsPostFilters
-      tags:
-      - Sessions
+      - $ref: '#/components/parameters/id6'
       requestBody:
-        description: See the filter description of <a href="#operation/listProgramItems">GET List Program Items</a> for full filtering information.
-        required: false
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/filter'
-      parameters:
-      - $ref: '#/components/parameters/after'
-      - $ref: '#/components/parameters/before'
-      - $ref: '#/components/parameters/limit'
-      - $ref: '#/components/parameters/token'
-      - $ref: '#/components/parameters/locale1'
-      responses:
-        '200':
-          description: Successfully retrieved a paginated list of session program items.
-          headers: {}
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/program-item-paginated-response'
-        '400':
-          $ref: '#/components/responses/BadRequest1'
-        '401':
-          $ref: '#/components/responses/Unauthorized1'
-        '403':
-          $ref: '#/components/responses/Forbidden1'
-        '429':
-          $ref: '#/components/responses/TooManyRequests1'
-    servers:
-    - url: https://api-platform.cvent.com/ea
-    - url: https://api-platform-eur.cvent.com/ea
-  /program-items/{programItemId}:
-    parameters:
-    - $ref: '#/components/parameters/programItemId1'
-    put:
-      security:
-      - OAuth2.clientCredentials:
-        - event/program-items:write
-      - OAuth2.authorizationCode:
-        - event/program-items:write
-      summary: Update Program Item
-      description: Updates the given session program item based on the details provided in the body of the request.
-      operationId: updateProgramItem
-      tags:
-      - Sessions
-      requestBody:
-        description: Session program item to be updated.
+        description: Exhibitor details
         required: true
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/program-item-update-request'
+              $ref: '#/components/schemas/exhibitor-request'
       responses:
-        '200':
-          description: Successfully updated the session program item.
+        '201':
+          description: Successfully Created the exhibitor.
           headers: {}
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/program-item'
+                $ref: '#/components/schemas/exhibitor-response'
         '400':
           $ref: '#/components/responses/BadRequest1'
         '401':
@@ -347,20 +467,104 @@ paths:
           $ref: '#/components/responses/NotFound1'
         '429':
           $ref: '#/components/responses/TooManyRequests1'
-    delete:
+      externalDocs:
+        description: More about OAuth2 authorization code support for administrators
+        url: '#oauth2-auth-code-planner-admin'
+  /events/{id}/exhibitors/{exhibitorId}:
+    get:
+      summary: Get Exhibitor
+      description: Retrieves a single exhibitor entity for an event.
+      operationId: getExhibitor
+      tags:
+      - Exhibitor
       security:
       - OAuth2.clientCredentials:
-        - event/program-items:delete
+        - exhibitor/exhibitors:read
       - OAuth2.authorizationCode:
-        - event/program-items:delete
-      summary: Delete Session Program Item
-      description: Delete the given session program item.
-      operationId: deleteProgramItem
+        - exhibitor/exhibitors:read
+      parameters:
+      - $ref: '#/components/parameters/id6'
+      - $ref: '#/components/parameters/exhibitorId'
+      responses:
+        '200':
+          description: Successfully retrieved exhibitor data.
+          headers: {}
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/exhibitor-response'
+        '400':
+          $ref: '#/components/responses/BadRequest1'
+        '401':
+          $ref: '#/components/responses/Unauthorized1'
+        '403':
+          $ref: '#/components/responses/Forbidden1'
+        '404':
+          $ref: '#/components/responses/NotFound1'
+        '429':
+          $ref: '#/components/responses/TooManyRequests1'
+      externalDocs:
+        description: More about OAuth2 authorization code support for administrators
+        url: '#oauth2-auth-code-planner-admin'
+    put:
+      summary: Update Exhibitor
+      description: Updates data for a single exhibitor entity.
+      operationId: updateExhibitor
       tags:
-      - Sessions
+      - Exhibitor
+      security:
+      - OAuth2.clientCredentials:
+        - exhibitor/exhibitors:write
+      - OAuth2.authorizationCode:
+        - exhibitor/exhibitors:write
+      parameters:
+      - $ref: '#/components/parameters/id6'
+      - $ref: '#/components/parameters/exhibitorId'
+      requestBody:
+        description: Exhibitor details
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/exhibitor-request'
+      responses:
+        '200':
+          description: Successfully updated the exhibitor.
+          headers: {}
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/exhibitor-response'
+        '400':
+          $ref: '#/components/responses/BadRequest1'
+        '401':
+          $ref: '#/components/responses/Unauthorized1'
+        '403':
+          $ref: '#/components/responses/Forbidden1'
+        '404':
+          $ref: '#/components/responses/NotFound1'
+        '429':
+          $ref: '#/components/responses/TooManyRequests1'
+      externalDocs:
+        description: More about OAuth2 authorization code support for administrators
+        url: '#oauth2-auth-code-planner-admin'
+    delete:
+      summary: Delete Exhibitor
+      description: Deletes a single exhibitor entity. To be deleted, exhibitors must have no tasks, registrations, or LeadCapture licenses assigned and must not be a sponsored or featured exhibitor.
+      operationId: deleteExhibitor
+      tags:
+      - Exhibitor
+      security:
+      - OAuth2.clientCredentials:
+        - exhibitor/exhibitors:delete
+      - OAuth2.authorizationCode:
+        - exhibitor/exhibitors:delete
+      parameters:
+      - $ref: '#/components/parameters/id6'
+      - $ref: '#/components/parameters/exhibitorId'
       responses:
         '204':
-          description: Successfully deleted the given session program item.
+          description: Successfully deleted exhibitor.
           headers: {}
         '401':
           $ref: '#/components/responses/Unauthorized1'
@@ -370,68 +574,331 @@ paths:
           $ref: '#/components/responses/NotFound1'
         '429':
           $ref: '#/components/responses/TooManyRequests1'
-    servers:
-    - url: https://api-platform.cvent.com/ea
-    - url: https://api-platform-eur.cvent.com/ea
-  /program-items/{programItemId}/docs:
-    parameters:
-    - $ref: '#/components/parameters/programItemId1'
-    get:
-      security:
-      - OAuth2.clientCredentials:
-        - event/program-items:read
-      - OAuth2.authorizationCode:
-        - event/program-items:read
-      summary: Get Program Item Documents
-      description: 'Returns a list of session documents for the specified program item ID.
-
-        **Note:** This endpoint is deprecated. use Filter Program Item Documents'
-      operationId: getProgramItemDocuments
-      tags:
-      - Sessions
-      responses:
-        '200':
-          description: Successfully retrieved a list of program item to session document relationships for the specified program item ID.
-          headers: {}
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/program-item-session-documents'
-        '401':
-          $ref: '#/components/responses/Unauthorized1'
-        '403':
-          $ref: '#/components/responses/Forbidden1'
-        '404':
-          $ref: '#/components/responses/NotFound1'
-        '429':
-          $ref: '#/components/responses/TooManyRequests1'
-      deprecated: true
-    servers:
-    - url: https://api-platform.cvent.com/ea
-    - url: https://api-platform-eur.cvent.com/ea
-  /program-items/{programItemId}/docs/{fileId}:
-    parameters:
-    - $ref: '#/components/parameters/programItemId1'
-    - $ref: '#/components/parameters/fileId'
+      externalDocs:
+        description: More about OAuth2 authorization code support for administrators
+        url: '#oauth2-auth-code-planner-admin'
+  /events/{id}/exhibitors/{exhibitorId}/banner-files/{fileId}:
     put:
+      summary: Assign Exhibitor Banner Image
+      description: 'Assign a banner image to an exhibitor with a file UUID from file upload endpoint. This will replace the current banner image if one is assigned.
+
+
+        **Note:** For exhibitor profile banner images, we recommend images that are 1872x320 pixels or smaller images that have an aspect ratio of 5.85:1. File extensions supported: JPEG, JPG, PNG, GIF'
+      operationId: updateExhibitorBanner
+      tags:
+      - Exhibitor
       security:
       - OAuth2.clientCredentials:
-        - event/program-items:write
+        - exhibitor/exhibitors:write
       - OAuth2.authorizationCode:
-        - event/program-items:write
-      summary: Add Program Item Document
-      description: Creates a relationship between a session program item and a session document. Limit 10 session documents per session program item.
-      operationId: relateProgramItemToSessionDocument
-      tags:
-      - Sessions
+        - exhibitor/exhibitors:write
+      parameters:
+      - $ref: '#/components/parameters/id6'
+      - $ref: '#/components/parameters/exhibitorId'
+      - $ref: '#/components/parameters/fileId1'
       responses:
         '200':
-          description: Successfully created the relationship between the session program item and the session document.
+          description: Successfully added the exhibitor banner image.
           headers: {}
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/program-item-session-document'
+                $ref: '#/components/schemas/exhibitor-banner-logo-file'
+        '400':
+          $ref: '#/components/responses/BadRequest1'
+        '401':
+          $ref: '#/components/responses/Unauthorized1'
+        '403':
+          $ref: '#/components/responses/Forbidden1'
+        '404':
+          $ref: '#/components/responses/NotFound1'
+        '429':
+          $ref: '#/components/responses/TooManyRequests1'
+      externalDocs:
+        description: More about OAuth2 authorization code support for administrators
+        url: '#oauth2-auth-code-planner-admin'
+    delete:
+      summary: Delete Exhibitor Banner Image
+      description: Deletes exhibitor banner image data
+      operationId: deleteExhibitorBanner
+      tags:
+      - Exhibitor
+      security:
+      - OAuth2.clientCredentials:
+        - exhibitor/exhibitors:write
+      - OAuth2.authorizationCode:
+        - exhibitor/exhibitors:write
+      parameters:
+      - $ref: '#/components/parameters/id6'
+      - $ref: '#/components/parameters/exhibitorId'
+      - $ref: '#/components/parameters/fileId1'
+      responses:
+        '204':
+          description: Successfully deleted exhibitor banner image data.
+          headers: {}
+        '401':
+          $ref: '#/components/responses/Unauthorized1'
+        '403':
+          $ref: '#/components/responses/Forbidden1'
+        '404':
+          $ref: '#/components/responses/NotFound1'
+        '429':
+          $ref: '#/components/responses/TooManyRequests1'
+      externalDocs:
+        description: More about OAuth2 authorization code support for administrators
+        url: '#oauth2-auth-code-planner-admin'
+  /events/{id}/exhibitors/{exhibitorId}/exhibitor-answers:
+    get:
+      summary: List Exhibitor Answers
+      description: Gets a list of answers to exhibitor questions for a given exhibitor id.
+      operationId: getExhibitorAnswers
+      tags:
+      - Exhibitor
+      security:
+      - OAuth2.clientCredentials:
+        - exhibitor/exhibitor-answers:read
+      - OAuth2.authorizationCode:
+        - exhibitor/exhibitor-answers:read
+      parameters:
+      - $ref: '#/components/parameters/id6'
+      - $ref: '#/components/parameters/exhibitorId'
+      responses:
+        '200':
+          description: Successfully retrieved exhibitor answers.
+          headers: {}
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/exhibitor-answers-response'
+        '401':
+          $ref: '#/components/responses/Unauthorized1'
+        '403':
+          $ref: '#/components/responses/Forbidden1'
+        '404':
+          $ref: '#/components/responses/NotFound1'
+        '429':
+          $ref: '#/components/responses/TooManyRequests1'
+      externalDocs:
+        description: More about OAuth2 authorization code support for administrators
+        url: '#oauth2-auth-code-planner-admin'
+    put:
+      summary: Update Exhibitor Answers
+      description: Updates answers to exhibitor questions for a given exhibitor id. The Planner can skip answering the questions marked as required for exhibitor admins.
+      operationId: updateExhibitorAnswers
+      tags:
+      - Exhibitor
+      security:
+      - OAuth2.clientCredentials:
+        - exhibitor/exhibitor-answers:write
+      - OAuth2.authorizationCode:
+        - exhibitor/exhibitor-answers:write
+      parameters:
+      - $ref: '#/components/parameters/id6'
+      - $ref: '#/components/parameters/exhibitorId'
+      requestBody:
+        description: Exhibitor answers to be updated
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/exhibitor-answers-request'
+      responses:
+        '200':
+          description: Successfully updated exhibitor answers.
+          headers: {}
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/exhibitor-answers-response'
+        '400':
+          $ref: '#/components/responses/BadRequest1'
+        '401':
+          $ref: '#/components/responses/Unauthorized1'
+        '403':
+          $ref: '#/components/responses/Forbidden1'
+        '404':
+          $ref: '#/components/responses/NotFound1'
+        '429':
+          $ref: '#/components/responses/TooManyRequests1'
+      externalDocs:
+        description: More about OAuth2 authorization code support for administrators
+        url: '#oauth2-auth-code-planner-admin'
+  /events/{id}/exhibitors/{exhibitorId}/exhibitor-categories:
+    get:
+      summary: List Exhibitor's Categories
+      description: Get a paginated list of exhibitor-categories assigned to the provided exhibitor Id.
+      operationId: listExhibitorCategories
+      tags:
+      - Exhibitor
+      security:
+      - OAuth2.clientCredentials:
+        - exhibitor/exhibitor-categories:read
+      - OAuth2.authorizationCode:
+        - exhibitor/exhibitor-categories:read
+      parameters:
+      - $ref: '#/components/parameters/id6'
+      - $ref: '#/components/parameters/exhibitorId'
+      - $ref: '#/components/parameters/limit'
+      - $ref: '#/components/parameters/token'
+      responses:
+        '200':
+          description: Successfully retrieved a Paginated list of exhibitor-categories assigned to the exhibitor
+          headers: {}
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/exhibitor-category-id-list-response'
+        '400':
+          $ref: '#/components/responses/BadRequest1'
+        '401':
+          $ref: '#/components/responses/Unauthorized1'
+        '403':
+          $ref: '#/components/responses/Forbidden1'
+        '404':
+          $ref: '#/components/responses/NotFound1'
+        '429':
+          $ref: '#/components/responses/TooManyRequests1'
+      externalDocs:
+        description: More about OAuth2 authorization code support for administrators
+        url: '#oauth2-auth-code-planner-admin'
+  /events/{id}/exhibitors/{exhibitorId}/logo-files/{fileId}:
+    put:
+      summary: Assign Exhibitor Logo Image
+      description: 'Assign a logo image to an exhibitor with a file UUID from file upload endpoint. This will replace the current logo image if one is assigned.
+
+
+        **Note:** For exhibitor profile logo images we recommend square images larger than 300x300 pixels. The file types supported are : JPEG, JPG, PNG, GIF'
+      operationId: updateExhibitorLogo
+      tags:
+      - Exhibitor
+      security:
+      - OAuth2.clientCredentials:
+        - exhibitor/exhibitors:write
+      - OAuth2.authorizationCode:
+        - exhibitor/exhibitors:write
+      parameters:
+      - $ref: '#/components/parameters/id6'
+      - $ref: '#/components/parameters/exhibitorId'
+      - $ref: '#/components/parameters/fileId1'
+      responses:
+        '200':
+          description: Successfully added the exhibitor logo image.
+          headers: {}
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/exhibitor-banner-logo-file'
+        '400':
+          $ref: '#/components/responses/BadRequest1'
+        '401':
+          $ref: '#/components/responses/Unauthorized1'
+        '403':
+          $ref: '#/components/responses/Forbidden1'
+        '404':
+          $ref: '#/components/responses/NotFound1'
+        '429':
+          $ref: '#/components/responses/TooManyRequests1'
+      externalDocs:
+        description: More about OAuth2 authorization code support for administrators
+        url: '#oauth2-auth-code-planner-admin'
+    delete:
+      summary: Delete Exhibitor Logo Image
+      description: Deletes exhibitor logo image data
+      operationId: deleteExhibitorLogo
+      tags:
+      - Exhibitor
+      security:
+      - OAuth2.clientCredentials:
+        - exhibitor/exhibitors:write
+      - OAuth2.authorizationCode:
+        - exhibitor/exhibitors:write
+      parameters:
+      - $ref: '#/components/parameters/id6'
+      - $ref: '#/components/parameters/exhibitorId'
+      - $ref: '#/components/parameters/fileId1'
+      responses:
+        '204':
+          description: Successfully deleted exhibitor logo image data.
+          headers: {}
+        '401':
+          $ref: '#/components/responses/Unauthorized1'
+        '403':
+          $ref: '#/components/responses/Forbidden1'
+        '404':
+          $ref: '#/components/responses/NotFound1'
+        '429':
+          $ref: '#/components/responses/TooManyRequests1'
+      externalDocs:
+        description: More about OAuth2 authorization code support for administrators
+        url: '#oauth2-auth-code-planner-admin'
+  /events/{id}/exhibitors/{exhibitorId}/questions:
+    get:
+      summary: List Qualification Questions
+      description: Retrieves a list of lead qualification questions associated with a single exhibitor at the given event.
+      operationId: getLeadQualificationQuestions
+      tags:
+      - Exhibitor
+      security:
+      - OAuth2.clientCredentials:
+        - exhibitor/lead-qualification-questions:read
+      - OAuth2.authorizationCode:
+        - exhibitor/lead-qualification-questions:read
+      parameters:
+      - $ref: '#/components/parameters/id6'
+      - $ref: '#/components/parameters/exhibitorId'
+      responses:
+        '200':
+          description: Successfully retrieved a list of Lead Qualification Questions.
+          headers: {}
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/lead-qualification-questions-list-response'
+        '400':
+          $ref: '#/components/responses/BadRequest1'
+        '401':
+          $ref: '#/components/responses/Unauthorized1'
+        '403':
+          $ref: '#/components/responses/Forbidden1'
+        '404':
+          $ref: '#/components/responses/NotFound1'
+        '429':
+          $ref: '#/components/responses/TooManyRequests1'
+      externalDocs:
+        description: More about OAuth2 authorization code support for administrators
+        url: '#oauth2-auth-code-planner-admin'
+  /events/{id}/exhibitors/{exhibitorId}/registration-packs:
+    post:
+      summary: Create Registration Pack
+      description: Create registration pack for an exhibitor
+      operationId: postRegistrationPack
+      tags:
+      - Exhibitor
+      security:
+      - OAuth2.clientCredentials:
+        - exhibitor/registration-packs:write
+      - OAuth2.authorizationCode:
+        - exhibitor/registration-packs:write
+      parameters:
+      - $ref: '#/components/parameters/id6'
+      - $ref: '#/components/parameters/exhibitorId'
+      requestBody:
+        description: Registration pack details
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/registration-pack-request'
+      responses:
+        '201':
+          description: Successfully created the registration pack.
+          headers: {}
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/registration-pack-response'
+        '400':
+          $ref: '#/components/responses/BadRequest1'
         '401':
           $ref: '#/components/responses/Unauthorized1'
         '403':
@@ -439,493 +906,227 @@ paths:
         '404':
           $ref: '#/components/responses/NotFound1'
         '409':
-          description: Program item session document limit reached.
+          description: Registration pack for given exhibitor already exists.
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/baseErrorResponse'
+                $ref: '#/components/schemas/error-response'
               example:
-                code: 409
+                code: 409,
+                message: Registration pack for given exhibitor already exists.
+        '429':
+          $ref: '#/components/responses/TooManyRequests1'
+      externalDocs:
+        description: More about OAuth2 authorization code support for administrators
+        url: '#oauth2-auth-code-planner-admin'
+    get:
+      summary: List Registration Pack
+      description: 'Retrieves the registration pack associated with an exhibitor. Each exhibitor has one registration pack per event
+
+        that consolidates capacities across all registration types.'
+      operationId: getExhibitorRegistrationPacks
+      tags:
+      - Exhibitor
+      security:
+      - OAuth2.clientCredentials:
+        - exhibitor/registration-packs:read
+      - OAuth2.authorizationCode:
+        - exhibitor/registration-packs:read
+      parameters:
+      - $ref: '#/components/parameters/id6'
+      - $ref: '#/components/parameters/exhibitorId'
+      responses:
+        '200':
+          description: Successfully retrieved the registration pack.
+          headers: {}
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/exhibitor-registration-pack-list-response'
+        '401':
+          $ref: '#/components/responses/Unauthorized1'
+        '403':
+          $ref: '#/components/responses/Forbidden1'
+        '404':
+          $ref: '#/components/responses/NotFound1'
+        '429':
+          $ref: '#/components/responses/TooManyRequests1'
+      externalDocs:
+        description: More about OAuth2 authorization code support for administrators
+        url: '#oauth2-auth-code-planner-admin'
+  /events/{id}/exhibitors/{exhibitorId}/registration-packs/{registrationPackId}:
+    get:
+      summary: Get Registration Pack
+      description: Retrieves registration types allocated to an exhibitor, along with the count of registrations utilized.
+      operationId: getRegistrationPack
+      tags:
+      - Exhibitor
+      security:
+      - OAuth2.clientCredentials:
+        - exhibitor/registration-packs:read
+      - OAuth2.authorizationCode:
+        - exhibitor/registration-packs:read
+      parameters:
+      - $ref: '#/components/parameters/id6'
+      - $ref: '#/components/parameters/exhibitorId'
+      - $ref: '#/components/parameters/registrationPackId'
+      responses:
+        '200':
+          description: Successfully retrieved the registration pack.
+          headers: {}
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/registration-pack-response'
+        '401':
+          $ref: '#/components/responses/Unauthorized1'
+        '403':
+          $ref: '#/components/responses/Forbidden1'
+        '404':
+          $ref: '#/components/responses/NotFound1'
+        '429':
+          $ref: '#/components/responses/TooManyRequests1'
+      externalDocs:
+        description: More about OAuth2 authorization code support for administrators
+        url: '#oauth2-auth-code-planner-admin'
+    put:
+      summary: Update Registration Pack
+      description: Update registration pack for an exhibitor
+      operationId: updateRegistrationPack
+      tags:
+      - Exhibitor
+      security:
+      - OAuth2.clientCredentials:
+        - exhibitor/registration-packs:write
+      - OAuth2.authorizationCode:
+        - exhibitor/registration-packs:write
+      parameters:
+      - $ref: '#/components/parameters/id6'
+      - $ref: '#/components/parameters/exhibitorId'
+      - $ref: '#/components/parameters/registrationPackId'
+      requestBody:
+        description: Registration pack details
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/registration-pack-request'
+      responses:
+        '200':
+          description: Successfully updated the registration pack.
+          headers: {}
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/registration-pack-response'
+        '400':
+          $ref: '#/components/responses/BadRequest1'
+        '401':
+          $ref: '#/components/responses/Unauthorized1'
+        '403':
+          $ref: '#/components/responses/Forbidden1'
+        '404':
+          $ref: '#/components/responses/NotFound1'
+        '429':
+          $ref: '#/components/responses/TooManyRequests1'
+      externalDocs:
+        description: More about OAuth2 authorization code support for administrators
+        url: '#oauth2-auth-code-planner-admin'
+    delete:
+      summary: Delete Registration Pack
+      description: Delete registration pack for an exhibitor
+      operationId: deleteRegistrationPack
+      tags:
+      - Exhibitor
+      security:
+      - OAuth2.clientCredentials:
+        - exhibitor/registration-packs:delete
+      - OAuth2.authorizationCode:
+        - exhibitor/registration-packs:delete
+      parameters:
+      - $ref: '#/components/parameters/id6'
+      - $ref: '#/components/parameters/exhibitorId'
+      - $ref: '#/components/parameters/registrationPackId'
+      responses:
+        '204':
+          description: Successfully deleted the registration pack.
+          headers: {}
+        '401':
+          $ref: '#/components/responses/Unauthorized1'
+        '403':
+          $ref: '#/components/responses/Forbidden1'
+        '404':
+          $ref: '#/components/responses/NotFound1'
+        '409':
+          description: RegPack cannot be deleted when at least one or more booth staff are already assigned.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/error-response'
+              example:
+                code: 409,
                 message: Conflict
         '429':
           $ref: '#/components/responses/TooManyRequests1'
+      externalDocs:
+        description: More about OAuth2 authorization code support for administrators
+        url: '#oauth2-auth-code-planner-admin'
+  /events/{id}/sponsorship-levels:
     get:
-      security:
-      - OAuth2.clientCredentials:
-        - event/program-items:read
-      - OAuth2.authorizationCode:
-        - event/program-items:read
-      summary: Get Program Item Document
-      description: Returns a single program item to session document relationship for the provided IDs.
-      operationId: getProgramItemSessionDocument
+      summary: List Sponsorship Levels
+      description: Gets a list of associated sponsorship levels for a single event.
+      operationId: getSponsorshipLevels
       tags:
-      - Sessions
-      responses:
-        '200':
-          description: Successfully retrieved a program item to session document relationship for the provided IDs.
-          headers: {}
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/program-item-session-document'
-        '401':
-          $ref: '#/components/responses/Unauthorized1'
-        '403':
-          $ref: '#/components/responses/Forbidden1'
-        '404':
-          $ref: '#/components/responses/NotFound1'
-        '429':
-          $ref: '#/components/responses/TooManyRequests1'
-    delete:
+      - Exhibitor
       security:
       - OAuth2.clientCredentials:
-        - event/program-items:delete
+        - exhibitor/sponsorship-levels:read
       - OAuth2.authorizationCode:
-        - event/program-items:delete
-      summary: Delete Program Item Document
-      description: Deletes session program item to session document relationship based on the provided IDs.
-      operationId: deleteProgramItemSessionDocument
-      tags:
-      - Sessions
-      responses:
-        '204':
-          description: Successfully deleted session program item to session document relationship.
-          headers: {}
-        '401':
-          $ref: '#/components/responses/Unauthorized1'
-        '403':
-          $ref: '#/components/responses/Forbidden1'
-        '404':
-          $ref: '#/components/responses/NotFound1'
-        '429':
-          $ref: '#/components/responses/TooManyRequests1'
-    servers:
-    - url: https://api-platform.cvent.com/ea
-    - url: https://api-platform-eur.cvent.com/ea
-  /session-categories:
-    get:
-      security:
-      - OAuth2.clientCredentials:
-        - event/session-categories:read
-      - OAuth2.authorizationCode:
-        - event/session-categories:read
-      summary: List Session Categories
-      description: Gets a paginated list of session categories.
-      operationId: listSessionsCategories
+        - exhibitor/sponsorship-levels:read
       parameters:
-      - $ref: '#/components/parameters/limit'
-      - $ref: '#/components/parameters/token'
-      - name: sort
-        in: query
-        required: false
-        style: form
-        explode: false
-        description: "The sort order passed as a parameter, used to control the order of the\nsearch results as a priority ordered list of sorts\n\nThere are two orders:\n  * ascending: ASC\n  * descending: DESC\n\nThe following fields are sortable:\n  * name\n"
-        schema:
-          type: string
-          example: name:ASC
-      - name: filter
-        in: query
-        required: false
-        description: "Use filter query parameters to limit results\nto data that matches your criteria. See\n[Filters](https://developers.cvent.com/docs/rest-api/reference/filters) for details.\n\nSupported fields and operators are listed below:\n\n| Field            | Operators                           |\n|------------------|-------------------------------------|\n| id               | `eq`, `ne`, `in`                    |\n| name             | `eq`, `ne`, `contains`              |\n\nThe following operators are available:\n  * and\n  * or\n"
-        schema:
-          type: string
-          example: name contains 'general'
-      tags:
-      - Sessions
+      - $ref: '#/components/parameters/id6'
       responses:
         '200':
-          description: Successfully retrieved a paginated list of sessions categories.
+          description: Successfully retrieved sponsorship levels.
           headers: {}
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/session-category-paginated-response'
-        '400':
-          $ref: '#/components/responses/BadRequest1'
+                $ref: '#/components/schemas/sponsorship-level-list-response'
         '401':
           $ref: '#/components/responses/Unauthorized1'
         '403':
           $ref: '#/components/responses/Forbidden1'
+        '404':
+          $ref: '#/components/responses/NotFound1'
         '429':
           $ref: '#/components/responses/TooManyRequests1'
-      deprecated: false
       externalDocs:
         description: More about OAuth2 authorization code support for administrators
         url: '#oauth2-auth-code-planner-admin'
-    post:
-      security:
-      - OAuth2.clientCredentials:
-        - event/session-categories:write
-      - OAuth2.authorizationCode:
-        - event/session-categories:write
-      summary: Create Session Categories
-      description: Create a session category.
-      operationId: createSessionCategory
-      tags:
-      - Sessions
-      requestBody:
-        description: Contains the details of the session category you're creating.
-        required: true
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/session-category'
-      responses:
-        '201':
-          description: Successfully created a session category.
-          headers: {}
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/session-category'
-        '400':
-          $ref: '#/components/responses/BadRequest1'
-        '401':
-          $ref: '#/components/responses/Unauthorized1'
-        '403':
-          $ref: '#/components/responses/Forbidden1'
-        '429':
-          $ref: '#/components/responses/TooManyRequests1'
-      deprecated: false
-      externalDocs:
-        description: More about OAuth2 authorization code support for administrators
-        url: '#oauth2-auth-code-planner-admin'
-    servers:
-    - url: https://api-platform.cvent.com/ea
-    - url: https://api-platform-eur.cvent.com/ea
-  /session-segments:
+  /events/{id}/sponsorship-levels/{sponsorshipLevelId}:
     get:
+      summary: Get Sponsorship Level
+      description: Retrieves associated sponsorship level data for a single sponsorship level ID.
+      operationId: getSponsorshipLevel
+      tags:
+      - Exhibitor
       security:
       - OAuth2.clientCredentials:
-        - event/session-segments:read
+        - exhibitor/sponsorship-levels:read
       - OAuth2.authorizationCode:
-        - event/session-segments:read
-      summary: Get Session Segments
-      description: Return a list of session and audience segment associations.
-      operationId: GetSessionSegments
-      tags:
-      - Sessions
+        - exhibitor/sponsorship-levels:read
       parameters:
-      - $ref: '#/components/parameters/limit'
-      - $ref: '#/components/parameters/token'
-      - name: filter
-        in: query
-        required: false
-        description: "A filter query string narrows search results and supports the combination of logical and comparison operators.\nThe filter adheres to the pattern filter='field' comparisonType 'value'.\n\nThere are two comparison types that can be used in filter expressions:\n  * equal: eq\n  * includes value(s): in\n\nThe following field is filterable:\n  * segment.id (eq|in)\n  * session.id (eq|in)\n\nThe following operators are available:\n  * and\n  * or\n"
-        schema:
-          type: string
-          example: segment.id in ('04ca6ae2-0dc3-487b-953e-86d6abbdf7d3', '34ca65e2-1dc3-487b-589e-839d8bbdf7d3')
+      - $ref: '#/components/parameters/id6'
+      - $ref: '#/components/parameters/sponsorshipLevelId'
       responses:
         '200':
-          description: Successfully retrieved a paginated list of session and audience segment associations.
+          description: Successfully retrieved sponsorship level data.
           headers: {}
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/session-segment-paginated-response'
-        '400':
-          $ref: '#/components/responses/BadRequest1'
-        '401':
-          $ref: '#/components/responses/Unauthorized1'
-        '403':
-          $ref: '#/components/responses/Forbidden1'
-        '429':
-          $ref: '#/components/responses/TooManyRequests1'
-      externalDocs:
-        description: More about OAuth2 authorization code support for administrators
-        url: '#oauth2-auth-code-planner-admin'
-    servers:
-    - url: https://api-platform.cvent.com/ea
-    - url: https://api-platform-eur.cvent.com/ea
-  /sessions:
-    get:
-      security:
-      - OAuth2.clientCredentials:
-        - event/sessions:read
-      - OAuth2.authorizationCode:
-        - event/sessions:read
-      summary: List Sessions
-      description: Gets a paginated list of sessions.
-      operationId: listSessions
-      parameters:
-      - $ref: '#/components/parameters/after'
-      - $ref: '#/components/parameters/before'
-      - $ref: '#/components/parameters/limit'
-      - $ref: '#/components/parameters/token'
-      - $ref: '#/components/parameters/sort6'
-      - $ref: '#/components/parameters/locale1'
-      - name: filter
-        in: query
-        required: false
-        description: 'Use filter query parameters to limit results
-
-          to data that matches your criteria. See
-
-          [Filters](https://developers.cvent.com/docs/rest-api/reference/filters) for details.
-
-
-          Supported fields and operators are listed below:
-
-
-          | Field                              | Operators                                    |
-
-          |------------------------------------|----------------------------------------------|
-
-          | id                                 | `eq`, `ne`, `in`                             |
-
-          | status                             | `eq`, `ne`                                   |
-
-          | event.id                           | `eq`, `ne`                                   |
-
-          | title                              | `eq`, `ne`, `contains`, `match`              |
-
-          | code                               | `eq`, `ne`                                   |
-
-          | category.id                        | `eq`, `ne`                                   |
-
-          | category.name                      | `eq`, `ne`, `contains`                       |
-
-          | start                              | `eq`, `ne`, `lt`, `le`, `gt`, `ge`           |
-
-          | end                                | `eq`, `ne`, `lt`, `le`, `gt`, `ge`           |
-
-          | description                        | `eq`, `ne`, `contains`                       |
-
-          | capacity                           | `eq`, `ne`, `lt`, `le`, `gt`, `ge`           |
-
-          | location.id                        | `eq`, `ne`                                   |
-
-          | location.name                      | `eq`, `ne`, `contains`                       |
-
-          | location.code                      | `eq`, `ne`                                   |
-
-          | includedSession                    | `eq`, `ne`                                   |
-
-          | enableWaitlist                     | `eq`, `ne`                                   |
-
-          | featured                           | `eq`, `ne`                                   |
-
-          | openForRegistration                | `eq`, `ne`                                   |
-
-          | openForAttendeeHub                 | `eq`, `ne`                                   |
-
-          | virtual                            | `eq`, `ne`                                   |
-
-          | created                            | `eq`, `ne`, `lt`, `le`, `gt`, `ge`           |
-
-          | lastModified                       | `eq`, `ne`, `lt`, `le`, `gt`, `ge`           |
-
-          | registrationTypes                  | `contains`, `in`, `is empty`, `is not empty` |
-
-          | customField.{uuid of custom field} | `eq`, `ne`, `lt`, `le`, `gt`, `ge`, `sw`, `contains`, `in` |
-
-          | group.id                           | `eq`, `ne`                                   |
-
-          | admissionItems                     | `contains`, `is empty`, `is not empty`       |
-
-          | segments                           | `contains`, `in`, `is empty`, `is not empty` |
-
-
-          **Note:** If the "match" filter is passed, the endpoint will return a relevance score for each session in the list and, by default, sort results by relevance. Higher scores represent a higher relevance to the filter string.
-
-
-          The following logical operators are supported for combining filters:
-
-          * and
-
-          * or
-
-          '
-        schema:
-          type: string
-          example: status eq 'active' or status eq 'closed' or event.id eq 'abc' or customField.{uuid of custom field} in ('abc','def')
-      tags:
-      - Sessions
-      responses:
-        '200':
-          description: Successfully retrieved a paginated list of sessions.
-          headers: {}
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/sessions-paginated-response'
-        '400':
-          $ref: '#/components/responses/BadRequest1'
-        '401':
-          $ref: '#/components/responses/Unauthorized1'
-        '403':
-          $ref: '#/components/responses/Forbidden1'
-        '429':
-          $ref: '#/components/responses/TooManyRequests1'
-      deprecated: false
-      externalDocs:
-        description: More about OAuth2 authorization code support for administrators
-        url: '#oauth2-auth-code-planner-admin'
-    post:
-      security:
-      - OAuth2.clientCredentials:
-        - event/sessions:write
-      - OAuth2.authorizationCode:
-        - event/sessions:write
-      summary: Create Session
-      description: Creates a single session based on the values provided in the request body.
-      operationId: createSession
-      tags:
-      - Sessions
-      requestBody:
-        description: Details of the session you're creating.
-        required: true
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/session'
-      responses:
-        '201':
-          description: Successfully created a session with the provided details.
-          headers: {}
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/session'
-        '400':
-          $ref: '#/components/responses/BadRequest1'
-        '401':
-          $ref: '#/components/responses/Unauthorized1'
-        '403':
-          $ref: '#/components/responses/Forbidden1'
-        '429':
-          $ref: '#/components/responses/TooManyRequests1'
-      externalDocs:
-        description: More about OAuth2 authorization code support for administrators
-        url: '#oauth2-auth-code-planner-admin'
-    servers:
-    - url: https://api-platform.cvent.com/ea
-    - url: https://api-platform-eur.cvent.com/ea
-  /sessions/filter:
-    post:
-      security:
-      - OAuth2.clientCredentials:
-        - event/sessions:read
-      - OAuth2.authorizationCode:
-        - event/sessions:read
-      summary: List Sessions
-      description: Gets a paginated list of sessions by sending a filter in the request's body. This method returns the same data as GET List Sessions but allows longer filters.
-      operationId: listSessionsPostFilters
-      requestBody:
-        description: 'Contains filters for the request. See the filter description of
-
-          <a href="#operation/listSessions">GET List Sessions</a> for complete
-
-          filtering information.
-
-          '
-        required: false
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/filter'
-      parameters:
-      - $ref: '#/components/parameters/after'
-      - $ref: '#/components/parameters/before'
-      - $ref: '#/components/parameters/limit'
-      - $ref: '#/components/parameters/token'
-      - $ref: '#/components/parameters/locale1'
-      tags:
-      - Sessions
-      responses:
-        '200':
-          description: Successfully retrieved a paginated list of sessions.
-          headers: {}
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/sessions-paginated-response'
-        '400':
-          $ref: '#/components/responses/BadRequest1'
-        '401':
-          $ref: '#/components/responses/Unauthorized1'
-        '403':
-          $ref: '#/components/responses/Forbidden1'
-        '429':
-          $ref: '#/components/responses/TooManyRequests1'
-      deprecated: false
-      externalDocs:
-        description: More about OAuth2 authorization code support for administrators
-        url: '#oauth2-auth-code-planner-admin'
-    servers:
-    - url: https://api-platform.cvent.com/ea
-    - url: https://api-platform-eur.cvent.com/ea
-  /sessions/{id}:
-    parameters:
-    - $ref: '#/components/parameters/sessionId2'
-    get:
-      summary: Get Session
-      description: Gets a single session based on the provided session ID.
-      operationId: getSessionById
-      security:
-      - OAuth2.clientCredentials:
-        - event/sessions:read
-      - OAuth2.authorizationCode:
-        - event/sessions:read
-      tags:
-      - Sessions
-      responses:
-        '200':
-          description: Successfully retrieved a session.
-          headers: {}
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/session'
-        '401':
-          $ref: '#/components/responses/Unauthorized1'
-        '403':
-          $ref: '#/components/responses/Forbidden1'
-        '404':
-          $ref: '#/components/responses/NotFound1'
-        '429':
-          $ref: '#/components/responses/TooManyRequests1'
-      deprecated: false
-      externalDocs:
-        description: More about OAuth2 authorization code support for administrators
-        url: '#oauth2-auth-code-planner-admin'
-    put:
-      security:
-      - OAuth2.clientCredentials:
-        - event/sessions:write
-      - OAuth2.authorizationCode:
-        - event/sessions:write
-      summary: Update Session
-      description: Updates the given session with the values provided in the request body.
-      operationId: updateSession
-      tags:
-      - Sessions
-      requestBody:
-        description: 'Contains values that you''ll update the session with.
-
-          Passing a null value in a field renders the field blank.
-
-          Omitting a field from the request body renders the field blank
-
-          on the session record.
-
-          '
-        required: true
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/session-update'
-      responses:
-        '200':
-          description: Successfully updated the session.
-          headers: {}
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/session'
-        '400':
-          $ref: '#/components/responses/BadRequest1'
+                $ref: '#/components/schemas/existing-sponsorship-level'
         '401':
           $ref: '#/components/responses/Unauthorized1'
         '403':
@@ -937,382 +1138,17 @@ paths:
       externalDocs:
         description: More about OAuth2 authorization code support for administrators
         url: '#oauth2-auth-code-planner-admin'
-    delete:
-      security:
-      - OAuth2.clientCredentials:
-        - event/sessions:delete
-      - OAuth2.authorizationCode:
-        - event/sessions:delete
-      summary: Delete Session
-      description: Deletes a session based on the given session ID.
-      operationId: deleteSession
-      tags:
-      - Sessions
-      responses:
-        '204':
-          description: Successfully deleted a session.
-          headers: {}
-        '401':
-          $ref: '#/components/responses/Unauthorized1'
-        '403':
-          $ref: '#/components/responses/Forbidden1'
-        '404':
-          $ref: '#/components/responses/NotFound1'
-        '429':
-          $ref: '#/components/responses/TooManyRequests1'
-      externalDocs:
-        description: More about OAuth2 authorization code support for administrators
-        url: '#oauth2-auth-code-planner-admin'
-    servers:
-    - url: https://api-platform.cvent.com/ea
-    - url: https://api-platform-eur.cvent.com/ea
-  /sessions/{id}/custom-fields/{customFieldId}/answers:
-    parameters:
-    - $ref: '#/components/parameters/sessionId2'
-    - $ref: '#/components/parameters/customFieldId2'
-    put:
-      summary: Update Custom Field Answers
-      description: Updates custom field answers for a single custom field and single session.
-      operationId: updateSessionCustomFieldAnswers
-      security:
-      - OAuth2.clientCredentials:
-        - event/sessions:write
-      - OAuth2.authorizationCode:
-        - event/sessions:write
-      tags:
-      - Sessions
-      requestBody:
-        description: Contains the custom field you're updating, and the new answer.
-        required: true
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/custom-field'
-      responses:
-        '200':
-          description: Successfully updated custom field answers for a session.
-          headers: {}
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/custom-field'
-        '400':
-          $ref: '#/components/responses/BadRequest1'
-        '401':
-          $ref: '#/components/responses/Unauthorized1'
-        '403':
-          $ref: '#/components/responses/Forbidden1'
-        '404':
-          $ref: '#/components/responses/NotFound1'
-        '429':
-          $ref: '#/components/responses/TooManyRequests1'
-      externalDocs:
-        description: More about OAuth2 authorization code support for administrators
-        url: '#oauth2-auth-code-planner-admin'
-    servers:
-    - url: https://api-platform.cvent.com/ea
-    - url: https://api-platform-eur.cvent.com/ea
-  /sessions/{id}/docs:
-    parameters:
-    - $ref: '#/components/parameters/sessionId2'
-    get:
-      security:
-      - OAuth2.clientCredentials:
-        - event/sessions:read
-      - OAuth2.authorizationCode:
-        - event/sessions:read
-      summary: List Session Documents
-      description: Gets a paginated list of document URLs for a single session.
-      operationId: listSessionDocs
-      parameters:
-      - $ref: '#/components/parameters/limit'
-      - $ref: '#/components/parameters/token'
-      - name: filter
-        in: query
-        required: false
-        description: 'Use filter query parameters to limit results
-
-          to data that matches your criteria. See
-
-          [Filters](https://developers.cvent.com/docs/rest-api/reference/filters) for details.
-
-
-          Supported fields and operators are listed below:
-
-
-          | Field            | Operators                          |
-
-          |------------------|-------------------------------------|
-
-          | file.id          | `eq`, `ne`                          |
-
-
-          The following logical operators are supported for combining filters:
-
-          * and
-
-          * or
-
-          '
-        schema:
-          type: string
-          example: file.id eq '04ca6ae2-0dc3-487b-953e-86d6abbdf7d3'
-      tags:
-      - Sessions
-      responses:
-        '200':
-          description: Successfully retrieved a list of documents.
-          headers: {}
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/session-document-paginated-response'
-        '400':
-          $ref: '#/components/responses/BadRequest1'
-        '401':
-          $ref: '#/components/responses/Unauthorized1'
-        '403':
-          $ref: '#/components/responses/Forbidden1'
-        '404':
-          $ref: '#/components/responses/NotFound1'
-        '429':
-          $ref: '#/components/responses/TooManyRequests1'
-      deprecated: false
-      externalDocs:
-        description: More about OAuth2 authorization code support for administrators
-        url: '#oauth2-auth-code-planner-admin'
-    servers:
-    - url: https://api-platform.cvent.com/ea
-    - url: https://api-platform-eur.cvent.com/ea
-  /sessions/{id}/docs/{fileId}:
-    parameters:
-    - $ref: '#/components/parameters/sessionId2'
-    - $ref: '#/components/parameters/fileId'
-    get:
-      security:
-      - OAuth2.clientCredentials:
-        - event/sessions:read
-      - OAuth2.authorizationCode:
-        - event/sessions:read
-      summary: Get Session Document
-      description: Get a specific document that is assigned to a specific session.
-      operationId: getSessionDoc
-      tags:
-      - Sessions
-      responses:
-        '200':
-          description: Successfully retrieved a document.
-          headers: {}
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/session-file'
-        '401':
-          $ref: '#/components/responses/Unauthorized1'
-        '403':
-          $ref: '#/components/responses/Forbidden1'
-        '404':
-          $ref: '#/components/responses/NotFound1'
-        '429':
-          $ref: '#/components/responses/TooManyRequests1'
-      externalDocs:
-        description: More about OAuth2 authorization code support for administrators
-        url: '#oauth2-auth-code-planner-admin'
-    put:
-      security:
-      - OAuth2.clientCredentials:
-        - event/sessions:write
-      - OAuth2.authorizationCode:
-        - event/sessions:write
-      summary: Add Document To Session
-      description: 'Associates a given document to a session. Documents must be
-
-        uploaded before you can associate
-
-        them.'
-      operationId: addSessionDoc
-      tags:
-      - Sessions
-      responses:
-        '200':
-          description: Successfully added document to a session.
-          headers: {}
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/session-file'
-        '401':
-          $ref: '#/components/responses/Unauthorized1'
-        '403':
-          $ref: '#/components/responses/Forbidden1'
-        '404':
-          $ref: '#/components/responses/NotFound1'
-        '429':
-          $ref: '#/components/responses/TooManyRequests1'
-      externalDocs:
-        description: More about OAuth2 authorization code support for administrators
-        url: '#oauth2-auth-code-planner-admin'
-    delete:
-      security:
-      - OAuth2.clientCredentials:
-        - event/sessions:write
-      - OAuth2.authorizationCode:
-        - event/sessions:write
-      summary: Delete Document from Session
-      description: Disassociates a given document from a session. Document IDs are provided after file upload.
-      operationId: deleteSessionDocument
-      tags:
-      - Sessions
-      responses:
-        '204':
-          description: Successfully deleted a session's document.
-          headers: {}
-        '401':
-          $ref: '#/components/responses/Unauthorized1'
-        '403':
-          $ref: '#/components/responses/Forbidden1'
-        '404':
-          $ref: '#/components/responses/NotFound1'
-        '429':
-          $ref: '#/components/responses/TooManyRequests1'
-      externalDocs:
-        description: More about OAuth2 authorization code support for administrators
-        url: '#oauth2-auth-code-planner-admin'
-    servers:
-    - url: https://api-platform.cvent.com/ea
-    - url: https://api-platform-eur.cvent.com/ea
-  /sessions/{id}/speakers:
-    parameters:
-    - $ref: '#/components/parameters/sessionId1'
-    get:
-      security:
-      - OAuth2.clientCredentials:
-        - event/speakers:read
-      - OAuth2.authorizationCode:
-        - event/speakers:read
-      summary: List Session's Speakers
-      description: Get a paginated list of speakers and categories assigned to the provided session ID.
-      operationId: listSessionSpeakers
-      parameters:
-      - $ref: '#/components/parameters/limit'
-      - $ref: '#/components/parameters/token'
-      tags:
-      - Sessions
-      responses:
-        '200':
-          description: Successfully retrieved a paginated list of speakers assigned to the session.
-          headers: {}
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/session-speaker-paginated-response'
-        '400':
-          $ref: '#/components/responses/BadRequest1'
-        '401':
-          $ref: '#/components/responses/Unauthorized1'
-        '403':
-          $ref: '#/components/responses/Forbidden1'
-        '404':
-          $ref: '#/components/responses/NotFound1'
-        '429':
-          $ref: '#/components/responses/TooManyRequests1'
-      deprecated: false
-      externalDocs:
-        description: More about OAuth2 authorization code support for administrators
-        url: '#oauth2-auth-code-planner-admin'
-    servers:
-    - url: https://api-platform.cvent.com/ea
-    - url: https://api-platform-eur.cvent.com/ea
-  /sessions/{id}/speakers/{speakerId}:
-    parameters:
-    - $ref: '#/components/parameters/sessionId2'
-    - $ref: '#/components/parameters/speakerId1'
-    put:
-      security:
-      - OAuth2.clientCredentials:
-        - event/sessions:write
-      - OAuth2.authorizationCode:
-        - event/sessions:write
-      summary: Assign Speaker to Session
-      description: Assign a given speaker to a given session based on their IDs.
-      operationId: addSpeakerToSession
-      tags:
-      - Sessions
-      requestBody:
-        description: Assign a category and order to the session's speaker. If no category is included in the body or the body isn't provided, the speaker's default category will be used. Similarly if no order is provided or no body is provided the speaker will be placed last in the ordered list of speakers for the session.
-        required: false
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/session-speaker-assignment'
-      responses:
-        '204':
-          description: Successfully added the speaker to the session.
-        '400':
-          $ref: '#/components/responses/BadRequest1'
-        '401':
-          $ref: '#/components/responses/Unauthorized1'
-        '403':
-          $ref: '#/components/responses/Forbidden1'
-        '404':
-          $ref: '#/components/responses/NotFound1'
-        '429':
-          $ref: '#/components/responses/TooManyRequests1'
-      externalDocs:
-        description: More about OAuth2 authorization code support for administrators
-        url: '#oauth2-auth-code-planner-admin'
-    delete:
-      security:
-      - OAuth2.clientCredentials:
-        - event/sessions:delete
-      - OAuth2.authorizationCode:
-        - event/sessions:delete
-      summary: Delete Speaker From Session
-      description: Deletes a speaker from a session.
-      operationId: removeSpeakerFromSession
-      tags:
-      - Sessions
-      responses:
-        '204':
-          description: Successfully removed the speaker from the session.
-        '401':
-          $ref: '#/components/responses/Unauthorized1'
-        '403':
-          $ref: '#/components/responses/Forbidden1'
-        '404':
-          $ref: '#/components/responses/NotFound1'
-        '429':
-          $ref: '#/components/responses/TooManyRequests1'
-      deprecated: false
-      externalDocs:
-        description: More about OAuth2 authorization code support for administrators
-        url: '#oauth2-auth-code-planner-admin'
-    servers:
-    - url: https://api-platform.cvent.com/ea
-    - url: https://api-platform-eur.cvent.com/ea
 components:
   schemas:
-    Session:
+    AdditionalChoice1:
+      title: Additional Choice
+      description: Contains text of additional choice
       type: object
       properties:
-        id:
+        text:
           type: string
-        title:
-          type: string
-        start:
-          type: string
-          format: date-time
-        end:
-          type: string
-          format: date-time
-        capacity:
-          type: integer
-    uuid-property:
-      title: UUID Property
-      description: A string that has to be a format matching the industry standard uuid
-      type: string
-      format: uuid
-      example: 04ca6ae2-0dc3-487b-953e-86d6abbdf7d3
+          description: Text Value of additional choice
+          example: Not Applicable or Other
     Paging:
       title: Paging
       required:
@@ -1342,37 +1178,12 @@ components:
           example: 2
         _links:
           $ref: '#/components/schemas/PaginationLinks'
-    program-item-document-paginated-response:
-      title: ProgramItemDocumentPaginatedResponse
-      description: The response from a request to get the list of session program item documents.
-      required:
-      - paging
-      - data
-      type: object
-      properties:
-        paging:
-          $ref: '#/components/schemas/Paging'
-        data:
-          type: array
-          items:
-            $ref: '#/components/schemas/program-item-session-document'
-          description: Collection of Session Program Item Documents.
-          maxItems: 200
-    session-speaker-paginated-response:
-      title: SessionSpeakerPaginatedResponse
-      description: The response from a request to get the list of session speakers.  This includes the paging object as well as the collection of session speakers.
-      required:
-      - paging
-      - data
-      type: object
-      properties:
-        paging:
-          $ref: '#/components/schemas/Paging'
-        data:
-          type: array
-          items:
-            $ref: '#/components/schemas/SessionSpeaker'
-          description: Collection of a session's speakers.
+    uuid-property:
+      title: UUID Property
+      description: A string that has to be a format matching the industry standard uuid
+      type: string
+      format: uuid
+      example: 04ca6ae2-0dc3-487b-953e-86d6abbdf7d3
     Audit:
       title: Audit
       description: Audit information
@@ -1400,133 +1211,149 @@ components:
           description: The identifier of the user that last updated this record.
           readOnly: true
           example: hporter
-    NamedObject:
-      title: NamedObject
-      description: A Named object
+    exhibitor-banner-logo-file:
+      title: Exhibitor Banner/Logo File
+      type: object
+      description: JSON Schema for Exhibitor Banner/Logo File
+      properties:
+        file:
+          type: object
+          description: File object containing UUID
+          properties:
+            id:
+              $ref: '#/components/schemas/uuid-property'
+        href:
+          format: uri
+          type: string
+          description: URL of a exhibitor banner/logo image
+          readOnly: true
+          example: https://images.cvent.com/pt/production/account_123/event_123/ExhibitorLogo.png
+    exhibitor-answers-request:
+      title: Exhibitor Answers Request
+      description: An object representing the request for exhibitor answers.
       type: object
       properties:
-        id:
-          $ref: '#/components/schemas/uuid-property'
-        name:
-          type: string
-          description: Name of the object
-          example: Sample Object name
-    Relevance:
-      title: Relevance
-      description: Returned when the `match` filter is applied. Indicates how relevant the `match` filter term is to the search result. Larger numbers represent higher relevance with respect to other search results in the request. Null if no `match` filter is provided.
-      type: number
-      example: 2.3
-      exclusiveMinimum: 0
-    session-segment-paginated-response:
-      title: SessionSegmentPaginatedResponse
-      description: The response from a request to get the list of SessionSegment associations.
-      required:
-      - paging
-      - data
+        data:
+          type: array
+          items:
+            $ref: '#/components/schemas/ExistingExhibitorAnswer'
+          description: List of answers for all exhibitor questions.
+    exhibitors-paginated-response:
+      title: ExhibitorsPaginatedResponse
       type: object
+      description: A paginated response containing a list of exhibitors for an event.
       properties:
         paging:
           $ref: '#/components/schemas/Paging'
         data:
           type: array
           items:
-            $ref: '#/components/schemas/session-segment'
-          description: Collection of SessionSegment associations.
-    session-category:
-      title: SessionCategory
-      description: This is used to denote the category of a session.
-      required:
-      - name
+            $ref: '#/components/schemas/exhibitor-response'
+          description: Paginated list of exhibitors for an event.
+    Event4:
+      description: The Associated Event.
+      title: Event
       type: object
+      required:
+      - id
       properties:
         id:
-          title: Session Category Id
-          description: A string that represents a specified session category.
           type: string
           format: uuid
-          example: 38db6ae2-0dc3-487b-953e-86d6abbdf7d3
-          readOnly: true
-        name:
-          type: string
-          description: The name of the session category.
-          maxLength: 100
-          example: Networking
-        description:
-          type: string
-          description: A description for the session category.
-          maxLength: 2500
-          example: During networking sessions, come meet fellow workers in your field.
-    session-locations-paginated-response:
-      title: SessionLocationPaginatedResponse
-      required:
-      - data
-      - paging
+          example: 3db28cfc-db22-11eb-8d19-0242ac130003
+          description: Event id
+    registration-pack-request:
+      title: RegistrationPack
       type: object
-      description: A paginated response of session locations.
-      properties:
-        paging:
-          $ref: '#/components/schemas/Paging'
-        data:
-          type: array
-          items:
-            $ref: '#/components/schemas/session-location'
-          description: Collection of session locations.
-    SessionId:
-      title: SessionId
-      description: The unique identifier for a session.
-      type: string
-      format: uuid
-      example: 832cb481-74c5-4859-ba21-bbb5be8b86e0
-    baseErrorResponse:
-      title: ErrorResponse
-      description: Represents an error response with additional details of cascading error messages.
-      allOf:
-      - $ref: '#/components/schemas/ErrorResponseBase'
-      type: object
-      required:
-      - code
-      - message
-      properties:
-        details:
-          type: array
-          items:
-            $ref: '#/components/schemas/ErrorResponseBase'
-          description: Additional details of cascading error messages.
-    event-id:
-      type: object
-      title: Event
-      description: The related event object.
-      properties:
-        id:
-          $ref: '#/components/schemas/EventId1'
-    session-segment:
-      title: SessionSegment
-      type: object
-      description: Represents a mapping between a session and an audience segment, which is used to enforce session visibility to only those in certain audience segments.
       required:
       - event
-      - session
-      - segment
+      - exhibitor
+      - capacities
+      description: A registration pack defining the registration type capacity allocations for an exhibitor at an event.
+      properties:
+        event:
+          $ref: '#/components/schemas/Event4'
+        exhibitor:
+          $ref: '#/components/schemas/Exhibitor'
+        capacities:
+          type: array
+          minItems: 1
+          items:
+            $ref: '#/components/schemas/Capacity'
+          description: An array of capacities for the registration pack.
+    existing-exhibitor-question:
+      title: Existing Exhibitor Question
+      type: object
+      description: Schema for an existing exhibitor question
       allOf:
-      - $ref: '#/components/schemas/Audit'
+      - $ref: '#/components/schemas/exhibitor-question'
+      required:
+      - id
       properties:
         id:
-          description: ID of the session segment.
           type: string
           format: uuid
-          example: 38db6ae2-0dc3-487b-953e-86d6abbdf7d3
           readOnly: true
+          example: f7c01518-1792-11ec-9621-0242ac130002
+          description: Exhibitor Question id
+        displayOrder:
+          type: integer
+          description: The unique display order of the exhibitor question.
+          example: 1
+          readOnly: true
+          default: 1
+          minimum: 1
+    ExistingExhibitorAnswer:
+      title: Existing Exhibitor Answer
+      type: object
+      description: Existing Exhibitor Answer schema
+      allOf:
+      - $ref: '#/components/schemas/ExhibitorAnswer'
+      required:
+      - id
+      properties:
+        id:
+          type: string
+          format: uuid
+          readOnly: true
+          example: 06d2bfce-1793-11ec-9621-0242ac130002
+          description: Exhibitor Answer id
+    ExhibitorAnswer:
+      title: Exhibitor Answer
+      description: A JSON Schema representation of an exhibitor answer entity.
+      type: object
+      allOf:
+      - $ref: '#/components/schemas/Audit'
+      required:
+      - question
+      - exhibitor
+      - event
+      - answers
+      properties:
+        question:
+          $ref: '#/components/schemas/UUID'
         event:
-          $ref: '#/components/schemas/event-id'
-        session:
-          $ref: '#/components/schemas/Session-1'
-        segment:
-          $ref: '#/components/schemas/Segment1'
-        active:
-          description: True indicates the session segment is active.
-          type: boolean
-          example: true
-          default: true
+          $ref: '#/components/schemas/Event4'
+        exhibitor:
+          $ref: '#/components/schemas/Exhibitor'
+        answers:
+          description: List of answers
+          type: array
+          items:
+            $ref: '#/components/schemas/Answer-2'
+    ExistingCapacity:
+      title: ExistingCapacity
+      type: object
+      description: Represents the existing capacity of the registration type for an exhibitor
+      allOf:
+      - $ref: '#/components/schemas/Capacity'
+      required:
+      - availableCapacity
+      properties:
+        availableCapacity:
+          type: integer
+          description: Available capacity of the registration type for an exhibitor
+          example: 4
     ErrorResponse:
       title: ErrorResponse
       description: Represents an error response with additional details of cascading error messages.
@@ -1542,106 +1369,103 @@ components:
           items:
             $ref: '#/components/schemas/ErrorResponseBase'
           description: Additional details of cascading error messages.
-    Location1:
-      title: Location
+    LeadQualificationQuestion:
+      title: Lead Qualification Question
       type: object
-      description: Used to denote a locations name and abbreviation.
+      description: A JSON schema representing a Lead Qualification Question model
+      allOf:
+      - $ref: '#/components/schemas/Audit'
       properties:
         id:
-          $ref: '#/components/schemas/uuid-property'
-        code:
-          type: string
-          description: Code / Abbreviation of the location.
-          maxLength: 30
-          example: ConfA
-          readOnly: true
-        name:
-          type: string
-          description: Name of the location.
-          maxLength: 100
-          example: Conference Room A
-          readOnly: true
-    sessions-paginated-response:
-      title: SessionPaginatedResponse
-      required:
-      - data
-      - paging
-      type: object
-      description: A paginated response of session objects.
-      properties:
-        paging:
-          $ref: '#/components/schemas/Paging'
-        data:
-          type: array
-          items:
-            $ref: '#/components/schemas/session'
-          description: Collection of sessions.
-    session-category-paginated-response:
-      title: SessionCategoryPaginatedResponse
-      description: The response from a request to get the list of session categories.  This includes the paging object as well as the collection of session categories.
-      required:
-      - paging
-      - data
-      type: object
-      properties:
-        paging:
-          $ref: '#/components/schemas/Paging'
-        data:
-          type: array
-          items:
-            $ref: '#/components/schemas/session-category'
-          description: Collection of session categories.
-    filter:
-      title: A filter sent in the body of a request
-      description: A filter which is sent through the body of the request.
-      type: object
-      properties:
-        filter:
-          type: string
-          example: property eq 'value'
-          description: Filter included in the request.
-    session-location:
-      title: SessionLocation
-      type: object
-      required:
-      - code
-      - name
-      description: Used to denote a sessions location.
-      properties:
-        id:
-          title: UUID Property
-          description: A string that represents a specified location.
           type: string
           format: uuid
-          example: 38db6ae2-0dc3-487b-953e-86d6abbdf7d3
-          readOnly: true
+          example: 04ca6ae2-0dc3-487b-953e-86d6abbdf7d3
+          description: Lead Qualification Question id
+        event:
+          $ref: '#/components/schemas/Event4'
+        exhibitor:
+          $ref: '#/components/schemas/Exhibitor'
+        type:
+          type: string
+          description: Type of question
+          enum:
+          - MultiChoice
+          - SingleChoice
+          - Rating
+          - OpenEndedTextOneLine
+          - OpenEndedTextCommentBox
+          - OpenEndedDateTime
         code:
           type: string
-          description: Code / Abbreviation of the location.
-          maxLength: 30
-          example: ConfA
+          description: question code
+          example: cult
+        choices:
+          type: array
+          description: List of available choices for the question
+          items:
+            $ref: '#/components/schemas/Choice1'
+        notApplicableAnswer:
+          $ref: '#/components/schemas/AdditionalChoice1'
+        otherAnswers:
+          $ref: '#/components/schemas/AdditionalChoice1'
+        required:
+          type: boolean
+          description: A boolean indicating whether the question is mandatory or not
+          example: true
+        text:
+          type: string
+          description: text of the question
+          example: Is there a business need?
+    registration-pack-response:
+      title: ExistingRegistrationPack
+      type: object
+      required:
+      - id
+      - event
+      - exhibitor
+      - capacities
+      description: Schema for existing registration pack object
+      properties:
+        id:
+          type: string
+          format: uuid
+          example: 50f4f0df-0c2d-4e6b-8e68-e1413b6917f5
+          description: Registration pack id
+        event:
+          $ref: '#/components/schemas/Event4'
+        exhibitor:
+          $ref: '#/components/schemas/Exhibitor'
+        capacities:
+          type: array
+          items:
+            $ref: '#/components/schemas/ExistingCapacity'
+          description: Capacities allocated per registration type for this exhibitor's registration pack.
+    ExhibitorCategoryId:
+      title: ExhibitorCategoryId
+      type: object
+      description: Schema for Exhibitor Category ID.
+      properties:
+        id:
+          type: string
+          format: uuid
+          example: 534a465b-b4cb-471d-9498-4bf3917ad8bf
+          description: ID of exhibitor category.
+    SponsorshipLevel-1:
+      title: Sponsorship level
+      type: object
+      description: A file representing the sponsorship level
+      required:
+      - event
+      - name
+      allOf:
+      - $ref: '#/components/schemas/Audit'
+      properties:
+        event:
+          $ref: '#/components/schemas/Event4'
         name:
           type: string
-          description: Name of the location.
-          maxLength: 100
-          example: Conference Room A
-    program-item-session-documents:
-      title: ProgramItemSessionDocuments
-      description: Represents an array of session document IDs associated with the given program item ID.
-      type: object
-      properties:
-        data:
-          type: array
-          description: List of program item session documents.
-          items:
-            $ref: '#/components/schemas/program-item-session-document'
-          maxItems: 10
-    EventId1:
-      title: EventId
-      description: The unique identifier for an event
-      type: string
-      format: uuid
-      example: 78842378-5d83-11ee-8c99-0242ac120002
+          description: Name of the sponsorship level
+          example: Silver
     PaginationLinks:
       title: PaginationLinks
       type: object
@@ -1653,31 +1477,103 @@ components:
           $ref: '#/components/schemas/Link'
         prev:
           $ref: '#/components/schemas/Link'
-    SessionLite:
+    Capacity:
+      title: Capacity
+      type: object
+      required:
+      - registrationType
+      - reservedCapacity
+      properties:
+        registrationType:
+          type: object
+          description: Registration type information
+          required:
+          - id
+          properties:
+            id:
+              type: string
+              format: uuid
+              example: 923d5629-3cac-40c2-8237-34937dd93475
+              description: Registration type id
+        reservedCapacity:
+          minimum: 1
+          type: integer
+          description: Reserved capacity of the registration type for an exhibitor
+          example: 5
+      description: Registration capacity object containing registration type and reserved capacity
+    exhibitor-category-request:
+      title: Exhibitor Category
+      type: object
+      required:
+      - event
+      - name
+      - order
+      - type
+      allOf:
+      - $ref: '#/components/schemas/Audit'
+      properties:
+        event:
+          $ref: '#/components/schemas/Event4'
+        name:
+          type: string
+          description: Name of the exhibitor category
+          maxLength: 50
+          example: Automobile
+        description:
+          description: Exhibitor Category description
+          type: string
+          maxLength: 180
+          example: everything related to automobiles
+        order:
+          description: order for exhibitor category
+          type: integer
+          example: 3
+          minimum: 1
+        type:
+          description: Type of exhibitor category
+          enum:
+          - BANNER
+          - LOGO
+          type: string
+          example: LOGO
+      description: JSON schema representing an Exhibitor Category object
+    Choice1:
+      title: Choice
+      description: A schema representing a choice object
+      type: object
+      allOf:
+      - $ref: '#/components/schemas/BaseChoice'
+      properties:
+        label:
+          type: string
+          description: Label of choice
+          example: Choice A
+    BaseChoice:
+      title: BaseChoice
+      type: object
+      description: A JSON schema representing a base choice object
+      properties:
+        id:
+          readOnly: true
+          type: string
+          format: uuid
+          description: Unique identifier for the choice
+        text:
+          type: string
+          description: Text value of the field
+          example: Choice 1
+    SponsorshipLevel:
+      title: Sponsorship level
+      description: Associated sponsorship level for an exhibitor
+      type: object
       required:
       - id
-      type: object
-      title: SessionLite
-      description: The unique identifier of a session.
       properties:
         id:
-          $ref: '#/components/schemas/SessionId'
-    SessionStatus:
-      title: SessionStatus
-      enum:
-      - Active
-      - Cancelled
-      - Closed
-      type: string
-      description: This is used to denote the status of a session.
-      example: Active
-    SessionDocumentLite:
-      type: object
-      title: SessionDocumentLite
-      description: The related document object.
-      properties:
-        id:
-          $ref: '#/components/schemas/DocumentId'
+          type: string
+          format: uuid
+          example: 3db28cfc-db22-11eb-8d19-0242ac130003
+          description: Sponsorship Level Id
     UUID:
       title: UUID
       description: The reference to the related entity. Contains only the ID of the related entity.
@@ -1687,578 +1583,464 @@ components:
       properties:
         id:
           $ref: '#/components/schemas/UUIDProperty'
-    Session-1:
+    exhibitor-answer-format:
+      type: string
+      description: Specifies the format for displaying answers based on the question type. For SingleChoice questions, choose between 'Dropdown' or 'RadioButton'. For OpenEndedTextOneLine questions, select 'General', 'EmailAddress', or 'PhoneNumber'. For OpenEndedDateTime questions, use 'DateAndTime' or 'Date'.
+      enum:
+      - Date
+      - DateAndTime
+      - Dropdown
+      - EmailAddress
+      - General
+      - PhoneNumber
+      - RadioButton
+      example: RadioButton
+    Address5:
+      title: Address
+      type: object
+      description: An object representing an address with various properties.
+      properties:
+        address1:
+          type: string
+          description: The first line of an address
+          example: Cvent Inc.
+        address2:
+          type: string
+          description: The second line of an address
+          example: 4001 West Parmer Lane
+        city:
+          type: string
+          description: The name of the city.
+          example: Austin
+        region:
+          type: string
+          description: The name of the state/province/region of the address.
+          example: Texas
+        postalCode:
+          type: string
+          description: postal code (also known as zipcode) of the address
+          example: '78727'
+        country:
+          type: string
+          description: Name of the country for example, 'United States'
+          example: United States of America
+    Exhibitor:
+      description: The Associated Exhibitor.
+      title: Exhibitor
+      type: object
       required:
       - id
-      type: object
-      title: Session
-      description: The related session object.
       properties:
         id:
-          $ref: '#/components/schemas/SessionId1'
-    SessionId1:
-      title: SessionId
-      description: The unique identifier for a session
-      type: string
-      format: uuid
-      example: 78842aee-5d83-11ee-8c99-0242ac120002
-    session-file:
-      title: SessionFile
+          type: string
+          format: uuid
+          example: 4888db54-db22-11eb-8d19-0242ac130003
+          description: Exhibitor id
+    Answer-2:
+      title: Answer
+      type: object
+      description: A JSON schema representing an answer object.
       required:
-      - file
-      - href
-      description: Used to denote a session files attributes.
+      - type
+      properties:
+        type:
+          $ref: '#/components/schemas/AnswerType-1'
+        value:
+          type: string
+          description: 'Answered value like: Choice text, text answer input etc.'
+          example: Choice A
+        choice:
+          description: The choice that was selected.
+          type: object
+          properties:
+            id:
+              type: string
+              format: uuid
+              description: The ID of the choice that was selected.
+    exhibitor-registration-pack-list-response:
+      title: Exhibitor Registration Pack List Response
+      type: object
+      description: The registration pack associated with an exhibitor. Each exhibitor has at most one registration pack per event.
+      properties:
+        data:
+          type: array
+          items:
+            $ref: '#/components/schemas/registration-pack-response'
+          maxItems: 1
+          description: The registration pack for an exhibitor. Contains at most one item.
+    exhibitor-id-list-response:
+      title: ExhibitorIdPaginatedResponse
+      type: object
+      description: Exhibitor Id Paginated Response schema
+      properties:
+        paging:
+          $ref: '#/components/schemas/Paging'
+        data:
+          type: array
+          items:
+            $ref: '#/components/schemas/ExhibitorId'
+          description: Paginated list of exhibitor Ids for an exhibitor category.
+    exhibitor-category-banner-file:
+      title: Exhibitor Category Banner File
+      type: object
+      description: A JSON schema for the exhibitor category banner file.
       properties:
         file:
+          type: object
+          description: File properties for the exhibitor category banner file.
           properties:
             id:
               $ref: '#/components/schemas/uuid-property'
         href:
           format: uri
           type: string
-          description: URL of a session's document
+          description: URL of a exhibitor category banner image
           readOnly: true
-          example: https://custom.cvent.com/a5154f85f71a4cf2464e037feb75b308/00000000000000000000000000000000/files/e209d73d845746b7a6deda4da9d91b2c.png
-        friendlyName:
-          type: string
-          description: Friendly name of the file
-          example: Important Document
-          readOnly: true
-        type:
-          type: string
-          description: Mime type of the file
-          example: image/png
-          readOnly: true
-        size:
-          type: integer
-          description: Size of the file in bytes
-          example: 150
-          readOnly: true
-        displayEnabled:
-          type: boolean
-          description: Display this file to the public
-          example: true
-          readOnly: true
-    SessionBase:
-      title: SessionBase
+          example: https://images.cvent.com/pt/production/account_123/event_123/CategoryImage.png
+    ExhibitorId:
+      title: ExhibitorId
+      description: A JSON Schema representation of an exhibitor ID.
       type: object
-      description: Used to denote a session and all of its attributes.
-      required:
-      - title
-      - start
-      - end
-      - event
-      - status
+      properties:
+        id:
+          $ref: '#/components/schemas/uuid-property'
+    exhibitor-answers-response:
+      title: Exhibitor Answers List Response
+      type: object
+      description: A response object containing a list of exhibitor question answers.
+      properties:
+        data:
+          type: array
+          items:
+            $ref: '#/components/schemas/ExistingExhibitorAnswer'
+          description: List of answers for all exhibitor questions.
+    exhibitor-question:
+      title: Exhibitor Question
+      description: A representation of an exhibitor question for an event.
+      type: object
       allOf:
       - $ref: '#/components/schemas/Audit'
+      required:
+      - event
+      - type
+      - text
+      - required
+      properties:
+        event:
+          $ref: '#/components/schemas/Event4'
+        text:
+          type: string
+          description: The actual text of the exhibitor question.
+          example: Is there a business need?
+        code:
+          type: string
+          minLength: 4
+          maxLength: 10
+          example: A001
+          description: System or User defined event level unique exhibitor question code.
+        type:
+          $ref: '#/components/schemas/exhibitor-question-type'
+        required:
+          type: boolean
+          description: A boolean indicating whether the question is mandatory or not
+          example: true
+        choices:
+          type: array
+          description: An array of choices for the exhibitor question.
+          items:
+            $ref: '#/components/schemas/BaseChoice'
+          minItems: 1
+          maxItems: 100
+        notApplicableAnswer:
+          $ref: '#/components/schemas/AdditionalChoice1'
+        otherAnswer:
+          $ref: '#/components/schemas/AdditionalChoice1'
+        answerFormat:
+          $ref: '#/components/schemas/exhibitor-answer-format'
+        answerLimits:
+          $ref: '#/components/schemas/ExhibitorAnswerLimits'
+        defaultToCurrentDate:
+          type: boolean
+          description: True indicates the current date and time is automatically set as the default value for OpenEndedDateTime questions.
+          example: true
+    ContactLinks1:
+      title: ContactLinks
+      type: object
+      description: A JSON schema representing contact links, including Twitter, Facebook, and LinkedIn URLs.
+      properties:
+        twitterUrl:
+          $ref: '#/components/schemas/Link'
+        facebookUrl:
+          $ref: '#/components/schemas/Link'
+        linkedInUrl:
+          $ref: '#/components/schemas/Link'
+        instagramUrl:
+          $ref: '#/components/schemas/Link'
+    existing-sponsorship-level:
+      title: Sponsorship Level
+      type: object
+      description: Existing sponsorship level model
+      allOf:
+      - $ref: '#/components/schemas/SponsorshipLevel-1'
       properties:
         id:
           type: string
           format: uuid
-          example: 04ca6ae2-0dc3-487b-953e-86d6abbdf7d3
-          description: A unique identifier of the session
+          example: 1765848c-2a7f-48d2-85a2-6668b8e64ffb
+          description: ID of event sponsorship level.
           readOnly: true
-        virtual:
-          type: boolean
-          description: Indicates whether the session is virtual or not.
-          example: true
-          readOnly: true
-        event:
-          $ref: '#/components/schemas/UUID'
-        title:
-          type: string
-          description: Title of the session. For example, Keynote Session.
-          maxLength: 500
-          example: Day 1 Keynote Session
-        code:
-          type: string
-          description: A unique code for this session.
-          maxLength: 30
-          example: R5NP4NJYB3D
-        category:
-          $ref: '#/components/schemas/NamedObject'
-        type:
-          type: object
-          allOf:
-          - deprecated: true
-            description: Whether a session is in-person, virtual or hybrid. Use virtual field instead.
-          - $ref: '#/components/schemas/Lookup'
-        location:
-          $ref: '#/components/schemas/Location1'
-        description:
-          type: string
-          description: 'Detailed description of the session. HTML is supported, but only a limited set of elements and attributes are allowed. Use of HTML will count towards the character limit. Planners are responsible for confirming the visual output of HTML content.
-
-
-            Allowed elements: b, strong, i, em, u, a, strike, del, s, sup, sub, ul, ol, li, p, font, mark, span
-
-
-            Allowed attributes:
-
-            - color on font
-
-            - style on p, font, li, ul, ol, span
-
-            - href, target, rel on a'
-          maxLength: 5000
-          example: Keynote session to kick off the event. The dynamic and energetic Dr. Smith will be speaking about the industry.
-        start:
-          type: string
-          format: date-time
-          description: The ISO 8601 formatted date and time when the session starts.
-          example: '2020-02-03T13:00:00.000Z'
-        end:
-          type: string
-          format: date-time
-          description: The ISO 8601 formatted date and time when the session ends.
-          example: '2020-02-07T17:00:00.000Z'
-        status:
-          $ref: '#/components/schemas/SessionStatus'
-        automaticallyOpensOn:
-          type: string
-          format: date
-          description: The ISO 8601 formatted date when the session registration automatically opens.
-          example: '2022-08-01'
-        automaticallyClosesOn:
-          type: string
-          format: date
-          description: The ISO 8601 formatted date when the session registration automatically closes.
-          example: '2022-08-12'
-        enableWaitlist:
-          type: boolean
-          description: Indicates if the waitlist is supported for the session.
-          example: false
-        waitlistCapacity:
+        rank:
           type: integer
-          description: The maximum number of attendees who can waitlist for the in-person portion of the session.
-          example: 100
-        enableWaitlistVirtual:
-          type: boolean
-          description: Indicates if the virtual waitlist for the session is open.
-          example: true
-        capacity:
-          type: integer
-          description: The maximum number of attendees who can enroll in the in-person portion of the session.
-          example: 150
-        capacityUnlimited:
-          type: boolean
-          description: Indicates whether a given session has unlimited in-person capacity.
-          example: false
-        capacityVirtual:
-          type: integer
-          description: The maximum number of attendees who can enroll in the virtual portion of the session.
-          example: 150
-        virtualCapacityUnlimited:
-          type: boolean
-          description: Indicates whether a given session has unlimited virtual capacity.
-          example: false
-        waitlistCapacityVirtual:
-          type: integer
-          description: The maximum number of attendees who can waitlist the virtual portion of the session.
-          example: 150
-        timezone:
-          type: string
-          deprecated: true
-          description: The timezone of the event that the session is associated with
-          maxLength: 29
-          example: America/New_York
-          readOnly: true
-        displayOnAgenda:
-          type: boolean
-          description: Indicates whether to display the session on Agenda.
-          example: true
-          default: true
-        featured:
-          type: boolean
-          description: Indicates if the session is featured
-          example: true
-        group:
-          type: object
-          example:
-            id: b0cd3bac-0565-4593-be6e-5333753a6c25
-          properties:
-            id:
-              type: string
-              format: uuid
-              example: b0cd3bac-0565-4593-be6e-5333753a6c25
-              description: The ID of the session group, if the session belongs to one.
-          description: The session group, if the session belongs to one.
-        admissionItems:
-          type: array
-          items:
-            $ref: '#/components/schemas/uuid-property'
-          description: The ids of the admission items, if the session is included with any.
-        openForRegistration:
-          type: boolean
-          description: Indicates if the session is open for registration.
-          example: false
-        openForAttendeeHub:
-          type: boolean
-          description: Indicates if the session is open for AttendeeHub.
-          example: true
-        registrationTypes:
-          type: array
-          items:
-            $ref: '#/components/schemas/uuid-property'
-          description: Contains unique identifiers for registration types associated with this session
-        presentationType:
-          type: string
-          description: The presentation type of the session.
-          maxLength: 100
-          example: Power Point
-        dataTagCode:
-          type: string
-          description: A tag associated with the session.
-          maxLength: 30
-          example: Optional Session
-        customFields:
-          type: array
-          items:
-            $ref: '#/components/schemas/custom-field'
-          description: Collection of custom fields.
-          readOnly: true
-        segments:
-          type: array
-          maxItems: 25
-          items:
-            $ref: '#/components/schemas/segment-id'
-          description: Contains unique identifiers for segments associated with this session.
-          readOnly: true
-        order:
-          type: integer
-          description: The display order of session, set by planner for concurrent sessions
-          example: 1
-    session-speaker-assignment:
-      title: SessionSpeakerAssignment
-      type: object
-      description: Holds fields that can be applied to a session speaker assignment.
-      properties:
-        speakerCategory:
-          $ref: '#/components/schemas/CategoryId'
-        order:
-          description: Preferred position where the speaker will appear in an ordered list for a session. Smaller values indicate a higher position in the list with the value 1 being the first item in the list.
-          example: 1
-          minimum: 1
-          type: integer
-    session-document-paginated-response:
-      title: SessionDocumentPaginatedResponse
-      description: The response from a request to get the list of documents for a single session.  This includes the paging object as well as the collection of documents.
-      required:
-      - paging
-      - data
-      type: object
-      properties:
-        paging:
-          $ref: '#/components/schemas/Paging'
-        data:
-          type: array
-          items:
-            $ref: '#/components/schemas/session-file'
-          description: Collection of a session's documents.
-    session:
-      title: Session
-      type: object
-      description: Used to denote a session and its attributes.
-      required:
-      - title
-      - start
-      - end
-      - event
-      - status
-      allOf:
-      - $ref: '#/components/schemas/SessionBase'
-      properties:
-        includedSession:
-          type: boolean
-          description: Indicator to specify if this session was automatically included with the event.
-          example: true
-          default: false
-        relevance:
-          $ref: '#/components/schemas/Relevance'
-    program-item-paginated-response:
-      title: ProgramItemPaginatedResponse
-      description: The response from a request to get the list of session program items.
-      required:
-      - paging
-      - data
-      type: object
-      properties:
-        paging:
-          $ref: '#/components/schemas/Paging'
-        data:
-          type: array
-          items:
-            $ref: '#/components/schemas/program-item'
-          description: Collection of Session Program Items.
-          maxItems: 200
-    SpeakerCategory:
-      title: SpeakerCategory
-      description: A defined speaker category.
-      type: object
-      required:
-      - id
-      properties:
-        id:
-          $ref: '#/components/schemas/uuid-property'
-        name:
-          type: string
-          description: The name of the speaker category
-          maxLength: 50
-          example: Presenters
-    Segment1:
-      required:
-      - id
-      type: object
-      title: Segment
-      description: The audience segment associated with the session.
-      properties:
-        id:
-          $ref: '#/components/schemas/segment-id'
-    Lookup:
-      title: Lookup
-      description: Lookup response object
-      type: object
-      properties:
-        id:
-          $ref: '#/components/schemas/uuid-property'
-        code:
-          type: string
-          description: Code / Abbreviation of the lookup item.
-          maxLength: 30
-          example: MU
-        name:
-          type: string
-          description: Name of the lookup item.
-          maxLength: 30
-          example: Meet up
-    DocumentId:
-      title: DocumentId
-      description: The unique identifier for a document.
-      type: string
-      format: uuid
+          description: Represents the order sponsors appear in a list.
+          example: 3
+          minimum: 0
     UUIDProperty:
       title: UUID Property
       description: A string that has to be a format matching the industry standard uuid
       type: string
       format: uuid
       example: 04ca6ae2-0dc3-487b-953e-86d6abbdf7d3
-    Locale:
-      title: Locale
-      description: Locale code
-      type: string
-      example: en-US
-      minLength: 1
-      maxLength: 200
-    program-item-update-request:
-      title: ProgramItemUpdateRequest
+    exhibitor-request:
+      title: Exhibitor
       type: object
-      description: Represents a program item object that will be updated.
+      description: A representation of an exhibitor including all relevant information.
+      allOf:
+      - $ref: '#/components/schemas/Audit'
       required:
-      - id
       - event
-      - session
       - name
-      allOf:
-      - $ref: '#/components/schemas/Audit'
       properties:
-        id:
-          description: ID of the program item.
-          type: string
-          format: uuid
-          example: 38db6ae2-0dc3-487b-953e-86d6abbdf7d3
         event:
-          $ref: '#/components/schemas/event-id'
-        session:
-          $ref: '#/components/schemas/Session-1'
+          $ref: '#/components/schemas/Event4'
         name:
           type: string
-          description: Name of the program item.
+          description: Name of the exhibitor. Cvent suggests limiting this to a maximum of 200 characters for optimal results.
+          minLength: 1
           maxLength: 500
-          example: Day 1 Program Item.
-        duration:
-          type: integer
-          description: The duration of the program item in minutes.
-          example: 30
+          example: Potterfield Harry
         description:
+          description: Exhibitor description
           type: string
-          description: Description of the program item.
-          maxLength: 2500
-          example: This is a sample description of the day 1 program item.
-        rteDescription:
+          maxLength: 5000
+          example: A man who sells relatively good hotdogs
+        code:
+          description: Code used to identify the exhibitor
           type: string
-          description: Rich-text-editor description in json formatting.
-          example: '{"format":"draftjs-nucleus","version":1,"content":{"blocks":[{"key":"cubve","text":"Program Item Description","type":"unstyled","depth":0,"inlineStyleRanges":[],"entityRanges":[],"data":{}}],"entityMap":{}}}'
-    program-item-session-document:
-      title: ProgramItemSessionDocument
+          example: abc123
+        sourceId:
+          description: Code used for marketing groupings
+          type: string
+          example: software
+        location:
+          description: Exhibitor location
+          type: string
+          example: Taj Mahal
+        address:
+          $ref: '#/components/schemas/Address5'
+        email:
+          type: string
+          format: email
+          description: Email address of the exhibitor
+          example: h.potterfield@test.com
+        mobilePhone:
+          type: string
+          description: Mobile Phone of the exhibitor
+          example: 555-555-5555
+        workPhone:
+          type: string
+          description: Work Phone of the exhibitor
+          example: 555-555-5555
+        otherPhone:
+          type: string
+          description: Any other phone of the exhibitor
+          example: 555-555-5555
+        website:
+          description: Exhibitor's website URL
+          example: www.superhappyfuntime.com
+          type: string
+          format: url
+        contactLinks:
+          $ref: '#/components/schemas/ContactLinks1'
+        deleted:
+          description: A boolean indicating whether the exhibitor is deleted or not
+          type: boolean
+          default: false
+        hidden:
+          description: True indicates that the exhibitor is hidden.
+          type: boolean
+          default: false
+        eventSponsor:
+          type: boolean
+          description: A boolean indicating whether the exhibitor is an event sponsor or not
+          default: false
+        featured:
+          type: boolean
+          description: A boolean indicating whether the exhibitor is designated as featured or not
+          default: false
+        sponsorshipLevel:
+          $ref: '#/components/schemas/SponsorshipLevel'
+    lead-qualification-questions-list-response:
+      title: Lead Qualification Questions List Response
       type: object
-      description: Represents a program item object that will be added to a session document.
-      required:
-      - event
-      - session
-      - document
-      - programItem
-      allOf:
-      - $ref: '#/components/schemas/Audit'
+      description: A response containing a list of lead qualification questions.
       properties:
-        id:
-          description: ID of the session document to program item relationship.
-          type: string
-          format: uuid
-          example: 38db6ae2-0dc3-487b-953e-86d6abbdf7d3
-          readOnly: true
-        event:
-          $ref: '#/components/schemas/event-id'
-        session:
-          $ref: '#/components/schemas/Session-1'
-        document:
-          $ref: '#/components/schemas/SessionDocumentLite'
-        programItem:
-          $ref: '#/components/schemas/ProgramItem'
-    ProgramItemId1:
-      title: ProgramItemId
-      description: The unique identifier for a program item
-      type: string
-      format: uuid
-      example: 788426ac-5d83-11ee-8c99-0242ac120002
-    CustomFieldBase:
-      title: CustomFieldBase
-      description: Base schema for Custom Field - allows type to be customized by extending schemas
-      required:
-      - id
-      - value
-      type: object
-      properties:
-        id:
-          type: string
-          description: The unique ID representing this custom field.
-          format: uuid
-        name:
-          type: string
-          description: The actual text of the custom field.
-          example: What is your favorite color?
-          readOnly: true
-        value:
+        data:
           type: array
-          uniqueItems: true
           items:
-            type: string
-            description: A question answer value
-            maxLength: 16000
-          description: The set of answers or possible answers to a question.
-          example:
-          - Choice C
-          - Choice A
-        order:
-          type: integer
-          description: The order of this question in the bigger list of questions.
-          example: 1
-          readOnly: true
-    CustomFieldType:
-      title: CustomFieldType
-      enum:
-      - AutoIncrement
-      - ConsentQuestion
-      - Currency
-      - Decimal
-      - Date
-      - DateTime
-      - Email
-      - FileUpload
-      - FreeText
-      - General
-      - MultiChoice
-      - MultiSelect
-      - Number
-      - OpenEndedDateTime
-      - OpenEndedText
-      - SingleChoice
-      - SingleSelect
-      - USPhoneNumber
-      - Unknown
-      type: string
-      description: The type of data collected by a custom field.
-      example: General
-    session-update:
-      title: SessionUpdate
+            $ref: '#/components/schemas/LeadQualificationQuestion'
+          description: Collection of lead qualification questions.
+    exhibitor-response:
+      title: Exhibitor
+      description: JSON schema for the exhibitor object
       type: object
-      description: Used to update a session.
       allOf:
-      - $ref: '#/components/schemas/SessionBase'
-    SessionSpeaker:
-      title: SessionSpeaker
-      description: A session speaker
-      type: object
+      - $ref: '#/components/schemas/exhibitor-request'
       properties:
         id:
-          $ref: '#/components/schemas/uuid-property'
-        session:
-          $ref: '#/components/schemas/SessionLite'
-        category:
-          $ref: '#/components/schemas/SpeakerCategory'
-        order:
-          type: integer
-          description: The order of the speaker in a session.
-          example: 1
-    custom-field:
-      title: CustomField
-      description: A Custom Field
-      type: object
-      allOf:
-      - $ref: '#/components/schemas/CustomFieldBase'
-      properties:
-        type:
-          description: The type of data collected by a custom field.
-          type: string
-          allOf:
-          - $ref: '#/components/schemas/CustomFieldType'
-          - readOnly: true
-            example: MultiSelect
-    program-item:
-      title: ProgramItem
-      type: object
-      description: Represents a program item object that will be added to a session.
-      required:
-      - event
-      - session
-      - name
-      allOf:
-      - $ref: '#/components/schemas/Audit'
-      properties:
-        id:
-          description: ID of the program item.
           type: string
           format: uuid
-          example: 38db6ae2-0dc3-487b-953e-86d6abbdf7d3
+          example: 4888db54-db22-11eb-8d19-0242ac130003
+          description: ID of an exhibitor.
           readOnly: true
-        event:
-          $ref: '#/components/schemas/event-id'
-        session:
-          $ref: '#/components/schemas/Session-1'
-        name:
+        profileLogoId:
+          description: File ID for exhibitor profile logo.
+          format: uuid
           type: string
-          description: Name of the program item.
-          maxLength: 500
-          example: Day 1 Program Item.
-        duration:
-          type: integer
-          description: The duration of the program item in minutes.
-          default: 0
-          example: 30
-        description:
+          example: 31bd3ae1-0dc3-487b-953e-41d6bbade7d2
+          readOnly: true
+        profileLogoUrl:
+          description: URL for exhibitor profile logo.
+          format: uri
           type: string
-          description: Description of the program item.
-          maxLength: 2500
-          example: This is a sample description of the day 1 program item.
-        rteDescription:
+          example: https://images.cvent.com/pt/fileLocation/url_123
+          readOnly: true
+        bannerId:
+          description: File ID for exhibitor banner.
+          format: uuid
           type: string
-          description: Rich-text-editor description in json formatting.
-          example: '{"format":"draftjs-nucleus","version":1,"content":{"blocks":[{"key":"cubve","text":"Program Item Description","type":"unstyled","depth":0,"inlineStyleRanges":[],"entityRanges":[],"data":{}}],"entityMap":{}}}'
-    segment-id:
-      title: SegmentId
-      description: The unique identifier for an audience segment
+          example: 12ca3ae2-0dc3-487b-953e-86d6acadf7d5
+          readOnly: true
+        bannerUrl:
+          description: URL for exhibitor banner.
+          format: uri
+          type: string
+          example: https://images.cvent.com/pt/fileLocation/url_456
+          readOnly: true
+    error-response:
+      title: ErrorResponse
+      description: Represents an error response with additional details of cascading error messages.
+      allOf:
+      - $ref: '#/components/schemas/ErrorResponseBase'
+      type: object
+      required:
+      - code
+      - message
+      properties:
+        details:
+          type: array
+          items:
+            $ref: '#/components/schemas/ErrorResponseBase'
+          description: Additional details of cascading error messages.
+    exhibitor-questions-response:
+      title: Exhibitor Questions List Response
+      type: object
+      description: A response containing a list of all questions for exhibitors.
+      properties:
+        data:
+          type: array
+          items:
+            $ref: '#/components/schemas/existing-exhibitor-question'
+          description: List of all questions for exhibitors.
+    AnswerType-1:
+      title: AnswerType
+      enum:
+      - Choice
+      - Text
+      - Other
+      - NA
       type: string
-      format: uuid
-      example: 788426ac-5d83-11ee-8c99-0242ac120002
+      description: Type of answer
+      example: Choice
+    exhibitor-category-id-list-response:
+      title: ExhibitorCategoryIdPaginatedResponse
+      type: object
+      description: A paginated response containing a list of exhibitor category Ids.
+      properties:
+        paging:
+          $ref: '#/components/schemas/Paging'
+        data:
+          type: array
+          items:
+            $ref: '#/components/schemas/ExhibitorCategoryId'
+          description: Paginated list of exhibitor category Ids for an exhibitor.
+    exhibitor-categories-paginated-response:
+      title: Exhibitor Categories List Response
+      description: The response object containing the paginated list of exhibitor categories.
+      type: object
+      properties:
+        paging:
+          $ref: '#/components/schemas/Paging'
+        data:
+          type: array
+          items:
+            $ref: '#/components/schemas/exhibitor-category-response'
+          description: Paginated list of all exhibitor categories for an event.
+    ExhibitorAnswerLimits:
+      title: Exhibitor Answer Limits
+      description: Defines the limits for answers to exhibitor questions.
+      type: object
+      properties:
+        minLength:
+          type: integer
+          description: Minimum length of the answer for OpenEndedTextCommentBox questions. It must be less than or equal to maxLength.
+          default: 1
+          minimum: 1
+          maximum: 2000
+          example: 1
+        maxLength:
+          type: integer
+          description: Maximum length of the answer for OpenEndedTextCommentBox questions.
+          default: 2000
+          minimum: 1
+          maximum: 2000
+          example: 2000
+        minSelections:
+          type: integer
+          description: Minimum number of choices required for MultiChoice questions. It must be less than or equal to maxSelections.
+          minimum: 1
+          maximum: 100
+          example: 1
+        maxSelections:
+          type: integer
+          description: Maximum number of choices allowed for MultiChoice questions. It cannot exceed the total number of available choices.
+          minimum: 1
+          maximum: 100
+          example: 10
+    exhibitor-category-response:
+      title: Existing Exhibitor Category
+      description: A description of the Existing Exhibitor Category JSON schema
+      type: object
+      allOf:
+      - $ref: '#/components/schemas/exhibitor-category-request'
+      properties:
+        id:
+          type: string
+          format: uuid
+          example: 534a465b-b4cb-471d-9498-4bf3917ad8bf
+          description: ID of exhibitor category.
+          readOnly: true
+        bannerId:
+          description: File ID for exhibitor category banner.
+          format: uuid
+          type: string
+          example: 22ca5ab1-0dc3-487b-953e-41d6dacde3e6
+          readOnly: true
+        bannerUrl:
+          description: URL for exhibitor category banner.
+          format: uri
+          type: string
+          example: https://images.cvent.com/pt/fileLocation/url_456
+          readOnly: true
     ErrorResponseBase:
       title: ErrorResponseBase
       type: object
@@ -2279,6 +2061,16 @@ components:
           type: string
           description: The target resource of the error.
           example: example target
+    exhibitor-question-type:
+      type: string
+      description: 'Enumeration indicating the type of data collected by an exhibitor question. ''MultiChoice'': Respondents select multiple options from a list. ''SingleChoice'': restricts respondents to a single option from a list, often displayed as a dropdown or radio button. ''OpenEndedTextOneLine'': brief text responses, such as names or short answers. ''OpenEndedTextCommentBox'': longer text responses for detailed feedback. ''OpenEndedDateTime'': captures date and time information from respondents.'
+      enum:
+      - MultiChoice
+      - SingleChoice
+      - OpenEndedTextOneLine
+      - OpenEndedTextCommentBox
+      - OpenEndedDateTime
+      example: SingleChoice
     Link:
       title: Link
       required:
@@ -2290,138 +2082,16 @@ components:
           type: string
           description: A url provided that can be followed for linking
           example: ?token=90c5f062-76ad-4ea4-aa53-00eb698d9262
-    ProgramItem:
-      required:
-      - id
+    sponsorship-level-list-response:
+      title: Sponsorship level List Response
       type: object
-      title: ProgramItem
-      description: The program item associated with the session.
+      description: This schema describes the response for a list of sponsorship levels.
       properties:
-        id:
-          $ref: '#/components/schemas/ProgramItemId1'
-    CategoryId:
-      title: CategoryId
-      type: object
-      description: An object that holds the id for a category
-      properties:
-        id:
-          $ref: '#/components/schemas/uuid-property'
-  parameters:
-    EventId:
-      in: path
-      name: eventId
-      required: true
-      schema:
-        type: string
-    eventId1:
-      in: path
-      name: id
-      description: Unique Id of Event
-      required: true
-      schema:
-        $ref: '#/components/schemas/uuid-property'
-    sessionId1:
-      in: path
-      name: id
-      description: The unique identifier of a session.
-      required: true
-      schema:
-        $ref: '#/components/schemas/uuid-property'
-    limit:
-      name: limit
-      in: query
-      description: The maximum number of records to return per page.
-      style: form
-      explode: true
-      schema:
-        maximum: 200
-        minimum: 1
-        type: integer
-        default: 100
-        example: 100
-    before:
-      name: before
-      required: false
-      in: query
-      description: Used to query records that have been added or updated before this time point.
-      schema:
-        type: string
-        format: date-time
-        example: '2017-01-02T02:00:00Z'
-    customFieldId2:
-      in: path
-      name: customFieldId
-      description: Unique Id of a custom field
-      required: true
-      schema:
-        $ref: '#/components/schemas/uuid-property'
-    fileId:
-      in: path
-      name: fileId
-      description: The unique identifier of a file from <a href="#operation/uploadFile">file upload</a> service.
-      required: true
-      schema:
-        $ref: '#/components/schemas/uuid-property'
-    sort6:
-      name: sort
-      required: false
-      in: query
-      style: form
-      explode: false
-      description: "The sort order passed as a parameter, used to control the order of the\nsearch results as a priority ordered list of sorts\n\nThere are two orders:\n  * ascending: ASC\n  * descending: DESC\n\nThe following fields are sortable:\n  * start\n  * end\n  * title\n  * includedSession\n  * category.name\n  * code\n  * relevance\n  * order\n"
-      schema:
-        type: string
-        example: start:DESC,order:ASC,title:ASC
-    locale1:
-      name: locale
-      required: false
-      description: Locale code in IETF Language tag format. Indicates desired locale of return values.
-      in: query
-      schema:
-        $ref: '#/components/schemas/Locale'
-    programItemId1:
-      in: path
-      name: programItemId
-      description: Unique ID of a session program item.
-      required: true
-      schema:
-        $ref: '#/components/schemas/uuid-property'
-    speakerId1:
-      in: path
-      name: speakerId
-      description: Unique Id of a speaker
-      required: true
-      schema:
-        $ref: '#/components/schemas/uuid-property'
-    sessionId2:
-      in: path
-      name: id
-      description: Unique Id of a session
-      required: true
-      schema:
-        $ref: '#/components/schemas/uuid-property'
-    token:
-      name: token
-      in: query
-      description: 'The continuation token returned from a previous class. This must be a valid UUID v4 if provided.
-
-        This will override any other pageable parameters provided.
-
-        '
-      style: form
-      explode: true
-      schema:
-        type: string
-        example: 0e28af57-511f-47ab-ae46-46cd1ca51a1a
-    after:
-      name: after
-      required: false
-      description: Used to query records that have been added or updated after this time point. Default to the beginning of time of the data store.
-      in: query
-      schema:
-        type: string
-        format: date-time
-        example: '2017-01-02T02:00:00Z'
+        data:
+          type: array
+          items:
+            $ref: '#/components/schemas/existing-sponsorship-level'
+          description: List of sponsorship level.
   responses:
     TooManyRequests1:
       description: Too many requests
@@ -2441,15 +2111,6 @@ components:
           example:
             code: 404
             message: Not found
-    Unauthorized1:
-      description: Bad or expired token
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/ErrorResponse'
-          example:
-            code: 401
-            message: Unauthorized
     Forbidden1:
       description: You do not have access to the resource
       content:
@@ -2459,6 +2120,15 @@ components:
           example:
             code: 403
             message: Access Forbidden
+    Unauthorized1:
+      description: Bad or expired token
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+          example:
+            code: 401
+            message: Unauthorized
     BadRequest1:
       description: Bad request
       content:
@@ -2468,26 +2138,103 @@ components:
           example:
             code: 400
             message: Bad Request
+  parameters:
+    exhibitorCategoryId:
+      in: path
+      name: exhibitorCategoryId
+      description: ID of an exhibitor category.
+      required: true
+      schema:
+        type: string
+        format: uuid
+        example: 534a465b-b4cb-471d-9498-4bf3917ad8bf
+    before:
+      name: before
+      required: false
+      in: query
+      description: Used to query records that have been added or updated before this time point.
+      schema:
+        type: string
+        format: date-time
+        example: '2017-01-02T02:00:00Z'
+    limit:
+      name: limit
+      in: query
+      description: The maximum number of records to return per page.
+      style: form
+      explode: true
+      schema:
+        maximum: 200
+        minimum: 1
+        type: integer
+        default: 100
+        example: 100
+    registrationPackId:
+      in: path
+      name: registrationPackId
+      description: ID of a registration pack.
+      required: true
+      schema:
+        type: string
+        format: uuid
+        example: 50f4f0df-0c2d-4e6b-8e68-e1413b6917f5
+    fileId1:
+      in: path
+      name: fileId
+      description: ID of a file.
+      required: true
+      schema:
+        $ref: '#/components/schemas/uuid-property'
+    sponsorshipLevelId:
+      in: path
+      name: sponsorshipLevelId
+      description: ID of sponsorship level.
+      required: true
+      schema:
+        type: string
+        format: uuid
+        example: 1765848c-2a7f-48d2-85a2-6668b8e64ffb
+    token:
+      name: token
+      in: query
+      description: 'The continuation token returned from a previous class. This must be a valid UUID v4 if provided.
+
+        This will override any other pageable parameters provided.
+
+        '
+      style: form
+      explode: true
+      schema:
+        type: string
+        example: 0e28af57-511f-47ab-ae46-46cd1ca51a1a
+    exhibitorId:
+      in: path
+      name: exhibitorId
+      description: ID of an exhibitor.
+      required: true
+      schema:
+        type: string
+        format: uuid
+        example: 4888db54-db22-11eb-8d19-0242ac130003
+    after:
+      name: after
+      required: false
+      description: Used to query records that have been added or updated after this time point. Default to the beginning of time of the data store.
+      in: query
+      schema:
+        type: string
+        format: date-time
+        example: '2017-01-02T02:00:00Z'
+    id6:
+      in: path
+      name: id
+      description: ID of an event.
+      required: true
+      schema:
+        type: string
+        format: uuid
+        example: 3db28cfc-db22-11eb-8d19-0242ac130003
   securitySchemes:
-    OAuth2ClientCredentials:
-      type: oauth2
-      flows:
-        clientCredentials:
-          tokenUrl: https://api-platform.cvent.com/ea/oauth2/token
-          scopes:
-            event/events:read: Read events
-            event/events:write: Write events
-            event/contacts:read: Read contacts
-            event/contacts:write: Write contacts
-            event/attendees:read: Read attendees
-            event/attendees:write: Write attendees
-            event/sessions:read: Read sessions
-            event/registration-types:read: Read registration types
-            event/custom-fields:read: Read custom fields
-    BasicAuth:
-      type: http
-      scheme: basic
-      description: Client ID / client secret Basic auth used only for the /ea/oauth2/token call.
     OAuth2.authorizationCode:
       type: oauth2
       description: OAuth2 Authorization Code Flow.
@@ -2958,6 +2705,6 @@ components:
       type: http
       scheme: basic
       description: This security scheme is used to indicate that Cvent should use basic auth when invoking your callback. This scheme is only supported for callback operations, and cannot be used to make calls to Cvent endpoints.
-x-refined-from:
-- cvent-registration-openapi.yml
-- cvent-rest-apis-openapi.yaml
+externalDocs:
+  description: Cvent Developer Documentation
+  url: https://developers.cvent.com/docs

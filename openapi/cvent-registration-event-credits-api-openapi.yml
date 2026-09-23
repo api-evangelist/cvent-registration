@@ -1,6 +1,6 @@
 openapi: 3.2.0
 info:
-  title: Cvent REST Usage API
+  title: Cvent REST Event Credits API
   description: '# Introduction
 
     The Cvent API Platform is built around REST.'
@@ -12,81 +12,139 @@ servers:
 - url: https://api-platform.cvent.com/ea
 - url: https://api-platform-eur.cvent.com/ea
 tags:
-- name: Usage
-  description: Use these APIs view your REST API usage and limits metrics. For more details on limits - Rate Limits
+- name: Event Credits
+  description: Event Credits reward attendees for participating in your events. Planners can award credits for the entire event, specific sessions, or both. You can also award credits after attendees complete surveys. Use these APIs to retrieve credit details for your attendees.
 paths:
-  /usage:
+  /attendee-credits:
     get:
       tags:
-      - Usage
-      operationId: getUsage
-      summary: Get Current Usage
-      description: 'Returns API call usage for the last seven days, or between some date range (up to the past seven days) for
-
-        the current caller''s account.'
+      - Event Credits
+      summary: List Attendee Event Credits
+      description: Gets a paginated list of attendee event credits in your account.
+      operationId: getAttendeeCredits
       security:
-      - OAuth2.clientCredentials: []
+      - OAuth2.clientCredentials:
+        - event/attendee-credits:read
+      - OAuth2.authorizationCode:
+        - event/attendee-credits:read
       parameters:
-      - name: before
+      - $ref: '#/components/parameters/after'
+      - $ref: '#/components/parameters/before'
+      - $ref: '#/components/parameters/attendeeCreditLimit'
+      - $ref: '#/components/parameters/token'
+      - $ref: '#/components/parameters/sort10'
+      - $ref: '#/components/parameters/expand1'
+      - name: filter
         in: query
-        description: 'Returns usage for the seven days before (inclusive) the date provided. If after is also provided, then
-
-          only the dates between (inclusive) those dates are returned. before must be a valid ISO8601 date stamp.
-
-          before and after must not be more then seven days apart.
-
-          '
         required: false
+        description: "A filter query string narrows search\nresults and supports the combination of logical and comparison\noperators.\n\nThe filter adheres to the pattern filter='field' comparisonType 'value'.\n\nThese are the comparison types that can be used in filter expressions:\n  * equal: eq\n  * not equal: ne\n\nThe following fields are filterable:\n* attendee.id (eq|ne)\n* event.id (eq|ne)\n* session.id (eq|ne)\n* creditType.id (eq|ne)\n* type (eq)\n\nNote:\n* lastModified: Used by the 'before' and 'after' filters.\n"
         schema:
           type: string
-      - name: after
-        in: query
-        description: 'Returns usage for the seven days after (inclusive) the date provided. If before is also provided, then
-
-          only the dates between (inclusive) those dates are returned. after must be a valid ISO8601 date stamp.
-
-          after and before must not be more then seven days apart.
-
-          '
-        required: false
-        schema:
-          type: string
+          example: attendee.id eq '{UUID}'
       responses:
         '200':
-          $ref: '#/components/responses/usage-paginated-response'
+          description: Successfully retrieved a paginated list of event credits for attendees.
+          headers: {}
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/attendeeCreditsPaginatedResponse'
         '400':
           $ref: '#/components/responses/BadRequest1'
         '401':
           $ref: '#/components/responses/Unauthorized1'
         '403':
           $ref: '#/components/responses/Forbidden1'
-        '429':
-          $ref: '#/components/responses/TooManyRequests1'
-  /usage/tier:
-    get:
-      tags:
-      - Usage
-      operationId: getUsageTier
-      summary: Get Current Usage Tier
-      description: Returns the current usage tier of the caller's account.
-      security:
-      - OAuth2.clientCredentials: []
-      - OAuth2.authorizationCode: []
-      responses:
-        '200':
-          $ref: '#/components/responses/PublicUsagePlanResponse'
-        '401':
-          $ref: '#/components/responses/Unauthorized1'
-        '403':
-          $ref: '#/components/responses/Forbidden1'
+        '404':
+          $ref: '#/components/responses/NotFound1'
         '429':
           $ref: '#/components/responses/TooManyRequests1'
       externalDocs:
         description: More about OAuth2 authorization code support for administrators
         url: '#oauth2-auth-code-planner-admin'
 components:
+  responses:
+    TooManyRequests1:
+      description: Too many requests
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+          example:
+            code: 429
+            message: Limit Exceeded
+    NotFound1:
+      description: Resource not found
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+          example:
+            code: 404
+            message: Not found
+    Forbidden1:
+      description: You do not have access to the resource
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+          example:
+            code: 403
+            message: Access Forbidden
+    Unauthorized1:
+      description: Bad or expired token
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+          example:
+            code: 401
+            message: Unauthorized
+    BadRequest1:
+      description: Bad request
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+          example:
+            code: 400
+            message: Bad Request
   schemas:
-    Paging:
+    attendee-credit-type.json:
+      title: AttendeeCreditType
+      description: 'Represents the entity that granted the credit. Event: This credit was granted by an event. Session: This credit was granted by a session.'
+      type: string
+      enum:
+      - Event
+      - Session
+      example: Session
+    pagination-links.json:
+      title: PaginationLinks
+      type: object
+      description: Represents pagination links for navigating between pages of data.
+      properties:
+        next:
+          $ref: '#/components/schemas/link.json'
+        self:
+          $ref: '#/components/schemas/link.json'
+        prev:
+          $ref: '#/components/schemas/link.json'
+    ErrorResponse:
+      title: ErrorResponse
+      description: Represents an error response with additional details of cascading error messages.
+      allOf:
+      - $ref: '#/components/schemas/ErrorResponseBase'
+      type: object
+      required:
+      - code
+      - message
+      properties:
+        details:
+          type: array
+          items:
+            $ref: '#/components/schemas/ErrorResponseBase'
+          description: Additional details of cascading error messages.
+    paging.json:
       title: Paging
       required:
       - _links
@@ -114,119 +172,46 @@ components:
           description: The total number of records available. This field may return blank, even if there are more records. To confirm if there are more records, check the `nextToken` field.
           example: 2
         _links:
-          $ref: '#/components/schemas/PaginationLinks'
-    ErrorResponse:
-      title: ErrorResponse
-      description: Represents an error response with additional details of cascading error messages.
-      allOf:
-      - $ref: '#/components/schemas/ErrorResponseBase'
+          $ref: '#/components/schemas/pagination-links.json'
+    expandable-credit-type.json:
+      title: ExpandableCreditType
+      description: 'An object that contains the associated credit type ID.
+
+
+        This is an **expandable** object and if requested will contain the name of a credit type object.'
       type: object
-      required:
-      - code
-      - message
       properties:
-        details:
-          type: array
-          items:
-            $ref: '#/components/schemas/ErrorResponseBase'
-          description: Additional details of cascading error messages.
-    Usage:
-      title: Usage
-      description: A usage object represents the usage of a resource on a given day
-      required:
-      - date
-      - used
-      - remaining
-      - total
-      type: object
-      allOf:
-      - $ref: '#/components/schemas/UsageQuotaFields'
-      properties:
-        date:
+        id:
           type: string
-          description: The date the usage occurred, as an ISO8601 date
-          example: '2020-01-01'
-    UsageQuotaFields:
-      title: Usage Quota Fields
-      description: Fields representing usage quota information. Usage quota represents the number of API requests that can be made in a given usage period. Usage periods reset daily at midnight UTC.
-      type: object
+          format: uuid
+          example: c15d600b-1363-413e-b00a-87d946903fe1
+          description: A unique identifier of the credit type.
+    attendeeCreditsPaginatedResponse:
+      title: Credits information
+      description: Response containing attendee credits information.
       required:
-      - used
-      - remaining
-      - total
-      properties:
-        used:
-          type: integer
-          description: The number of API requests that have been made in the current usage period. Usage periods reset daily at midnight UTC.
-          example: 40000
-        remaining:
-          type: integer
-          description: The number of API requests remaining in the current usage period. Usage periods reset daily at midnight UTC.
-          example: 260000
-        total:
-          type: integer
-          description: The total number of API requests allowed in the current usage period. Usage periods reset daily at midnight UTC.
-          example: 300000
-    usage-paginated-response:
-      title: Usage Paginated Response
-      description: The list of usage for the caller's account in the date range specified.
-      required:
+      - paging
       - data
       type: object
       properties:
         paging:
-          $ref: '#/components/schemas/Paging'
+          $ref: '#/components/schemas/paging.json'
         data:
           type: array
           items:
-            $ref: '#/components/schemas/Usage'
-          description: Collection of usage objects.
-    public-usage-plan:
-      title: Public Usage Plan
-      description: Object representing an API Platform Usage Tier, including information when the usage plan is scheduled to revert to a previous plan, if any.
-      type: object
-      allOf:
-      - $ref: '#/components/schemas/UsagePlan'
-      properties:
-        switchBackPlan:
-          $ref: '#/components/schemas/SwitchBackTargetUsagePlan'
-    UsagePlan:
-      title: Usage Plan
-      description: Object representing an API Platform Usage Tier
+            $ref: '#/components/schemas/attendee-credit.json'
+          description: Collection of credits assigned to attendees.
+    link.json:
+      title: Link
       required:
-      - name
-      - quota
-      - burstLimit
-      - rateLimit
+      - href
       type: object
+      description: Represents a link to a related resource.
       properties:
-        name:
+        href:
           type: string
-          description: The name of the usage tier
-          example: API_Platform_Free_Tier
-        quota:
-          type: number
-          description: The daily quota of the usage tier. If this value is null, this means the usage tier is unlimited.
-          example: 1000
-        burstLimit:
-          type: number
-          description: The burst limit capacity of the usage tier
-          example: 1
-        rateLimit:
-          type: number
-          description: The per-second steady rate-limit of the usage tier
-          example: 2
-    PaginationLinks:
-      title: PaginationLinks
-      type: object
-      description: Represents pagination links for navigating between pages of data.
-      properties:
-        next:
-          $ref: '#/components/schemas/Link'
-        self:
-          $ref: '#/components/schemas/Link'
-        prev:
-          $ref: '#/components/schemas/Link'
+          description: A url provided that can be followed for linking
+          example: ?token=90c5f062-76ad-4ea4-aa53-00eb698d9262
     ErrorResponseBase:
       title: ErrorResponseBase
       type: object
@@ -247,83 +232,126 @@ components:
           type: string
           description: The target resource of the error.
           example: example target
-    Link:
-      title: Link
-      required:
-      - href
+    attendee-credit.json:
+      title: AttendeeCredit
+      description: Credit details for an attendee.
       type: object
-      description: Represents a link to a related resource.
       properties:
-        href:
+        id:
           type: string
-          description: A url provided that can be followed for linking
-          example: ?token=90c5f062-76ad-4ea4-aa53-00eb698d9262
-    SwitchBackTargetUsagePlan:
-      title: Switch Back Target Usage Plan
-      description: Object representing the target usage plan and the date when the current plan is scheduled to revert to it. This object is only present when a switch-back is scheduled.
-      type: object
-      required:
-      - name
-      - time
-      properties:
-        name:
+          description: A unique identifier representing the attendee credit response. Can be the format of a string or UUID.
+          example: 1db28cfc-db22-11eb-8d19-0242ac130003_6ef33f60-64c7-4f92-81e5-af717da5c398_c15d600b-1363-413e-b00a-87d946903fe1
+        type:
+          $ref: '#/components/schemas/attendee-credit-type.json'
+        creditType:
+          $ref: '#/components/schemas/expandable-credit-type.json'
+        amount:
+          type: number
+          description: Credit amount earned by the attendee.
+          example: 20
+        attendee:
+          type: object
+          description: The attendee who earned the credit.
+          properties:
+            id:
+              type: string
+              format: uuid
+              example: 1db28cfc-db22-11eb-8d19-0242ac130003
+              description: A unique identifier of the attendee.
+        event:
+          description: The event where the credit was earned.
+          type: object
+          properties:
+            id:
+              type: string
+              format: UUID
+              example: 3db28cfc-db22-11eb-8d19-0242ac130003
+              description: A unique identifier of the event.
+        session:
+          description: Session associated to the credit.
+          type: object
+          properties:
+            id:
+              type: string
+              format: uuid
+              description: A unique identifier of the session.
+              example: 6ef33f60-64c7-4f92-81e5-af717da5c398
+        created:
           type: string
-          description: Name of the target usage plan to switch back to. This field is only present when the usage plan is scheduled to revert to a previous plan.
-          example: API_Platform_Standard_Tier
-        time:
-          type: string
+          description: The ISO 8601 zoned date time when this record was created.
+          example: '2024-01-05T03:00:00Z'
           format: date-time
-          description: The date and time when the usage plan is scheduled to revert to a previous plan. This field is only present when the usage plan is scheduled to revert to a previous plan. The date and time cannot be more than 14 days from the current date.
-          example: '2023-10-01T12:00:00Z'
-  responses:
-    PublicUsagePlanResponse:
-      description: The Usage Tier assigned to the account
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/public-usage-plan'
-    TooManyRequests1:
-      description: Too many requests
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/ErrorResponse'
-          example:
-            code: 429
-            message: Limit Exceeded
-    Forbidden1:
-      description: You do not have access to the resource
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/ErrorResponse'
-          example:
-            code: 403
-            message: Access Forbidden
-    usage-paginated-response:
-      description: Usage metrics for the dates requested
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/usage-paginated-response'
-    Unauthorized1:
-      description: Bad or expired token
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/ErrorResponse'
-          example:
-            code: 401
-            message: Unauthorized
-    BadRequest1:
-      description: Bad request
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/ErrorResponse'
-          example:
-            code: 400
-            message: Bad Request
+        lastModified:
+          type: string
+          description: The ISO 8601 zoned date time when this record was last modified.
+          example: '2024-01-07T02:00:00Z'
+          format: date-time
+  parameters:
+    sort10:
+      in: query
+      name: sort
+      required: false
+      description: "The `sort` query parameter sorts items in the list of results and organizes them according to your preference.\nThere are two orders:\n  * ascending: ASC\n  * descending: DESC\n\nThe following fields are sortable:\n  * lastModified\n"
+      schema:
+        example: lastModified:DESC
+        type: string
+    attendeeCreditLimit:
+      name: limit
+      in: query
+      description: The maximum number of records to return per page.
+      style: form
+      explode: true
+      schema:
+        maximum: 200
+        minimum: 1
+        type: integer
+        default: 100
+        example: 100
+    before:
+      name: before
+      required: false
+      in: query
+      description: Used to query records that have been added or updated before this time point.
+      schema:
+        type: string
+        format: date-time
+        example: '2017-01-02T02:00:00Z'
+    expand1:
+      name: expand
+      in: query
+      explode: false
+      required: false
+      description: "Use the `expand` query parameter to include additional related information in the response. For each specified value, the related entity is retrieved and displayed inline.\n\nAn expandable object typically contains the ID of a related object in its response properties.\n\nThe following fields are expandable:\n  * creditType(Includes only the `creditType.name` in the response. A full list of properties for `creditType` is not currently provided).\n"
+      example:
+      - creditType
+      schema:
+        type: array
+        items:
+          type: string
+          enum:
+          - creditType
+    token:
+      name: token
+      in: query
+      description: 'The continuation token returned from a previous class. This must be a valid UUID v4 if provided.
+
+        This will override any other pageable parameters provided.
+
+        '
+      style: form
+      explode: true
+      schema:
+        type: string
+        example: 0e28af57-511f-47ab-ae46-46cd1ca51a1a
+    after:
+      name: after
+      required: false
+      description: Used to query records that have been added or updated after this time point. Default to the beginning of time of the data store.
+      in: query
+      schema:
+        type: string
+        format: date-time
+        example: '2017-01-02T02:00:00Z'
   securitySchemes:
     OAuth2.authorizationCode:
       type: oauth2

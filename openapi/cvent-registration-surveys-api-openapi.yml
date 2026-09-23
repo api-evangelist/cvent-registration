@@ -1,24 +1,19 @@
-openapi: 3.0.2
+openapi: 3.2.0
 info:
-  title: Cvent Registration Surveys API
-  version: ea
-  description: 'Registration-surface slice of the official Cvent REST APIs OpenAPI, filtered to the ''Surveys'' tag(s).
+  title: Cvent REST Surveys API
+  description: '# Introduction
 
-    Derived verbatim (operations, schemas, parameters and responses copied unchanged) from Cvent''s own published contract
-    at https://github.com/cvent/rest-sdks/blob/main/cvent-public-spec/openapi.yaml — the spec Cvent generates its official
-    TypeScript, Java and C# SDKs from.
-
-    Full platform description, authentication, pagination, filtering, rate-limit and versioning narrative lives in openapi/_original/cvent-rest-apis-openapi.yaml.'
+    The Cvent API Platform is built around REST.'
   contact:
     name: Cvent Development Platform
     url: https://developers.cvent.com/
+  version: ea
 servers:
 - url: https://api-platform.cvent.com/ea
 - url: https://api-platform-eur.cvent.com/ea
 tags:
 - name: Surveys
-  description: Surveys are lists of questions deployed to your contacts. Surveys can be standalone or can be associated to
-    a Cvent event. Use these APIs to search for surveys and retrieve the associated questions and responses.
+  description: Surveys are lists of questions deployed to your contacts. Surveys can be standalone or can be associated to a Cvent event. Use these APIs to search for surveys and retrieve the associated questions and responses.
 paths:
   /events/surveys/responses:
     get:
@@ -90,10 +85,11 @@ paths:
           type: string
           example: id eq '04ca6ae2-0dc3-487b-953e-86d6abbdf7d3'
   /events/{id}/surveys:
+    parameters:
+    - $ref: '#/components/parameters/id7'
     get:
       summary: List Event Surveys
-      description: Gets a paginated list of surveys (id refers to chapter id and parentId is the survey id) associated to
-        a single event.
+      description: Gets a paginated list of surveys (id refers to chapter id and parentId is the survey id) associated to a single event.
       operationId: getEventSurveys
       security:
       - OAuth2.clientCredentials:
@@ -104,8 +100,7 @@ paths:
       - Surveys
       responses:
         '200':
-          description: Successfully retrieved a paginated list of event surveys (id refers to chapter id and parentId is the
-            survey id).
+          description: Successfully retrieved a paginated list of event surveys (id refers to chapter id and parentId is the survey id).
           headers: {}
           content:
             application/json:
@@ -160,15 +155,14 @@ paths:
           '
         schema:
           type: string
-          example: id eq '04ca6ae2-0dc3-487b-953e-86d6abbdf7d3' and type eq 'Session Feedback' and sessions eq  '04ca6ae2-0dc3-487b-953e-86d6abbdf7d3'
-            or sessions eq '05ca6ae2-0dc3-487b-953e-86d6abbdf7d3'
+          example: id eq '04ca6ae2-0dc3-487b-953e-86d6abbdf7d3' and type eq 'Session Feedback' and sessions eq  '04ca6ae2-0dc3-487b-953e-86d6abbdf7d3' or sessions eq '05ca6ae2-0dc3-487b-953e-86d6abbdf7d3'
+  /events/{id}/surveys/{surveyId}/questions:
     parameters:
     - $ref: '#/components/parameters/id7'
-  /events/{id}/surveys/{surveyId}/questions:
+    - $ref: '#/components/parameters/surveyId'
     get:
       summary: List Event Survey Questions
-      description: Gets a paginated list of event survey questions for a given event and survey. The <a href="#operation/getLargeChoices">
-        GET List Large Choices </a> endpoint returns choices for the large choice question `type` (`LargeChoices`).
+      description: Gets a paginated list of event survey questions for a given event and survey. The GET List Large Choices endpoint returns choices for the large choice question `type` (`LargeChoices`).
       operationId: getEventSurveyQuestions
       security:
       - OAuth2.clientCredentials:
@@ -201,10 +195,10 @@ paths:
       - $ref: '#/components/parameters/before'
       - $ref: '#/components/parameters/limit'
       - $ref: '#/components/parameters/token'
+  /events/{id}/surveys/{surveyId}/respondents:
     parameters:
     - $ref: '#/components/parameters/id7'
     - $ref: '#/components/parameters/surveyId'
-  /events/{id}/surveys/{surveyId}/respondents:
     get:
       summary: List Event Survey Respondents
       description: Gets a paginated list of event survey respondents for a single event and survey.
@@ -300,10 +294,11 @@ paths:
         '429':
           $ref: '#/components/responses/TooManyRequests1'
       deprecated: false
+  /events/{id}/surveys/{surveyId}/respondents/{respondentId}:
     parameters:
     - $ref: '#/components/parameters/id7'
     - $ref: '#/components/parameters/surveyId'
-  /events/{id}/surveys/{surveyId}/respondents/{respondentId}:
+    - $ref: '#/components/parameters/respondentId'
     put:
       summary: Update Event Survey Respondent
       description: Update respondent for an event survey.
@@ -341,11 +336,11 @@ paths:
         '429':
           $ref: '#/components/responses/TooManyRequests1'
       deprecated: false
+  /events/{id}/surveys/{surveyId}/respondents/{respondentId}/responses:
     parameters:
     - $ref: '#/components/parameters/id7'
     - $ref: '#/components/parameters/surveyId'
     - $ref: '#/components/parameters/respondentId'
-  /events/{id}/surveys/{surveyId}/respondents/{respondentId}/responses:
     post:
       summary: Create Event Survey Responses
       description: Create responses for a particular respondent in an event survey.
@@ -383,11 +378,10 @@ paths:
         '429':
           $ref: '#/components/responses/TooManyRequests1'
       deprecated: false
+  /events/{id}/surveys/{surveyId}/responses:
     parameters:
     - $ref: '#/components/parameters/id7'
     - $ref: '#/components/parameters/surveyId'
-    - $ref: '#/components/parameters/respondentId'
-  /events/{id}/surveys/{surveyId}/responses:
     get:
       summary: List Event Survey Responses
       description: Gets a paginated list of event survey responses for a single event and survey.
@@ -454,9 +448,6 @@ paths:
         schema:
           type: string
           example: id eq '04ca6ae2-0dc3-487b-953e-86d6abbdf7d3'
-    parameters:
-    - $ref: '#/components/parameters/id7'
-    - $ref: '#/components/parameters/surveyId'
   /large-choices:
     get:
       summary: List Large Choices
@@ -516,8 +507,7 @@ paths:
   /questions:
     get:
       summary: List Questions
-      description: Gets a paginated list of event and standalone survey questions. The <a href="#operation/getLargeChoices">
-        GET List Large Choices </a> endpoint returns choices for the large choice question `type` (`LargeChoices`).
+      description: Gets a paginated list of event and standalone survey questions. The GET List Large Choices endpoint returns choices for the large choice question `type` (`LargeChoices`).
       operationId: getQuestions
       security:
       - OAuth2.clientCredentials:
@@ -710,11 +700,9 @@ paths:
 
           | session.id    | `eq`        |                                                                                                                                                                              |
 
-          | question.id   | `eq`        | Use only question.id to get responses for specific questions, which may belong to
-          one or more surveys. question.id can be combined with other fields by ''and'' operator only. |
+          | question.id   | `eq`        | Use only question.id to get responses for specific questions, which may belong to one or more surveys. question.id can be combined with other fields by ''and'' operator only. |
 
-          | chapter.id    | `eq`        | Use only chapter.id to get responses for all questions in the chapter of a particular
-          survey.                                                                                |
+          | chapter.id    | `eq`        | Use only chapter.id to get responses for all questions in the chapter of a particular survey.                                                                                |
 
           | attempt       | `eq`        |                                                                                                                                                                              |
 
@@ -730,8 +718,7 @@ paths:
 
           1. chapter.id and survey.id cannot be used in combination with any other fields.
 
-          2. Multiple chapter.id or survey.id values must be separated by `or` (not `and`). Example: `filter=chapter.id eq
-          ''04ca6ae2-0dc3-487b-953e-86d6abbdf7d3'' or chapter.id eq ''1983f506-a4a5-4a05-b3f6-ff7f7afc58f1''`
+          2. Multiple chapter.id or survey.id values must be separated by `or` (not `and`). Example: `filter=chapter.id eq ''04ca6ae2-0dc3-487b-953e-86d6abbdf7d3'' or chapter.id eq ''1983f506-a4a5-4a05-b3f6-ff7f7afc58f1''`
 
           3. question.id can be combined with other fields using `and` operator only.
 
@@ -860,14 +847,11 @@ paths:
 
           |---------------|-----------|-------------------------------------|---------------------------------------------------------------------------------------------------------------------|
 
-          | survey.id     | `eq`      | 1                                   | Use only survey.id to get responses for all
-          questions in the survey.                                                |
+          | survey.id     | `eq`      | 1                                   | Use only survey.id to get responses for all questions in the survey.                                                |
 
-          | question.id   | `eq`      | 100                                 | Use only question.id to get responses for specific
-          questions, which may belong to different surveys or same survey. |
+          | question.id   | `eq`      | 100                                 | Use only question.id to get responses for specific questions, which may belong to different surveys or same survey. |
 
-          | respondent.id | `eq`      | 100                                 | Use only respondent.id to get responses for
-          specific respondents.                                                   |
+          | respondent.id | `eq`      | 100                                 | Use only respondent.id to get responses for specific respondents.                                                   |
 
 
           The following logical operators are supported for combining filters:
@@ -888,8 +872,10 @@ paths:
           type: string
           example: question.id eq '04ca6ae2-0dc3-487b-953e-86d6abbdf7d3' or question.id eq '1983f506-a4a5-4a05-b3f6-ff7f7afc58f1'
   /standard-surveys/{surveyId}/email-templates:
+    parameters:
+    - $ref: '#/components/parameters/surveyId'
     get:
-      summary: List Stdl. Survey Email Templ.
+      summary: List Stdl. Survey Email Templ
       description: Gets a paginated list of standalone survey email templates for a single survey.
       operationId: getStandardSurveyEmailTemplates
       security:
@@ -921,13 +907,12 @@ paths:
       parameters:
       - $ref: '#/components/parameters/limit'
       - $ref: '#/components/parameters/token'
+  /standard-surveys/{surveyId}/questions:
     parameters:
     - $ref: '#/components/parameters/surveyId'
-  /standard-surveys/{surveyId}/questions:
     get:
       summary: List Stdl. Survey Questions
-      description: Gets a paginated list of standalone survey questions for a single standalone survey. The <a href="#operation/getLargeChoices">
-        GET List Large Choices </a> endpoint returns choices for the large choice question `type` (`LargeChoices`).
+      description: Gets a paginated list of standalone survey questions for a single standalone survey. The GET List Large Choices endpoint returns choices for the large choice question `type` (`LargeChoices`).
       operationId: getStandardSurveyQuestions
       security:
       - OAuth2.clientCredentials:
@@ -960,9 +945,9 @@ paths:
       - $ref: '#/components/parameters/before'
       - $ref: '#/components/parameters/limit'
       - $ref: '#/components/parameters/token'
+  /standard-surveys/{surveyId}/respondents:
     parameters:
     - $ref: '#/components/parameters/surveyId'
-  /standard-surveys/{surveyId}/respondents:
     get:
       summary: List Stdl. Survey Respondents
       description: Gets a paginated list of standalone survey respondents for a single standalone survey.
@@ -1065,9 +1050,10 @@ paths:
         '429':
           $ref: '#/components/responses/TooManyRequests1'
       deprecated: false
+  /standard-surveys/{surveyId}/respondents/{respondentId}:
     parameters:
     - $ref: '#/components/parameters/surveyId'
-  /standard-surveys/{surveyId}/respondents/{respondentId}:
+    - $ref: '#/components/parameters/respondentId'
     put:
       summary: Update Stdl. Survey Respondent
       description: Update respondent for a standalone survey.
@@ -1105,10 +1091,11 @@ paths:
         '429':
           $ref: '#/components/responses/TooManyRequests1'
       deprecated: false
+  /standard-surveys/{surveyId}/respondents/{respondentId}/email-templates/{emailTemplateId}/email:
     parameters:
     - $ref: '#/components/parameters/surveyId'
     - $ref: '#/components/parameters/respondentId'
-  /standard-surveys/{surveyId}/respondents/{respondentId}/email-templates/{emailTemplateId}/email:
+    - $ref: '#/components/parameters/emailTemplateId'
     post:
       summary: Send Standalone Survey Email
       description: Sends standalone survey email.
@@ -1139,11 +1126,10 @@ paths:
         '429':
           $ref: '#/components/responses/TooManyRequests1'
       deprecated: false
+  /standard-surveys/{surveyId}/respondents/{respondentId}/responses:
     parameters:
     - $ref: '#/components/parameters/surveyId'
     - $ref: '#/components/parameters/respondentId'
-    - $ref: '#/components/parameters/emailTemplateId'
-  /standard-surveys/{surveyId}/respondents/{respondentId}/responses:
     post:
       summary: Create Stdl. Survey Responses
       description: Create responses for a particular standalone survey respondent.
@@ -1181,10 +1167,11 @@ paths:
         '429':
           $ref: '#/components/responses/TooManyRequests1'
       deprecated: false
+  /standard-surveys/{surveyId}/respondents/{respondentId}/responses/{responseId}:
     parameters:
     - $ref: '#/components/parameters/surveyId'
     - $ref: '#/components/parameters/respondentId'
-  /standard-surveys/{surveyId}/respondents/{respondentId}/responses/{responseId}:
+    - $ref: '#/components/parameters/responseId'
     put:
       summary: Update Stdl. Survey Responses
       description: Update responses for a particular standalone survey respondent.
@@ -1222,10 +1209,6 @@ paths:
         '429':
           $ref: '#/components/responses/TooManyRequests1'
       deprecated: false
-    parameters:
-    - $ref: '#/components/parameters/surveyId'
-    - $ref: '#/components/parameters/respondentId'
-    - $ref: '#/components/parameters/responseId'
   /surveys:
     get:
       summary: List Surveys
@@ -1293,235 +1276,85 @@ paths:
           type: string
           example: id eq '04ca6ae2-0dc3-487b-953e-86d6abbdf7d3' and type eq 'Standalone'
 components:
-  parameters:
-    after:
-      name: after
-      required: false
-      description: Used to query records that have been added or updated after this time point. Default to the beginning of
-        time of the data store.
-      in: query
-      schema:
-        type: string
-        format: date-time
-        example: '2017-01-02T02:00:00Z'
-    before:
-      name: before
-      required: false
-      in: query
-      description: Used to query records that have been added or updated before this time point.
-      schema:
-        type: string
-        format: date-time
-        example: '2017-01-02T02:00:00Z'
-    emailTemplateId:
-      in: path
-      name: emailTemplateId
-      description: Id of an email template
-      required: true
-      schema:
-        $ref: '#/components/schemas/uuid-property'
-    id7:
-      in: path
-      name: id
-      description: Id of an event
-      required: true
-      schema:
-        $ref: '#/components/schemas/uuid-property'
-    limit:
-      name: limit
-      in: query
-      description: The maximum number of records to return per page.
-      style: form
-      explode: true
-      schema:
-        maximum: 200
-        minimum: 1
-        type: integer
-        default: 100
-        example: 100
-    respondentId:
-      in: path
-      name: respondentId
-      description: Id of a respondent
-      required: true
-      schema:
-        $ref: '#/components/schemas/uuid-property'
-    responseId:
-      in: path
-      name: responseId
-      description: Id of a response
-      required: true
-      schema:
-        $ref: '#/components/schemas/uuid-property'
-    surveyId:
-      in: path
-      name: surveyId
-      description: Id of a survey or Id of a chapter in event survey
-      required: true
-      schema:
-        $ref: '#/components/schemas/uuid-property'
-    token:
-      name: token
-      in: query
-      description: 'The continuation token returned from a previous class. This must be a valid UUID v4 if provided.
-
-        This will override any other pageable parameters provided.
-
-        '
-      style: form
-      explode: true
-      schema:
-        type: string
-        example: 0e28af57-511f-47ab-ae46-46cd1ca51a1a
-  responses:
-    BadRequest1:
-      description: Bad request
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/ErrorResponse'
-          example:
-            code: 400
-            message: Bad Request
-    Forbidden1:
-      description: You do not have access to the resource
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/ErrorResponse'
-          example:
-            code: 403
-            message: Access Forbidden
-    NotFound1:
-      description: Resource not found
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/ErrorResponse'
-          example:
-            code: 404
-            message: Not found
-    TooManyRequests1:
-      description: Too many requests
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/ErrorResponse'
-          example:
-            code: 429
-            message: Limit Exceeded
-    Unauthorized1:
-      description: Bad or expired token
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/ErrorResponse'
-          example:
-            code: 401
-            message: Unauthorized
   schemas:
-    ErrorResponse:
-      title: ErrorResponse
-      description: Represents an error response with additional details of cascading error messages.
-      allOf:
-      - $ref: '#/components/schemas/ErrorResponseBase'
+    event-survey-response:
+      title: EventSurveyResponse
       type: object
-      required:
-      - code
-      - message
+      description: Response object for event survey respondent.
+      allOf:
+      - title: ResponseCommon
+        description: Base model with properties common to a survey response.
+        type: object
+        required:
+        - answers
+        - question
+        allOf:
+        - $ref: '#/components/schemas/response-common/allOf/0'
+        properties:
+          id:
+            type: string
+            format: uuid
+            description: Response ID
+            readOnly: true
+          respondent:
+            type: object
+            allOf:
+            - $ref: '#/components/schemas/uuid.json'
+            readOnly: true
+          question:
+            $ref: '#/components/schemas/uuid.json'
+          answers:
+            description: List of responded survey answers.
+            type: array
+            items:
+              $ref: '#/components/schemas/answer.json'
+            minItems: 1
+          score:
+            deprecated: true
+            type: number
+            description: Answer score (This property is not supported).
+            example: 20
+            readOnly: true
       properties:
-        details:
+        event:
+          $ref: '#/components/schemas/event.json1'
+        survey:
+          $ref: '#/components/schemas/uuid.json'
+        session:
+          $ref: '#/components/schemas/uuid.json'
+        speaker:
+          $ref: '#/components/schemas/uuid.json'
+    transaction-id-common.json:
+      title: TransactionIdCommon
+      type: string
+      example: TR5IDS4
+      description: 'Authors use transaction IDs to collect feedback after a customer transaction: invoice numbers or order IDs are common transaction IDs. Respondents can take a survey by entering their transaction ID, and each transaction ID uniquely identifies a response for that transaction.'
+    large-choices-paginated-response:
+      title: LargeChoicesPaginatedResponse
+      description: Response include paging and collection of choices for large choices question.
+      required:
+      - paging
+      - data
+      type: object
+      properties:
+        paging:
+          $ref: '#/components/schemas/paging.json'
+        data:
           type: array
           items:
-            $ref: '#/components/schemas/ErrorResponseBase'
-          description: Additional details of cascading error messages.
-    ErrorResponseBase:
-      title: ErrorResponseBase
-      type: object
-      description: Represents an error response with no additional details.
-      required:
-      - code
-      - message
-      properties:
-        code:
-          type: integer
-          description: The HTTP status code representing the error.
-          example: 400
-        message:
-          type: string
-          description: A brief description of the error.
-          example: Bad Request
-        target:
-          type: string
-          description: The target resource of the error.
-          example: example target
-    additionalChoice.json:
-      title: additionalChoice
-      description: Contains text of additional choice i.e N/A choice or otherAnswer choice
+            $ref: '#/components/schemas/large-choice.json'
+          description: Collection of choices for large choices question.
+    question-id.json:
+      title: Question
+      description: An object that holds the ID of the question.
       type: object
       properties:
-        text:
+        id:
+          title: Question ID
+          description: ID of the question in a survey.
           type: string
-          description: Text Value of additional choice
-          example: N/A or Other
-        shortText:
-          type: string
-          description: Reporting value of additional choice text
-          example: N/A or Other Reporting value
-    answer-type.json:
-      title: AnswerType
-      enum:
-      - Choice
-      - Text
-      - ChoiceText
-      - Comment
-      - Other
-      - NA
-      - File
-      type: string
-      description: Type of answer
-      example: ChoiceText
-    answer.json:
-      title: Answer
-      description: A survey answer.
-      type: object
-      required:
-      - type
-      properties:
-        type:
-          $ref: '#/components/schemas/answer-type.json'
-        value:
-          type: string
-          description: 'Value property is used to send information like string, number and date in case of following types
-            of answers only: ChoiceText, Text, Comment, Other. In case of Rank Order question, rank should be put into value.
-            Refer to questions resource to get choice label or category label from their respective ids.'
-          example: '1'
-        choice:
-          $ref: '#/components/schemas/uuid.json'
-        category:
-          $ref: '#/components/schemas/uuid.json'
-        subCategory:
-          $ref: '#/components/schemas/uuid.json'
-        field:
-          $ref: '#/components/schemas/uuid.json'
-    attempt.json:
-      title: Survey Attempt
-      type: integer
-      format: int32
-      example: 2
-      description: Counts the number of times a respondent has attempted the survey and answered the question.
-    category.json1:
-      title: Category
-      description: A survey category.
-      type: object
-      allOf:
-      - $ref: '#/components/schemas/text-field.json'
-      properties:
-        required:
-          type: boolean
-          default: false
-          description: is the category mandatory for answer
-          example: true
+          format: uuid
+          example: 04ca6ae2-0dc3-487b-953e-86d6abbdf7d3
     choice.json:
       title: Choice
       description: A survey choice.
@@ -1533,99 +1366,206 @@ components:
           type: string
           description: Label of choice
           example: Choice A
-    custom-field.json1:
-      title: CustomField
-      description: A survey custom field.
-      required:
-      - id
-      - values
+    respondent-chapter-reference.json-0:
+      title: RespondentChapterReference
+      description: Respondent chapter details for survey respondents (Event and Standalone).
       type: object
+      allOf:
+      - $ref: '#/components/schemas/respondent-event-survey-reference.json/allOf/0'
+      properties:
+        loopingChoice:
+          type: object
+          allOf:
+          - readOnly: true
+          - $ref: '#/components/schemas/looping-choice.json'
+        session:
+          type: object
+          description: Associated session.
+          properties:
+            id:
+              type: string
+              format: uuid
+              description: Session ID.
+          readOnly: true
+        evaluationResult:
+          $ref: '#/components/schemas/evaluation-result.json'
+        attempt:
+          $ref: '#/components/schemas/attempt.json'
+    link.json:
+      title: Link
+      required:
+      - href
+      type: object
+      description: Represents a link to a related resource.
+      properties:
+        href:
+          type: string
+          description: A url provided that can be followed for linking
+          example: ?token=90c5f062-76ad-4ea4-aa53-00eb698d9262
+    question-type.json:
+      title: QuestionType
+      enum:
+      - SingleChoice
+      - MultiChoice
+      - MatrixSingleChoice
+      - MatrixMultiChoice
+      - MatrixSideBySide
+      - MatrixSpreadSheet
+      - DateTime
+      - Number
+      - Text
+      - CommentBox
+      - Form
+      - RankOrder
+      - FileUpload
+      - NetPromoter
+      - Rating
+      - MatrixRating
+      - NumberAllocation
+      - LargeChoices
+      type: string
+      description: Question Type.
+      example: SingleChoice
+      readOnly: true
+    event-survey-session-match.json:
+      title: EventSurveySessionMatch
+      enum:
+      - Only certain sessions
+      - All sessions
+      type: string
+      description: What is the criteria of adding sessions to a event survey
+      example: Only certain sessions
+      readOnly: true
+    respondent.json:
+      title: Respondent
+      description: Respondent object for survey respondents.
+      type: object
+      allOf:
+      - $ref: '#/components/schemas/event-survey-respondent/allOf/0'
+      properties:
+        event:
+          $ref: '#/components/schemas/event.json1'
+        contact:
+          $ref: '#/components/schemas/uuid.json'
+        attendee:
+          $ref: '#/components/schemas/uuid.json'
+        survey:
+          $ref: '#/components/schemas/uuid.json'
+        status:
+          $ref: '#/components/schemas/respondent-status.json'
+        unsubscribed:
+          type: boolean
+          description: True indicates the respondent has unsubscribed from recieving emails from the survey.
+          example: false
+          readOnly: true
+        unsubscribedBy:
+          type: string
+          description: Who unsubscribed the respondent.
+          example: Respondent
+          readOnly: true
+        chapters:
+          type: array
+          description: Survey respondent chapters.
+          items:
+            $ref: '#/components/schemas/respondent-chapter-reference.json-0'
+        invitationList:
+          $ref: '#/components/schemas/invitation-list-common.json'
+        transactionId:
+          $ref: '#/components/schemas/transaction-id-common.json'
+    response-common:
+      title: ResponseCommon
+      description: Base model with properties common to a survey response.
+      type: object
+      required:
+      - answers
+      - question
+      allOf:
+      - title: Audit
+        description: Audit information
+        type: object
+        properties:
+          created:
+            type: string
+            format: date-time
+            description: The ISO 8601 zoned date time when this record was created.
+            readOnly: true
+            example: '2017-01-02T02:00:00Z'
+          createdBy:
+            type: string
+            description: The identifier of the user that created this record.
+            readOnly: true
+            example: hporter
+          lastModified:
+            type: string
+            format: date-time
+            description: The ISO 8601 zoned date time when this record was updated.
+            readOnly: true
+            example: '2019-02-12T03:00:00Z'
+          lastModifiedBy:
+            type: string
+            description: The identifier of the user that last updated this record.
+            readOnly: true
+            example: hporter
       properties:
         id:
           type: string
           format: uuid
-          description: The unique id representing this custom field.
-          example: bd57aeda-3483-4bcf-886e-c976e9f4454a
+          description: Response ID
           readOnly: true
-        name:
-          type: string
-          description: The actual text of the custom field.
-          example: What is a your favorite color?
-          readOnly: true
-        code:
-          type: string
-          description: Code to uniquely identify custom field.
-          example: FAVORITE_COLOR_CODE
-          readOnly: true
-        type:
-          type: string
+        respondent:
+          type: object
           allOf:
-          - title: CustomFieldType
-            enum:
-            - Open Ended Text - Date/Time
-            - Open Ended Text - One Line
-            - Open Ended Text - Comment Box
-            - Choice - Single Answer
-            - Choice - Multiple Answers
-            type: string
-            description: This is used to denote the type of data collected by a custom field.
-            example: Open Ended Text - One Line
-          - readOnly: true
-            example: Choice - Multiple Answers
-        values:
+          - $ref: '#/components/schemas/uuid.json'
+          readOnly: true
+        question:
+          $ref: '#/components/schemas/uuid.json'
+        answers:
+          description: List of responded survey answers.
           type: array
-          uniqueItems: true
           items:
-            type: string
-          description: The set of values or possible values to a custom field.
-          example:
-          - Green
-          - Blue
-    evaluation-result.json:
-      title: Evaluation Result
-      enum:
-      - Passed
-      - Failed
-      - Unevaluated
-      type: string
-      description: This represents the evaluation status of an assessment chapter.
-      example: Passed
-      readOnly: true
-    event-survey-audience-type.json:
-      title: EventSurveyAudienceType
-      enum:
-      - Attendee
-      - Stakeholder
-      - Speaker
-      type: string
-      description: Audience types of event surveys
-      example: Attendee
-      readOnly: true
-    event-survey-availability.json:
-      title: EventSurveyAvailability
-      enum:
-      - Event Registrants
-      - Event Participants
-      - Session Registrants
-      - Session Participants
-      type: string
-      description: Describes the availability of the event survey
-      example: Session Registrants
-      readOnly: true
-    event-survey-question.json:
-      title: EventSurveyQuestion
-      description: An event survey question.
+            $ref: '#/components/schemas/answer.json'
+          minItems: 1
+        score:
+          deprecated: true
+          type: number
+          description: Answer score (This property is not supported).
+          example: 20
+          readOnly: true
+    standard-survey-send-email-response:
+      title: StandardSurveySendEmailResponse
+      description: A standard survey, sent-email response.
       type: object
-      allOf:
-      - $ref: '#/components/schemas/question.json1/allOf/0'
       properties:
         survey:
-          $ref: '#/components/schemas/uuid.json'
-        event:
-          $ref: '#/components/schemas/uuid.json'
-    event-survey-questions-paginated-response:
-      title: SurveyQuestionPaginatedResponse
-      description: Response include Paging and collection os questions
+          description: Survey of response.
+          type: object
+          properties:
+            id:
+              type: string
+              format: uuid
+              example: 9463c74e-18c6-401a-a710-ae0f485bf059
+              description: Id of the the survey
+        respondent:
+          description: Respondent of response.
+          type: object
+          properties:
+            id:
+              type: string
+              format: uuid
+              example: 9463c74e-18c6-401a-a710-ae0f485bf059
+              description: Id of the respondent
+        emailTemplate:
+          description: Email template used.
+          type: object
+          properties:
+            id:
+              type: string
+              format: uuid
+              example: 9463c74e-18c6-401a-a710-ae0f485bf059
+              description: Id of the email template
+    standard-survey-email-templates-paginated-response:
+      title: StandardSurveyEmailTemplatesPaginatedResponse
+      description: Response include paging and collection of email templates of a particular standard survey
       required:
       - paging
       - data
@@ -1636,8 +1576,8 @@ components:
         data:
           type: array
           items:
-            $ref: '#/components/schemas/event-survey-question.json'
-          description: Collection of Questions
+            $ref: '#/components/schemas/standard-survey-email-template.json'
+          description: Collection of standard survey email templates
     event-survey-respondent:
       title: EventSurveyRespondent
       type: object
@@ -1674,8 +1614,7 @@ components:
           referenceId:
             type: string
             example: facebook
-            description: Reference ids are used to track where response is coming from. Survey Author can create multiple
-              weblinks with different values of referenceId query param in them.
+            description: Reference ids are used to track where response is coming from. Survey Author can create multiple weblinks with different values of referenceId query param in them.
           score:
             type: number
             description: Respondent Score
@@ -1730,334 +1669,32 @@ components:
           items:
             $ref: '#/components/schemas/respondent-event-survey-reference.json'
           readOnly: true
-    event-survey-respondents-paginated-response:
-      title: EventSurveyRespondentsPaginatedResponse
-      description: Response includes paging and respondents data for a event survey
+    ErrorResponseBase:
+      title: ErrorResponseBase
+      type: object
+      description: Represents an error response with no additional details.
       required:
-      - paging
-      - data
-      type: object
+      - code
+      - message
       properties:
-        paging:
-          $ref: '#/components/schemas/paging.json'
-        data:
-          type: array
-          items:
-            $ref: '#/components/schemas/event-survey-respondent'
-          description: Respondent information for an event survey
-    event-survey-response:
-      title: EventSurveyResponse
-      type: object
-      description: Response object for event survey respondent.
-      allOf:
-      - title: ResponseCommon
-        description: Base model with properties common to a survey response.
-        type: object
-        required:
-        - answers
-        - question
-        allOf:
-        - $ref: '#/components/schemas/response-common/allOf/0'
-        properties:
-          id:
-            type: string
-            format: uuid
-            description: Response ID
-            readOnly: true
-          respondent:
-            type: object
-            allOf:
-            - $ref: '#/components/schemas/uuid.json'
-            readOnly: true
-          question:
-            $ref: '#/components/schemas/uuid.json'
-          answers:
-            description: List of responded survey answers.
-            type: array
-            items:
-              $ref: '#/components/schemas/answer.json'
-            minItems: 1
-          score:
-            deprecated: true
-            type: number
-            description: Answer score (This property is not supported).
-            example: 20
-            readOnly: true
-      properties:
-        event:
-          $ref: '#/components/schemas/event.json1'
-        survey:
-          $ref: '#/components/schemas/uuid.json'
-        session:
-          $ref: '#/components/schemas/uuid.json'
-        speaker:
-          $ref: '#/components/schemas/uuid.json'
-    event-survey-responses-paginated-response:
-      title: EventSurveyResponsesPaginatedResponse
-      description: Response include paging and responses for a survey
-      required:
-      - paging
-      - data
-      type: object
-      properties:
-        paging:
-          $ref: '#/components/schemas/paging.json'
-        data:
-          type: array
-          items:
-            $ref: '#/components/schemas/event-survey-response'
-          description: Response for a survey
-    event-survey-session-match.json:
-      title: EventSurveySessionMatch
-      enum:
-      - Only certain sessions
-      - All sessions
-      type: string
-      description: What is the criteria of adding sessions to a event survey
-      example: Only certain sessions
-      readOnly: true
-    event-survey-type.json:
-      title: EventSurveyType
-      enum:
-      - Event Feedback
-      - Session Feedback
-      - Stakeholder Feedback
-      type: string
-      description: This is used to denote the different survey types.
-      example: Session Feedback
-      readOnly: true
-    event-survey.json:
-      title: EventSurvey
-      description: An event survey.
-      type: object
-      allOf:
-      - $ref: '#/components/schemas/survey.json/allOf/0'
-      properties:
-        type:
-          $ref: '#/components/schemas/event-survey-type.json'
-        availableTo:
-          $ref: '#/components/schemas/event-survey-availability.json'
-        audienceType:
-          $ref: '#/components/schemas/event-survey-audience-type.json'
-        sessionMatch:
-          $ref: '#/components/schemas/event-survey-session-match.json'
-        sessions:
-          type: array
-          description: Associated session ids of the survey, this can also be null
-          items:
-            $ref: '#/components/schemas/uuid-property'
-          example:
-          - 04ca6ae2-0dc3-487b-953e-86d6abbdf7d3
-          - 05ca6ae2-0dc3-487b-953e-86d6abbdf7d3
-        parentId:
-          type: string
-          format: uuid
-          example: 9463c74e-18c6-401a-a710-ae0f485bf059
-          description: Id of the parent survey
-    event-surveys-paginated-response:
-      title: EventSurveysPaginatedResponse
-      description: The response from a request to get the list of event surveys.  This includes the paging object as well
-        as the collection of surveys.
-      required:
-      - paging
-      - data
-      type: object
-      properties:
-        paging:
-          $ref: '#/components/schemas/paging.json'
-        data:
-          type: array
-          items:
-            $ref: '#/components/schemas/event-survey.json'
-          description: Collection of event surveys.
-    event.json1:
-      title: Event
-      type: object
-      description: Detail object of an event which is associated to a survey.
-      properties:
-        id:
-          type: string
-          format: uuid
-          example: 9463c74e-18c6-401a-a710-ae0f485bf059
-          description: Id of the associated event
-      readOnly: true
-    field-type.json:
-      title: FieldType
-      enum:
-      - SingleChoice
-      - MultiChoice
-      - DateTime
-      - Number
-      - Text
-      type: string
-      description: Field Type
-      example: SingleChoice
-      readOnly: true
-    field.json:
-      title: Field
-      description: A survey field.
-      type: object
-      allOf:
-      - $ref: '#/components/schemas/text-field.json'
-      properties:
-        type:
-          $ref: '#/components/schemas/field-type.json'
-        choices:
-          type: array
-          description: List of choices for this field.
-          items:
-            $ref: '#/components/schemas/choice.json'
-        notApplicableAnswer:
-          $ref: '#/components/schemas/additionalChoice.json'
-        otherAnswer:
-          $ref: '#/components/schemas/additionalChoice.json'
-        required:
-          type: boolean
-          default: false
-          description: Is this a mandatory field
-          example: true
-    invitation-list-common.json:
-      title: InvitationListCommon
-      type: object
-      description: Invitation list of respondents
-      properties:
-        id:
-          type: string
-          format: uuid
-          example: 9463c74e-18c6-401a-a710-ae0f485bf059
-          description: ID of the invitation list in which respondent is present.
-    large-choice.json:
-      title: LargeChoice
-      description: Choice of large choices question.
-      type: object
-      properties:
-        id:
-          type: string
-          format: uuid
-          description: The ID of the choice.
-          readOnly: true
-        text:
-          type: string
-          description: The text of the choice.
-          example: Choice A
-        question:
-          $ref: '#/components/schemas/question-id.json'
-    large-choices-paginated-response:
-      title: LargeChoicesPaginatedResponse
-      description: Response include paging and collection of choices for large choices question.
-      required:
-      - paging
-      - data
-      type: object
-      properties:
-        paging:
-          $ref: '#/components/schemas/paging.json'
-        data:
-          type: array
-          items:
-            $ref: '#/components/schemas/large-choice.json'
-          description: Collection of choices for large choices question.
-    link.json:
-      title: Link
-      required:
-      - href
-      type: object
-      description: Represents a link to a related resource.
-      properties:
-        href:
-          type: string
-          description: A url provided that can be followed for linking
-          example: ?token=90c5f062-76ad-4ea4-aa53-00eb698d9262
-    looping-choice.json:
-      title: LoopingChoice
-      description: Loop Choice is the choice for which the chapter is looped. Questions in the looping chapter get repeated
-        once for each choice selected in the parent question
-      type: object
-      properties:
-        id:
-          type: string
-          format: uuid
-          example: 9463c74e-18c6-401a-a710-ae0f485bf059
-          description: Loop Choice ID.
-    pagination-links.json:
-      title: PaginationLinks
-      type: object
-      description: Represents pagination links for navigating between pages of data.
-      properties:
-        next:
-          $ref: '#/components/schemas/link.json'
-        self:
-          $ref: '#/components/schemas/link.json'
-        prev:
-          $ref: '#/components/schemas/link.json'
-    paging.json:
-      title: Paging
-      required:
-      - _links
-      type: object
-      description: Represents pagination information for a collection of resources.
-      properties:
-        previousToken:
-          type: string
-          description: The pagination token for the previous page, if one exists. You can use this token to navigate to the
-            previous page of data.
-          example: 1a2b3c4d5e6f7g8h9i10j11k
-        nextToken:
-          type: string
-          description: The pagination token for the next page. If this value is present in the response, there is another
-            page of data you can fetch.
-          example: 1a2b3c4d5e6f7g8h9i10j11k
-        currentToken:
-          type: string
-          description: The pagination token for the current page.
-          example: 1a2b3c4d5e6f7g8h9i10j11k
-        limit:
+        code:
           type: integer
-          description: The number of records to return on the page. Not to exceed 200.
-          example: 100
-        totalCount:
-          type: integer
-          description: The total number of records available. This field may return blank, even if there are more records.
-            To confirm if there are more records, check the `nextToken` field.
-          example: 2
-        _links:
-          $ref: '#/components/schemas/pagination-links.json'
-    question-id.json:
-      title: Question
-      description: An object that holds the ID of the question.
-      type: object
-      properties:
-        id:
-          title: Question ID
-          description: ID of the question in a survey.
+          description: The HTTP status code representing the error.
+          example: 400
+        message:
           type: string
-          format: uuid
-          example: 04ca6ae2-0dc3-487b-953e-86d6abbdf7d3
-    question-type.json:
-      title: QuestionType
-      enum:
-      - SingleChoice
-      - MultiChoice
-      - MatrixSingleChoice
-      - MatrixMultiChoice
-      - MatrixSideBySide
-      - MatrixSpreadSheet
-      - DateTime
-      - Number
-      - Text
-      - CommentBox
-      - Form
-      - RankOrder
-      - FileUpload
-      - NetPromoter
-      - Rating
-      - MatrixRating
-      - NumberAllocation
-      - LargeChoices
+          description: A brief description of the error.
+          example: Bad Request
+        target:
+          type: string
+          description: The target resource of the error.
+          example: example target
+    uuid-property:
+      title: UUID Property
+      description: A string that has to be a format matching the industry standard uuid
       type: string
-      description: Question Type.
-      example: SingleChoice
-      readOnly: true
+      format: uuid
+      example: 04ca6ae2-0dc3-487b-953e-86d6abbdf7d3
     question.json1:
       title: Question
       description: A survey question.
@@ -2143,9 +1780,30 @@ components:
           $ref: '#/components/schemas/uuid.json'
         chapter:
           $ref: '#/components/schemas/uuid.json'
-    questions-paginated-response:
-      title: SurveyQuestionsPaginatedResponse
-      description: Response include paging and collection of questions of surveys
+    response.json:
+      title: Survey Responses
+      type: object
+      description: Response object for survey responses.
+      allOf:
+      - $ref: '#/components/schemas/event-survey-response/allOf/0'
+      properties:
+        event:
+          $ref: '#/components/schemas/uuid.json'
+        session:
+          $ref: '#/components/schemas/uuid.json'
+        chapter:
+          $ref: '#/components/schemas/uuid.json'
+        survey:
+          $ref: '#/components/schemas/uuid.json'
+        speaker:
+          $ref: '#/components/schemas/uuid.json'
+        loopingChoice:
+          $ref: '#/components/schemas/looping-choice.json'
+        attempt:
+          $ref: '#/components/schemas/attempt.json'
+    standard-survey-responses-paginated-response:
+      title: StandardSurveyResponsesPaginatedResponse
+      description: Response include paging and responses for a survey
       required:
       - paging
       - data
@@ -2156,70 +1814,205 @@ components:
         data:
           type: array
           items:
-            $ref: '#/components/schemas/question.json1'
-          description: Collection of questions for surveys.
-    responded-through.json:
-      title: RespondedThrough
-      type: string
-      description: 'Indicates the mode by which a respondent submitted their response.
-
-
-        This field contains one of the enumerated, string constants listed below.
-
-
-        Enum values:
-
-
-        - "Not Responded": Respondent did not provide a response.
-
-        - "API": Response was submitted via an API.
-
-        - "Import": Response was created by a bulk import process.
-
-        - "Mobile" (deprecated): Historically indicated submission from a mobile device. This value is deprecated.
-
-        - "Desktop" (deprecated): Historically indicated submission from a desktop device. This value is deprecated.'
-      example: API
+            $ref: '#/components/schemas/standard-survey-response'
+          description: Response for a survey
+    responses-paginated-response:
+      title: ResponsesPaginatedResponse
+      description: Response include paging and responses for surveys
+      required:
+      - paging
+      - data
+      type: object
+      properties:
+        paging:
+          $ref: '#/components/schemas/paging.json'
+        data:
+          type: array
+          items:
+            $ref: '#/components/schemas/response.json'
+          description: Responses for a survey.
+    event-survey-availability.json:
+      title: EventSurveyAvailability
       enum:
-      - Not Responded
-      - API
-      - Import
-      - Mobile
-      - Desktop
-    respondent-chapter-reference.json:
-      title: RespondentChapterReference
-      description: Respondent chapter reference.
+      - Event Registrants
+      - Event Participants
+      - Session Registrants
+      - Session Participants
+      type: string
+      description: Describes the availability of the event survey
+      example: Session Registrants
+      readOnly: true
+    standard-survey-response:
+      title: StandardSurveyResponse
+      description: A standard survey response.
       type: object
       allOf:
-      - $ref: '#/components/schemas/respondent-event-survey-reference.json/allOf/0'
+      - $ref: '#/components/schemas/event-survey-response/allOf/0'
       properties:
+        survey:
+          $ref: '#/components/schemas/uuid.json'
         loopingChoice:
           $ref: '#/components/schemas/looping-choice.json'
-    respondent-chapter-reference.json-0:
-      title: RespondentChapterReference
-      description: Respondent chapter details for survey respondents (Event and Standalone).
+    standard-survey-respondents-paginated-response:
+      title: StandardSurveyRespondentsPaginatedResponse
+      description: Response include paging and respondents for a survey
+      required:
+      - paging
+      - data
+      type: object
+      properties:
+        paging:
+          $ref: '#/components/schemas/paging.json'
+        data:
+          type: array
+          items:
+            $ref: '#/components/schemas/standard-survey-respondent'
+          description: Respondent for a survey
+    paging.json:
+      title: Paging
+      required:
+      - _links
+      type: object
+      description: Represents pagination information for a collection of resources.
+      properties:
+        previousToken:
+          type: string
+          description: The pagination token for the previous page, if one exists. You can use this token to navigate to the previous page of data.
+          example: 1a2b3c4d5e6f7g8h9i10j11k
+        nextToken:
+          type: string
+          description: The pagination token for the next page. If this value is present in the response, there is another page of data you can fetch.
+          example: 1a2b3c4d5e6f7g8h9i10j11k
+        currentToken:
+          type: string
+          description: The pagination token for the current page.
+          example: 1a2b3c4d5e6f7g8h9i10j11k
+        limit:
+          type: integer
+          description: The number of records to return on the page. Not to exceed 200.
+          example: 100
+        totalCount:
+          type: integer
+          description: The total number of records available. This field may return blank, even if there are more records. To confirm if there are more records, check the `nextToken` field.
+          example: 2
+        _links:
+          $ref: '#/components/schemas/pagination-links.json'
+    standard-survey-email-template-response:
+      title: StandardSurveyEmailTemplates
+      description: A standard survey email template
       type: object
       allOf:
-      - $ref: '#/components/schemas/respondent-event-survey-reference.json/allOf/0'
+      - title: EmailTemplateCommon
+        description: Email Template
+        type: object
+        allOf:
+        - $ref: '#/components/schemas/response-common/allOf/0'
+        properties:
+          name:
+            type: string
+            description: Name of the email template.
+            example: Invitation
+          subject:
+            type: string
+            description: Subject of the email template.
+            example: Email Template Testing
+          fromName:
+            type: string
+            description: Name of the sender.
+            example: Henry Potterfield
+          fromEmail:
+            type: string
+            description: The email address of the sender.
+            example: h.potterfield@test.com
+          plaintextBody:
+            type: string
+            description: Plain text body of the page in the email.
+            example: We’d love to hear your thoughts!\n\nPlease take a few minutes to let us know about your recent experience.\n\nStart Survey Now ({[RES-SURVEY URL]})
+          htmlBody:
+            type: string
+            description: html body of the page sent in the email
+            example: '<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html><head><title></title></head><body style="margin:0;padding:0" id="body"><table ><tbody><tr><td align="center" bgcolor="#041532"><table ><tbody><tr><td align="center" bgcolor="#DDE2E6" style="padding-top:0;padding-bottom:0;padding-left:0;padding-right:0"><table border="0" cellpadding="0" cellspacing="0" width="100%" style="max-width:600px" class="wrapper"><tbody><tr><td><table><tbody><tr><td valign="top"><table><tbody><tr><td><table><tbody><tr><td bgcolor="transparent" style="padding-top:15px;padding-bottom:15px;padding-left:15px;padding-right:15px"><table><tbody><tr><td><table border="0" cellpadding="0" cellspacing="0" width="100%"><tr><td>{[C-FIRST NAME]}, <br></td></tr> <tr><td>We&#x2019;d love to hear your thoughts!</td></tr> </table></td></tr></tbody></table></td></tr></tbody></table></td></tr></tbody></table></td></tr><tr><td valign="top"><table border="0" cellpadding="0" cellspacing="0" width="100%" align="left" class="column"><tbody><tr><td><table border="0" cellpadding="0" cellspacing="0" width="100%" data-cvent-id="widget-NucleusText-widget:13ea36d2-1eb4-452f-ae17-9d582dbeb7eb"><tbody><tr><td bgcolor="transparent" style="padding-top:15px;padding-bottom:15px;padding-left:15px;padding-right:15px"><table border="0" cellpadding="0" cellspacing="0" width="100%"><tbody><tr><td><table><tr><td>Please take a few minutes to let us know about your recent experience.</td></tr> </table></td></tr></tbody></table></td></tr></tbody></table></td></tr></tbody></table></td></tr><tr><td valign="top"><table><tbody><tr><td><table><tbody><tr><td><table><tbody><tr><td >Start Survey Now</a></td></tr></tbody></table></td></tr></tbody></table></td></tr></tbody></table></td></tr><tr><td valign="top"><table border="0" cellpadding="0" cellspacing="0" width="100%" align="left" class="column"><tbody><tr><td><table ><tbody><tr><td bgcolor="transparent" style="padding-top:15px;padding-bottom:15px;padding-left:15px;padding-right:15px"><table ><tbody><tr><td><table border="0" cellpadding="0" cellspacing="0" width="100%"><tr><td style="font-size:16px;line-height:20px;font-family:Arial,Helvetica,sans-serif;color:#273F69;font-style:normal;font-weight:400;text-align:center; padding: 6px 0;">If you have any questions, feel free to email us at {[SUR-AUTHOR EMAIL]}.<br>Thank you,<br>{[SUR-AUTHOR COMPANY]}&#xA0;</td></tr> </table></td></tr></tbody></table></td></tr></tbody></table></td></tr></tbody></table></td></tr><tr><td valign="top"><table><tbody><tr><td><table><tbody><tr><td bgcolor="transparent" style="padding-top:15px;padding-bottom:15px;padding-left:15px;padding-right:15px"><table ><tbody><tr><td><table><tr><td>Click the link below to opt out of receiving emails from {[SUR-AUTHOR FIRST NAME]} {[SUR-AUTHOR LAST NAME]}.<br>{[EMAIL OPT OUT]}&#xA0;</td></tr> </table></td></tr></tbody></table></td></tr></tbody></table></td></tr></tbody></table></td></tr></tbody></table></td></tr></tbody></table></td></tr><tr><td><table><tbody><tr><td><table><tbody></tbody></table></td></tr></tbody></table></td></tr></tbody></table> ></td></tr></tbody></table></body></html>'
+          locale:
+            type: string
+            description: The locale of the email template using the IETF Language Tag format.
+            example: en-US
+          clickTrackingEnabled:
+            type: boolean
+            description: Enables tracking when respondent clicks on the email
+            example: true
+          replyToName:
+            type: string
+            description: Name of the person to reply to
+            example: Henry Potterfield
+          replyToEmail:
+            type: string
+            description: Email address to reply to
+            example: h.potterfield@test.com
       properties:
-        loopingChoice:
-          type: object
-          allOf:
-          - readOnly: true
-          - $ref: '#/components/schemas/looping-choice.json'
-        session:
-          type: object
-          description: Associated session.
-          properties:
-            id:
-              type: string
-              format: uuid
-              description: Session ID.
+        id:
+          $ref: '#/components/schemas/uuid-property'
+        active:
+          type: boolean
+          description: Status of the email
+          example: true
+    event-survey-type.json:
+      title: EventSurveyType
+      enum:
+      - Event Feedback
+      - Session Feedback
+      - Stakeholder Feedback
+      type: string
+      description: This is used to denote the different survey types.
+      example: Session Feedback
+      readOnly: true
+    custom-field.json1:
+      title: CustomField
+      description: A survey custom field.
+      required:
+      - id
+      - values
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+          description: The unique id representing this custom field.
+          example: bd57aeda-3483-4bcf-886e-c976e9f4454a
           readOnly: true
-        evaluationResult:
-          $ref: '#/components/schemas/evaluation-result.json'
-        attempt:
-          $ref: '#/components/schemas/attempt.json'
+        name:
+          type: string
+          description: The actual text of the custom field.
+          example: What is a your favorite color?
+          readOnly: true
+        code:
+          type: string
+          description: Code to uniquely identify custom field.
+          example: FAVORITE_COLOR_CODE
+          readOnly: true
+        type:
+          type: string
+          allOf:
+          - title: CustomFieldType
+            enum:
+            - Open Ended Text - Date/Time
+            - Open Ended Text - One Line
+            - Open Ended Text - Comment Box
+            - Choice - Single Answer
+            - Choice - Multiple Answers
+            type: string
+            description: This is used to denote the type of data collected by a custom field.
+            example: Open Ended Text - One Line
+          - readOnly: true
+            example: Choice - Multiple Answers
+        values:
+          type: array
+          uniqueItems: true
+          items:
+            type: string
+          description: The set of values or possible values to a custom field.
+          example:
+          - Green
+          - Blue
     respondent-event-survey-reference.json:
       title: RespondentEventSurveyReference
       description: Respondent event survey reference.
@@ -2261,8 +2054,7 @@ components:
               format: uuid
               example: 9463c74e-18c6-401a-a710-ae0f485bf059
               readOnly: true
-              description: Loop Session is the session for which the survey is looped. Questions in the looping survey get
-                repeated once for each session defined in the configuration depending on eligibility
+              description: Loop Session is the session for which the survey is looped. Questions in the looping survey get repeated once for each session defined in the configuration depending on eligibility
     respondent-status.json:
       title: RespondentStatus
       enum:
@@ -2275,499 +2067,18 @@ components:
       type: string
       description: Respondent Status
       example: No Response
-    respondent.json:
-      title: Respondent
-      description: Respondent object for survey respondents.
+    category.json1:
+      title: Category
+      description: A survey category.
       type: object
       allOf:
-      - $ref: '#/components/schemas/event-survey-respondent/allOf/0'
+      - $ref: '#/components/schemas/text-field.json'
       properties:
-        event:
-          $ref: '#/components/schemas/event.json1'
-        contact:
-          $ref: '#/components/schemas/uuid.json'
-        attendee:
-          $ref: '#/components/schemas/uuid.json'
-        survey:
-          $ref: '#/components/schemas/uuid.json'
-        status:
-          $ref: '#/components/schemas/respondent-status.json'
-        unsubscribed:
+        required:
           type: boolean
-          description: True indicates the respondent has unsubscribed from recieving emails from the survey.
-          example: false
-          readOnly: true
-        unsubscribedBy:
-          type: string
-          description: Who unsubscribed the respondent.
-          example: Respondent
-          readOnly: true
-        chapters:
-          type: array
-          description: Survey respondent chapters.
-          items:
-            $ref: '#/components/schemas/respondent-chapter-reference.json-0'
-        invitationList:
-          $ref: '#/components/schemas/invitation-list-common.json'
-        transactionId:
-          $ref: '#/components/schemas/transaction-id-common.json'
-    respondents-paginated-response:
-      title: SurveyRespondentsPaginatedResponse
-      description: Response include paging and respondents for surveys
-      required:
-      - paging
-      - data
-      type: object
-      properties:
-        paging:
-          $ref: '#/components/schemas/paging.json'
-        data:
-          type: array
-          items:
-            $ref: '#/components/schemas/respondent.json'
-          description: Respondents for surveys.
-    response-common:
-      title: ResponseCommon
-      description: Base model with properties common to a survey response.
-      type: object
-      required:
-      - answers
-      - question
-      allOf:
-      - title: Audit
-        description: Audit information
-        type: object
-        properties:
-          created:
-            type: string
-            format: date-time
-            description: The ISO 8601 zoned date time when this record was created.
-            readOnly: true
-            example: '2017-01-02T02:00:00Z'
-          createdBy:
-            type: string
-            description: The identifier of the user that created this record.
-            readOnly: true
-            example: hporter
-          lastModified:
-            type: string
-            format: date-time
-            description: The ISO 8601 zoned date time when this record was updated.
-            readOnly: true
-            example: '2019-02-12T03:00:00Z'
-          lastModifiedBy:
-            type: string
-            description: The identifier of the user that last updated this record.
-            readOnly: true
-            example: hporter
-      properties:
-        id:
-          type: string
-          format: uuid
-          description: Response ID
-          readOnly: true
-        respondent:
-          type: object
-          allOf:
-          - $ref: '#/components/schemas/uuid.json'
-          readOnly: true
-        question:
-          $ref: '#/components/schemas/uuid.json'
-        answers:
-          description: List of responded survey answers.
-          type: array
-          items:
-            $ref: '#/components/schemas/answer.json'
-          minItems: 1
-        score:
-          deprecated: true
-          type: number
-          description: Answer score (This property is not supported).
-          example: 20
-          readOnly: true
-    response.json:
-      title: Survey Responses
-      type: object
-      description: Response object for survey responses.
-      allOf:
-      - $ref: '#/components/schemas/event-survey-response/allOf/0'
-      properties:
-        event:
-          $ref: '#/components/schemas/uuid.json'
-        session:
-          $ref: '#/components/schemas/uuid.json'
-        chapter:
-          $ref: '#/components/schemas/uuid.json'
-        survey:
-          $ref: '#/components/schemas/uuid.json'
-        speaker:
-          $ref: '#/components/schemas/uuid.json'
-        loopingChoice:
-          $ref: '#/components/schemas/looping-choice.json'
-        attempt:
-          $ref: '#/components/schemas/attempt.json'
-    responses-paginated-response:
-      title: ResponsesPaginatedResponse
-      description: Response include paging and responses for surveys
-      required:
-      - paging
-      - data
-      type: object
-      properties:
-        paging:
-          $ref: '#/components/schemas/paging.json'
-        data:
-          type: array
-          items:
-            $ref: '#/components/schemas/response.json'
-          description: Responses for a survey.
-    standard-survey-email-template-response:
-      title: StandardSurveyEmailTemplates
-      description: A standard survey email template
-      type: object
-      allOf:
-      - title: EmailTemplateCommon
-        description: Email Template
-        type: object
-        allOf:
-        - $ref: '#/components/schemas/response-common/allOf/0'
-        properties:
-          name:
-            type: string
-            description: Name of the email template.
-            example: Invitation
-          subject:
-            type: string
-            description: Subject of the email template.
-            example: Email Template Testing
-          fromName:
-            type: string
-            description: Name of the sender.
-            example: Henry Potterfield
-          fromEmail:
-            type: string
-            description: The email address of the sender.
-            example: h.potterfield@test.com
-          plaintextBody:
-            type: string
-            description: Plain text body of the page in the email.
-            example: We’d love to hear your thoughts!\n\nPlease take a few minutes to let us know about your recent experience.\n\nStart
-              Survey Now ({[RES-SURVEY URL]})
-          htmlBody:
-            type: string
-            description: html body of the page sent in the email
-            example: '<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html><head><title></title></head><body
-              style="margin:0;padding:0" id="body"><table ><tbody><tr><td align="center" bgcolor="#041532"><table ><tbody><tr><td
-              align="center" bgcolor="#DDE2E6" style="padding-top:0;padding-bottom:0;padding-left:0;padding-right:0"><table
-              border="0" cellpadding="0" cellspacing="0" width="100%" style="max-width:600px" class="wrapper"><tbody><tr><td><table><tbody><tr><td
-              valign="top"><table><tbody><tr><td><table><tbody><tr><td bgcolor="transparent" style="padding-top:15px;padding-bottom:15px;padding-left:15px;padding-right:15px"><table><tbody><tr><td><table
-              border="0" cellpadding="0" cellspacing="0" width="100%"><tr><td>{[C-FIRST NAME]}, <br></td></tr> <tr><td>We&#x2019;d
-              love to hear your thoughts!</td></tr> </table></td></tr></tbody></table></td></tr></tbody></table></td></tr></tbody></table></td></tr><tr><td
-              valign="top"><table border="0" cellpadding="0" cellspacing="0" width="100%" align="left" class="column"><tbody><tr><td><table
-              border="0" cellpadding="0" cellspacing="0" width="100%" data-cvent-id="widget-NucleusText-widget:13ea36d2-1eb4-452f-ae17-9d582dbeb7eb"><tbody><tr><td
-              bgcolor="transparent" style="padding-top:15px;padding-bottom:15px;padding-left:15px;padding-right:15px"><table
-              border="0" cellpadding="0" cellspacing="0" width="100%"><tbody><tr><td><table><tr><td>Please take a few minutes
-              to let us know about your recent experience.</td></tr> </table></td></tr></tbody></table></td></tr></tbody></table></td></tr></tbody></table></td></tr><tr><td
-              valign="top"><table><tbody><tr><td><table><tbody><tr><td><table><tbody><tr><td >Start Survey Now</a></td></tr></tbody></table></td></tr></tbody></table></td></tr></tbody></table></td></tr><tr><td
-              valign="top"><table border="0" cellpadding="0" cellspacing="0" width="100%" align="left" class="column"><tbody><tr><td><table
-              ><tbody><tr><td bgcolor="transparent" style="padding-top:15px;padding-bottom:15px;padding-left:15px;padding-right:15px"><table
-              ><tbody><tr><td><table border="0" cellpadding="0" cellspacing="0" width="100%"><tr><td style="font-size:16px;line-height:20px;font-family:Arial,Helvetica,sans-serif;color:#273F69;font-style:normal;font-weight:400;text-align:center;
-              padding: 6px 0;">If you have any questions, feel free to email us at {[SUR-AUTHOR EMAIL]}.<br>Thank you,<br>{[SUR-AUTHOR
-              COMPANY]}&#xA0;</td></tr> </table></td></tr></tbody></table></td></tr></tbody></table></td></tr></tbody></table></td></tr><tr><td
-              valign="top"><table><tbody><tr><td><table><tbody><tr><td bgcolor="transparent" style="padding-top:15px;padding-bottom:15px;padding-left:15px;padding-right:15px"><table
-              ><tbody><tr><td><table><tr><td>Click the link below to opt out of receiving emails from {[SUR-AUTHOR FIRST NAME]}
-              {[SUR-AUTHOR LAST NAME]}.<br>{[EMAIL OPT OUT]}&#xA0;</td></tr> </table></td></tr></tbody></table></td></tr></tbody></table></td></tr></tbody></table></td></tr></tbody></table></td></tr></tbody></table></td></tr><tr><td><table><tbody><tr><td><table><tbody></tbody></table></td></tr></tbody></table></td></tr></tbody></table>
-              ></td></tr></tbody></table></body></html>'
-          locale:
-            type: string
-            description: The locale of the email template using the IETF Language Tag format.
-            example: en-US
-          clickTrackingEnabled:
-            type: boolean
-            description: Enables tracking when respondent clicks on the email
-            example: true
-          replyToName:
-            type: string
-            description: Name of the person to reply to
-            example: Henry Potterfield
-          replyToEmail:
-            type: string
-            description: Email address to reply to
-            example: h.potterfield@test.com
-      properties:
-        id:
-          $ref: '#/components/schemas/uuid-property'
-        active:
-          type: boolean
-          description: Status of the email
+          default: false
+          description: is the category mandatory for answer
           example: true
-    standard-survey-email-template.json:
-      title: StandardSurveyEmailTemplates
-      description: A standard survey email template
-      type: object
-      allOf:
-      - $ref: '#/components/schemas/standard-survey-email-template-response/allOf/0'
-      properties:
-        id:
-          $ref: '#/components/schemas/uuid-property'
-        active:
-          type: boolean
-          description: Status of the email
-          example: true
-    standard-survey-email-templates-paginated-response:
-      title: StandardSurveyEmailTemplatesPaginatedResponse
-      description: Response include paging and collection of email templates of a particular standard survey
-      required:
-      - paging
-      - data
-      type: object
-      properties:
-        paging:
-          $ref: '#/components/schemas/paging.json'
-        data:
-          type: array
-          items:
-            $ref: '#/components/schemas/standard-survey-email-template.json'
-          description: Collection of standard survey email templates
-    standard-survey-question.json:
-      title: StandardSurveyQuestion
-      description: A standard survey question.
-      type: object
-      allOf:
-      - $ref: '#/components/schemas/question.json1/allOf/0'
-      properties:
-        survey:
-          $ref: '#/components/schemas/uuid.json'
-        chapter:
-          $ref: '#/components/schemas/uuid.json'
-    standard-survey-questions-paginated-response:
-      title: StandardSurveyQuestionsPaginatedResponse
-      description: Response include paging and collection of questions of a particular standard survey
-      required:
-      - paging
-      - data
-      type: object
-      properties:
-        paging:
-          $ref: '#/components/schemas/paging.json'
-        data:
-          type: array
-          items:
-            $ref: '#/components/schemas/standard-survey-question.json'
-          description: Collection of standard survey questions
-    standard-survey-respondent:
-      title: StandardSurveyRespondent
-      description: Standard survey respondent.
-      type: object
-      allOf:
-      - $ref: '#/components/schemas/event-survey-respondent/allOf/0'
-      properties:
-        contact:
-          description: Respondent contact.
-          type: object
-          properties:
-            id:
-              type: string
-              format: uuid
-              example: 9463c74e-18c6-401a-a710-ae0f485bf059
-              description: Contact Id of the respondent
-        status:
-          $ref: '#/components/schemas/respondent-status.json'
-        unsubscribed:
-          type: boolean
-          description: Whether or not the respondent has unsubscribed from Survey
-          example: false
-          readOnly: true
-        unsubscribedBy:
-          type: string
-          description: Who unsubscribed the respondent
-          example: Respondent
-          readOnly: true
-        invitationList:
-          $ref: '#/components/schemas/invitation-list-common.json'
-        chapters:
-          description: List of respondent chapters.
-          type: array
-          items:
-            $ref: '#/components/schemas/respondent-chapter-reference.json'
-          readOnly: true
-        transactionId:
-          $ref: '#/components/schemas/transaction-id-common.json'
-    standard-survey-respondents-paginated-response:
-      title: StandardSurveyRespondentsPaginatedResponse
-      description: Response include paging and respondents for a survey
-      required:
-      - paging
-      - data
-      type: object
-      properties:
-        paging:
-          $ref: '#/components/schemas/paging.json'
-        data:
-          type: array
-          items:
-            $ref: '#/components/schemas/standard-survey-respondent'
-          description: Respondent for a survey
-    standard-survey-response:
-      title: StandardSurveyResponse
-      description: A standard survey response.
-      type: object
-      allOf:
-      - $ref: '#/components/schemas/event-survey-response/allOf/0'
-      properties:
-        survey:
-          $ref: '#/components/schemas/uuid.json'
-        loopingChoice:
-          $ref: '#/components/schemas/looping-choice.json'
-    standard-survey-responses-paginated-response:
-      title: StandardSurveyResponsesPaginatedResponse
-      description: Response include paging and responses for a survey
-      required:
-      - paging
-      - data
-      type: object
-      properties:
-        paging:
-          $ref: '#/components/schemas/paging.json'
-        data:
-          type: array
-          items:
-            $ref: '#/components/schemas/standard-survey-response'
-          description: Response for a survey
-    standard-survey-send-email-response:
-      title: StandardSurveySendEmailResponse
-      description: A standard survey, sent-email response.
-      type: object
-      properties:
-        survey:
-          description: Survey of response.
-          type: object
-          properties:
-            id:
-              type: string
-              format: uuid
-              example: 9463c74e-18c6-401a-a710-ae0f485bf059
-              description: Id of the the survey
-        respondent:
-          description: Respondent of response.
-          type: object
-          properties:
-            id:
-              type: string
-              format: uuid
-              example: 9463c74e-18c6-401a-a710-ae0f485bf059
-              description: Id of the respondent
-        emailTemplate:
-          description: Email template used.
-          type: object
-          properties:
-            id:
-              type: string
-              format: uuid
-              example: 9463c74e-18c6-401a-a710-ae0f485bf059
-              description: Id of the email template
-    standard-survey.json:
-      title: StandardSurvey
-      description: A standard survey.
-      type: object
-      allOf:
-      - $ref: '#/components/schemas/survey.json/allOf/0'
-      properties:
-        responseCount:
-          description: The count of responses.
-          type: integer
-          minimum: 0
-          example: 10
-        status:
-          $ref: '#/components/schemas/survey-status.json'
-        archiveAfter:
-          type: string
-          format: date-time
-          description: The survey will be archived after this ISO 8601 formatted date and time.
-          example: '2022-05-07T12:00:00.000Z'
-        customFields:
-          type: array
-          items:
-            $ref: '#/components/schemas/custom-field.json1'
-          description: Collection of survey custom fields.
-    standard-surveys-paginated-response:
-      title: StandardSurveysPaginatedResponse
-      description: The response from a request to get the list of standard surveys. This includes the paging object as well
-        as the collection of surveys.
-      type: object
-      properties:
-        paging:
-          $ref: '#/components/schemas/paging.json'
-        data:
-          type: array
-          items:
-            $ref: '#/components/schemas/standard-survey.json'
-          description: Collection of standard surveys.
-      required:
-      - paging
-      - data
-    status.json:
-      title: Status
-      enum:
-      - Not Started
-      - In Progress
-      - Complete
-      type: string
-      description: In case of Event Survey this represents Survey Status and in case of Standard Survey this represents Chapter
-        Status
-      example: In Progress
-      readOnly: true
-    survey-author.json:
-      title: SurveyAuthor
-      description: Author of the survey
-      type: object
-      properties:
-        firstName:
-          type: string
-          description: First Name of Author
-          example: Vivek
-        lastName:
-          type: string
-          description: Last Name of Author
-          example: Singh
-        company:
-          type: string
-          description: Company Name
-          example: Cvent
-        title:
-          type: string
-          description: Designation
-          example: Sales Manager
-        email:
-          type: string
-          format: email
-          description: The email address of the author
-          minLength: 6
-          maxLength: 80
-          example: dummyemail@cvent.com
-    survey-status.json:
-      title: SurveyStatus
-      enum:
-      - Draft
-      - Active
-      - Closed
-      - Archived
-      type: string
-      description: Survey Status
-      example: Active
-      readOnly: true
-    survey-type.json:
-      title: SurveyType
-      enum:
-      - Standalone
-      - Event
-      - Assessment
-      type: string
-      description: Describes the survey's type. `Standalone` indicates the survey exists independent of an event. `Event`
-        indicates the survey is an event or session feedback survey. `Assessment` indicates the survey is associated with
-        an event and is for assessing attendees.
-      example: Event
-      readOnly: true
     survey.json:
       title: Survey
       type: object
@@ -2830,10 +2141,33 @@ components:
           items:
             $ref: '#/components/schemas/event.json1'
           description: List of events with which this survey is linked.
+    additionalChoice.json:
+      title: additionalChoice
+      description: Contains text of additional choice i.e N/A choice or otherAnswer choice
+      type: object
+      properties:
+        text:
+          type: string
+          description: Text Value of additional choice
+          example: N/A or Other
+        shortText:
+          type: string
+          description: Reporting value of additional choice text
+          example: N/A or Other Reporting value
+    event.json1:
+      title: Event
+      type: object
+      description: Detail object of an event which is associated to a survey.
+      properties:
+        id:
+          type: string
+          format: uuid
+          example: 9463c74e-18c6-401a-a710-ae0f485bf059
+          description: Id of the associated event
+      readOnly: true
     surveys-paginated-response:
       title: SurveysPaginatedResponse
-      description: The response from a request to get the list of surveys. This includes the paging object as well as the
-        collection of surveys.
+      description: The response from a request to get the list of surveys. This includes the paging object as well as the collection of surveys.
       required:
       - paging
       - data
@@ -2846,6 +2180,55 @@ components:
           items:
             $ref: '#/components/schemas/survey.json'
           description: Collection of surveys.
+    status.json:
+      title: Status
+      enum:
+      - Not Started
+      - In Progress
+      - Complete
+      type: string
+      description: In case of Event Survey this represents Survey Status and in case of Standard Survey this represents Chapter Status
+      example: In Progress
+      readOnly: true
+    uuid.json:
+      title: UUID
+      description: The reference to the related entity. Contains only the ID of the related entity.
+      required:
+      - id
+      type: object
+      properties:
+        id:
+          $ref: '#/components/schemas/uuid-property'
+    respondents-paginated-response:
+      title: SurveyRespondentsPaginatedResponse
+      description: Response include paging and respondents for surveys
+      required:
+      - paging
+      - data
+      type: object
+      properties:
+        paging:
+          $ref: '#/components/schemas/paging.json'
+        data:
+          type: array
+          items:
+            $ref: '#/components/schemas/respondent.json'
+          description: Respondents for surveys.
+    event-surveys-paginated-response:
+      title: EventSurveysPaginatedResponse
+      description: The response from a request to get the list of event surveys.  This includes the paging object as well as the collection of surveys.
+      required:
+      - paging
+      - data
+      type: object
+      properties:
+        paging:
+          $ref: '#/components/schemas/paging.json'
+        data:
+          type: array
+          items:
+            $ref: '#/components/schemas/event-survey.json'
+          description: Collection of event surveys.
     text-field.json:
       title: TextField
       description: A survey text field.
@@ -2864,28 +2247,589 @@ components:
           type: string
           description: Reporting value of the Category, Its like a custom abbreviation
           example: Category 1 Reporting value
-    transaction-id-common.json:
-      title: TransactionIdCommon
-      type: string
-      example: TR5IDS4
-      description: 'Authors use transaction IDs to collect feedback after a customer transaction: invoice numbers or order
-        IDs are common transaction IDs. Respondents can take a survey by entering their transaction ID, and each transaction
-        ID uniquely identifies a response for that transaction.'
-    uuid-property:
-      title: UUID Property
-      description: A string that has to be a format matching the industry standard uuid
-      type: string
-      format: uuid
-      example: 04ca6ae2-0dc3-487b-953e-86d6abbdf7d3
-    uuid.json:
-      title: UUID
-      description: The reference to the related entity. Contains only the ID of the related entity.
-      required:
-      - id
+    large-choice.json:
+      title: LargeChoice
+      description: Choice of large choices question.
       type: object
       properties:
         id:
+          type: string
+          format: uuid
+          description: The ID of the choice.
+          readOnly: true
+        text:
+          type: string
+          description: The text of the choice.
+          example: Choice A
+        question:
+          $ref: '#/components/schemas/question-id.json'
+    ErrorResponse:
+      title: ErrorResponse
+      description: Represents an error response with additional details of cascading error messages.
+      allOf:
+      - $ref: '#/components/schemas/ErrorResponseBase'
+      type: object
+      required:
+      - code
+      - message
+      properties:
+        details:
+          type: array
+          items:
+            $ref: '#/components/schemas/ErrorResponseBase'
+          description: Additional details of cascading error messages.
+    standard-surveys-paginated-response:
+      title: StandardSurveysPaginatedResponse
+      description: The response from a request to get the list of standard surveys. This includes the paging object as well as the collection of surveys.
+      type: object
+      properties:
+        paging:
+          $ref: '#/components/schemas/paging.json'
+        data:
+          type: array
+          items:
+            $ref: '#/components/schemas/standard-survey.json'
+          description: Collection of standard surveys.
+      required:
+      - paging
+      - data
+    event-survey-responses-paginated-response:
+      title: EventSurveyResponsesPaginatedResponse
+      description: Response include paging and responses for a survey
+      required:
+      - paging
+      - data
+      type: object
+      properties:
+        paging:
+          $ref: '#/components/schemas/paging.json'
+        data:
+          type: array
+          items:
+            $ref: '#/components/schemas/event-survey-response'
+          description: Response for a survey
+    standard-survey-question.json:
+      title: StandardSurveyQuestion
+      description: A standard survey question.
+      type: object
+      allOf:
+      - $ref: '#/components/schemas/question.json1/allOf/0'
+      properties:
+        survey:
+          $ref: '#/components/schemas/uuid.json'
+        chapter:
+          $ref: '#/components/schemas/uuid.json'
+    attempt.json:
+      title: Survey Attempt
+      type: integer
+      format: int32
+      example: 2
+      description: Counts the number of times a respondent has attempted the survey and answered the question.
+    looping-choice.json:
+      title: LoopingChoice
+      description: Loop Choice is the choice for which the chapter is looped. Questions in the looping chapter get repeated once for each choice selected in the parent question
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+          example: 9463c74e-18c6-401a-a710-ae0f485bf059
+          description: Loop Choice ID.
+    survey-author.json:
+      title: SurveyAuthor
+      description: Author of the survey
+      type: object
+      properties:
+        firstName:
+          type: string
+          description: First Name of Author
+          example: Vivek
+        lastName:
+          type: string
+          description: Last Name of Author
+          example: Singh
+        company:
+          type: string
+          description: Company Name
+          example: Cvent
+        title:
+          type: string
+          description: Designation
+          example: Sales Manager
+        email:
+          type: string
+          format: email
+          description: The email address of the author
+          minLength: 6
+          maxLength: 80
+          example: dummyemail@cvent.com
+    event-survey-question.json:
+      title: EventSurveyQuestion
+      description: An event survey question.
+      type: object
+      allOf:
+      - $ref: '#/components/schemas/question.json1/allOf/0'
+      properties:
+        survey:
+          $ref: '#/components/schemas/uuid.json'
+        event:
+          $ref: '#/components/schemas/uuid.json'
+    field.json:
+      title: Field
+      description: A survey field.
+      type: object
+      allOf:
+      - $ref: '#/components/schemas/text-field.json'
+      properties:
+        type:
+          $ref: '#/components/schemas/field-type.json'
+        choices:
+          type: array
+          description: List of choices for this field.
+          items:
+            $ref: '#/components/schemas/choice.json'
+        notApplicableAnswer:
+          $ref: '#/components/schemas/additionalChoice.json'
+        otherAnswer:
+          $ref: '#/components/schemas/additionalChoice.json'
+        required:
+          type: boolean
+          default: false
+          description: Is this a mandatory field
+          example: true
+    event-survey-questions-paginated-response:
+      title: SurveyQuestionPaginatedResponse
+      description: Response include Paging and collection os questions
+      required:
+      - paging
+      - data
+      type: object
+      properties:
+        paging:
+          $ref: '#/components/schemas/paging.json'
+        data:
+          type: array
+          items:
+            $ref: '#/components/schemas/event-survey-question.json'
+          description: Collection of Questions
+    event-survey.json:
+      title: EventSurvey
+      description: An event survey.
+      type: object
+      allOf:
+      - $ref: '#/components/schemas/survey.json/allOf/0'
+      properties:
+        type:
+          $ref: '#/components/schemas/event-survey-type.json'
+        availableTo:
+          $ref: '#/components/schemas/event-survey-availability.json'
+        audienceType:
+          $ref: '#/components/schemas/event-survey-audience-type.json'
+        sessionMatch:
+          $ref: '#/components/schemas/event-survey-session-match.json'
+        sessions:
+          type: array
+          description: Associated session ids of the survey, this can also be null
+          items:
+            $ref: '#/components/schemas/uuid-property'
+          example:
+          - 04ca6ae2-0dc3-487b-953e-86d6abbdf7d3
+          - 05ca6ae2-0dc3-487b-953e-86d6abbdf7d3
+        parentId:
+          type: string
+          format: uuid
+          example: 9463c74e-18c6-401a-a710-ae0f485bf059
+          description: Id of the parent survey
+    standard-survey-questions-paginated-response:
+      title: StandardSurveyQuestionsPaginatedResponse
+      description: Response include paging and collection of questions of a particular standard survey
+      required:
+      - paging
+      - data
+      type: object
+      properties:
+        paging:
+          $ref: '#/components/schemas/paging.json'
+        data:
+          type: array
+          items:
+            $ref: '#/components/schemas/standard-survey-question.json'
+          description: Collection of standard survey questions
+    survey-type.json:
+      title: SurveyType
+      enum:
+      - Standalone
+      - Event
+      - Assessment
+      type: string
+      description: Describes the survey's type. `Standalone` indicates the survey exists independent of an event. `Event` indicates the survey is an event or session feedback survey. `Assessment` indicates the survey is associated with an event and is for assessing attendees.
+      example: Event
+      readOnly: true
+    standard-survey-email-template.json:
+      title: StandardSurveyEmailTemplates
+      description: A standard survey email template
+      type: object
+      allOf:
+      - $ref: '#/components/schemas/standard-survey-email-template-response/allOf/0'
+      properties:
+        id:
           $ref: '#/components/schemas/uuid-property'
+        active:
+          type: boolean
+          description: Status of the email
+          example: true
+    evaluation-result.json:
+      title: Evaluation Result
+      enum:
+      - Passed
+      - Failed
+      - Unevaluated
+      type: string
+      description: This represents the evaluation status of an assessment chapter.
+      example: Passed
+      readOnly: true
+    survey-status.json:
+      title: SurveyStatus
+      enum:
+      - Draft
+      - Active
+      - Closed
+      - Archived
+      type: string
+      description: Survey Status
+      example: Active
+      readOnly: true
+    pagination-links.json:
+      title: PaginationLinks
+      type: object
+      description: Represents pagination links for navigating between pages of data.
+      properties:
+        next:
+          $ref: '#/components/schemas/link.json'
+        self:
+          $ref: '#/components/schemas/link.json'
+        prev:
+          $ref: '#/components/schemas/link.json'
+    event-survey-audience-type.json:
+      title: EventSurveyAudienceType
+      enum:
+      - Attendee
+      - Stakeholder
+      - Speaker
+      type: string
+      description: Audience types of event surveys
+      example: Attendee
+      readOnly: true
+    responded-through.json:
+      title: RespondedThrough
+      type: string
+      description: 'Indicates the mode by which a respondent submitted their response.
+
+
+        This field contains one of the enumerated, string constants listed below.
+
+
+        Enum values:
+
+
+        - "Not Responded": Respondent did not provide a response.
+
+        - "API": Response was submitted via an API.
+
+        - "Import": Response was created by a bulk import process.
+
+        - "Mobile" (deprecated): Historically indicated submission from a mobile device. This value is deprecated.
+
+        - "Desktop" (deprecated): Historically indicated submission from a desktop device. This value is deprecated.'
+      example: API
+      enum:
+      - Not Responded
+      - API
+      - Import
+      - Mobile
+      - Desktop
+    answer.json:
+      title: Answer
+      description: A survey answer.
+      type: object
+      required:
+      - type
+      properties:
+        type:
+          $ref: '#/components/schemas/answer-type.json'
+        value:
+          type: string
+          description: 'Value property is used to send information like string, number and date in case of following types of answers only: ChoiceText, Text, Comment, Other. In case of Rank Order question, rank should be put into value. Refer to questions resource to get choice label or category label from their respective ids.'
+          example: '1'
+        choice:
+          $ref: '#/components/schemas/uuid.json'
+        category:
+          $ref: '#/components/schemas/uuid.json'
+        subCategory:
+          $ref: '#/components/schemas/uuid.json'
+        field:
+          $ref: '#/components/schemas/uuid.json'
+    event-survey-respondents-paginated-response:
+      title: EventSurveyRespondentsPaginatedResponse
+      description: Response includes paging and respondents data for a event survey
+      required:
+      - paging
+      - data
+      type: object
+      properties:
+        paging:
+          $ref: '#/components/schemas/paging.json'
+        data:
+          type: array
+          items:
+            $ref: '#/components/schemas/event-survey-respondent'
+          description: Respondent information for an event survey
+    answer-type.json:
+      title: AnswerType
+      enum:
+      - Choice
+      - Text
+      - ChoiceText
+      - Comment
+      - Other
+      - NA
+      - File
+      type: string
+      description: Type of answer
+      example: ChoiceText
+    standard-survey-respondent:
+      title: StandardSurveyRespondent
+      description: Standard survey respondent.
+      type: object
+      allOf:
+      - $ref: '#/components/schemas/event-survey-respondent/allOf/0'
+      properties:
+        contact:
+          description: Respondent contact.
+          type: object
+          properties:
+            id:
+              type: string
+              format: uuid
+              example: 9463c74e-18c6-401a-a710-ae0f485bf059
+              description: Contact Id of the respondent
+        status:
+          $ref: '#/components/schemas/respondent-status.json'
+        unsubscribed:
+          type: boolean
+          description: Whether or not the respondent has unsubscribed from Survey
+          example: false
+          readOnly: true
+        unsubscribedBy:
+          type: string
+          description: Who unsubscribed the respondent
+          example: Respondent
+          readOnly: true
+        invitationList:
+          $ref: '#/components/schemas/invitation-list-common.json'
+        chapters:
+          description: List of respondent chapters.
+          type: array
+          items:
+            $ref: '#/components/schemas/respondent-chapter-reference.json'
+          readOnly: true
+        transactionId:
+          $ref: '#/components/schemas/transaction-id-common.json'
+    respondent-chapter-reference.json:
+      title: RespondentChapterReference
+      description: Respondent chapter reference.
+      type: object
+      allOf:
+      - $ref: '#/components/schemas/respondent-event-survey-reference.json/allOf/0'
+      properties:
+        loopingChoice:
+          $ref: '#/components/schemas/looping-choice.json'
+    questions-paginated-response:
+      title: SurveyQuestionsPaginatedResponse
+      description: Response include paging and collection of questions of surveys
+      required:
+      - paging
+      - data
+      type: object
+      properties:
+        paging:
+          $ref: '#/components/schemas/paging.json'
+        data:
+          type: array
+          items:
+            $ref: '#/components/schemas/question.json1'
+          description: Collection of questions for surveys.
+    standard-survey.json:
+      title: StandardSurvey
+      description: A standard survey.
+      type: object
+      allOf:
+      - $ref: '#/components/schemas/survey.json/allOf/0'
+      properties:
+        responseCount:
+          description: The count of responses.
+          type: integer
+          minimum: 0
+          example: 10
+        status:
+          $ref: '#/components/schemas/survey-status.json'
+        archiveAfter:
+          type: string
+          format: date-time
+          description: The survey will be archived after this ISO 8601 formatted date and time.
+          example: '2022-05-07T12:00:00.000Z'
+        customFields:
+          type: array
+          items:
+            $ref: '#/components/schemas/custom-field.json1'
+          description: Collection of survey custom fields.
+    invitation-list-common.json:
+      title: InvitationListCommon
+      type: object
+      description: Invitation list of respondents
+      properties:
+        id:
+          type: string
+          format: uuid
+          example: 9463c74e-18c6-401a-a710-ae0f485bf059
+          description: ID of the invitation list in which respondent is present.
+    field-type.json:
+      title: FieldType
+      enum:
+      - SingleChoice
+      - MultiChoice
+      - DateTime
+      - Number
+      - Text
+      type: string
+      description: Field Type
+      example: SingleChoice
+      readOnly: true
+  parameters:
+    emailTemplateId:
+      in: path
+      name: emailTemplateId
+      description: Id of an email template
+      required: true
+      schema:
+        $ref: '#/components/schemas/uuid-property'
+    surveyId:
+      in: path
+      name: surveyId
+      description: Id of a survey or Id of a chapter in event survey
+      required: true
+      schema:
+        $ref: '#/components/schemas/uuid-property'
+    responseId:
+      in: path
+      name: responseId
+      description: Id of a response
+      required: true
+      schema:
+        $ref: '#/components/schemas/uuid-property'
+    respondentId:
+      in: path
+      name: respondentId
+      description: Id of a respondent
+      required: true
+      schema:
+        $ref: '#/components/schemas/uuid-property'
+    id7:
+      in: path
+      name: id
+      description: Id of an event
+      required: true
+      schema:
+        $ref: '#/components/schemas/uuid-property'
+    limit:
+      name: limit
+      in: query
+      description: The maximum number of records to return per page.
+      style: form
+      explode: true
+      schema:
+        maximum: 200
+        minimum: 1
+        type: integer
+        default: 100
+        example: 100
+    token:
+      name: token
+      in: query
+      description: 'The continuation token returned from a previous class. This must be a valid UUID v4 if provided.
+
+        This will override any other pageable parameters provided.
+
+        '
+      style: form
+      explode: true
+      schema:
+        type: string
+        example: 0e28af57-511f-47ab-ae46-46cd1ca51a1a
+    after:
+      name: after
+      required: false
+      description: Used to query records that have been added or updated after this time point. Default to the beginning of time of the data store.
+      in: query
+      schema:
+        type: string
+        format: date-time
+        example: '2017-01-02T02:00:00Z'
+    before:
+      name: before
+      required: false
+      in: query
+      description: Used to query records that have been added or updated before this time point.
+      schema:
+        type: string
+        format: date-time
+        example: '2017-01-02T02:00:00Z'
+  responses:
+    Forbidden1:
+      description: You do not have access to the resource
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+          example:
+            code: 403
+            message: Access Forbidden
+    NotFound1:
+      description: Resource not found
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+          example:
+            code: 404
+            message: Not found
+    Unauthorized1:
+      description: Bad or expired token
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+          example:
+            code: 401
+            message: Unauthorized
+    BadRequest1:
+      description: Bad request
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+          example:
+            code: 400
+            message: Bad Request
+    TooManyRequests1:
+      description: Too many requests
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+          example:
+            code: 429
+            message: Limit Exceeded
   securitySchemes:
     OAuth2.authorizationCode:
       type: oauth2
@@ -3149,17 +3093,13 @@ components:
             business-transient/bids:read: Allows the reading of Business Transient Bid data
             business-transient/proposals:read: Allows the reading of Business Transient Proposal data
             business-transient/supplier-brands:read: Allows the reading of a supplier brand or a list of travel supplier brands.
-            business-transient/supplier-chains:read: Allows the reading of a travel supplier chain or a list of travel supplier
-              chains.
-            business-transient/supplier-properties:read: Allows the reading of a travel supplier property or a list of travel
-              supplier properties.
+            business-transient/supplier-chains:read: Allows the reading of a travel supplier chain or a list of travel supplier chains.
+            business-transient/supplier-properties:read: Allows the reading of a travel supplier property or a list of travel supplier properties.
             business-transient/supplier-property-rooms:read: Allows the reading of a list of travel supplier property rooms.
             business-transient/travel-accounts:read: Allows the reading of business transient travel account data.
-            business-transient/travel-program-questions:read: Allows the reading of business transient travel program question
-              data.
+            business-transient/travel-program-questions:read: Allows the reading of business transient travel program question data.
             business-transient/travel-programs:read: Allows the reading of business transient travel program data.
-            business-transient/travel-supplier-accounts:read: Allows the reading of business transient travel supplier account
-              data.
+            business-transient/travel-supplier-accounts:read: Allows the reading of business transient travel supplier account data.
             business-travel/bids:read: Allows the reading of Business Travel Bid data
             business-travel/proposals:read: Allows the reading of Business Travel Proposal data
             business-travel/travel-accounts:read: Allows the reading of business travel account data.
@@ -3352,7 +3292,15 @@ components:
             venue/venue-details-overview:read: Allows read access for overview of venue details.
             venue/venue-details:write: Allows the creation and modification of venue details.
             venue/venue-facility:write: Allows the modification of venue facility information.
-x-generated-from: openapi/_original/cvent-rest-apis-openapi.yaml
-x-source-url: https://github.com/cvent/rest-sdks/blob/main/cvent-public-spec/openapi.yaml
-x-generated-date: '2026-09-07'
-x-method: searched
+    CallbackApiKeyAuth:
+      type: apiKey
+      in: header
+      name: Authorization
+      description: This security scheme is used to indicate that Cvent should use API Key auth when invoking your callback. This scheme is only supported for callback operations, and cannot be used to make calls to Cvent endpoints.
+    CallbackBasicAuth:
+      type: http
+      scheme: basic
+      description: This security scheme is used to indicate that Cvent should use basic auth when invoking your callback. This scheme is only supported for callback operations, and cannot be used to make calls to Cvent endpoints.
+externalDocs:
+  description: Cvent Developer Documentation
+  url: https://developers.cvent.com/docs

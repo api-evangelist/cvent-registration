@@ -1,6 +1,6 @@
 openapi: 3.2.0
 info:
-  title: Cvent REST Usage API
+  title: Cvent REST Webcasts API
   description: '# Introduction
 
     The Cvent API Platform is built around REST.'
@@ -12,48 +12,122 @@ servers:
 - url: https://api-platform.cvent.com/ea
 - url: https://api-platform-eur.cvent.com/ea
 tags:
-- name: Usage
-  description: Use these APIs view your REST API usage and limits metrics. For more details on limits - Rate Limits
+- name: Webcasts
+  description: Webcasts are virtual or livestreaming components of your Cvent events. Use these APIs to integrate your virtual events from outside sources into your Cvent workflows, create and delete webcasts from within Cvent, and retrieve and update webcast details.
 paths:
-  /usage:
-    get:
+  /webcasts:
+    post:
       tags:
-      - Usage
-      operationId: getUsage
-      summary: Get Current Usage
-      description: 'Returns API call usage for the last seven days, or between some date range (up to the past seven days) for
-
-        the current caller''s account.'
+      - Webcasts
+      operationId: createWebcast
       security:
-      - OAuth2.clientCredentials: []
-      parameters:
-      - name: before
-        in: query
-        description: 'Returns usage for the seven days before (inclusive) the date provided. If after is also provided, then
-
-          only the dates between (inclusive) those dates are returned. before must be a valid ISO8601 date stamp.
-
-          before and after must not be more then seven days apart.
-
-          '
-        required: false
-        schema:
-          type: string
-      - name: after
-        in: query
-        description: 'Returns usage for the seven days after (inclusive) the date provided. If before is also provided, then
-
-          only the dates between (inclusive) those dates are returned. after must be a valid ISO8601 date stamp.
-
-          after and before must not be more then seven days apart.
-
-          '
-        required: false
-        schema:
-          type: string
+      - OAuth2.clientCredentials:
+        - event/webcasts:write
+      - OAuth2.authorizationCode:
+        - event/webcasts:write
+      summary: Create Webcast
+      description: Used to create a new webcast for a specific event.
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/webcast'
+        required: true
       responses:
         '200':
-          $ref: '#/components/responses/usage-paginated-response'
+          description: Webcast was successfully integrated for specific event.
+          headers: {}
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/existing-webcast'
+        '400':
+          $ref: '#/components/responses/BadRequest1'
+        '401':
+          $ref: '#/components/responses/Unauthorized1'
+        '403':
+          $ref: '#/components/responses/Forbidden1'
+        '409':
+          $ref: '#/components/responses/Conflict1'
+        '429':
+          $ref: '#/components/responses/TooManyRequests1'
+      deprecated: false
+      externalDocs:
+        description: More about OAuth2 authorization code support for administrators
+        url: '#oauth2-auth-code-planner-admin'
+    get:
+      security:
+      - OAuth2.clientCredentials:
+        - event/webcasts:read
+      - OAuth2.authorizationCode:
+        - event/webcasts:read
+      summary: List Webcasts
+      description: Gets a paginated list of webcasts associated with your event.
+      operationId: listWebcasts
+      parameters:
+      - $ref: '#/components/parameters/after'
+      - $ref: '#/components/parameters/before'
+      - $ref: '#/components/parameters/limit'
+      - $ref: '#/components/parameters/token'
+      - name: filter
+        in: query
+        required: false
+        description: 'Use filter query parameters to limit results
+
+          to data that matches your criteria. See
+
+          [Filters](https://developers.cvent.com/docs/rest-api/reference/filters) for details.
+
+
+          Supported fields and operators are listed below:
+
+
+          | Field          | Operators                                |
+
+          |----------------|------------------------------------------|
+
+          | id             | `eq`, `ne`                               |
+
+          | event.id       | `eq`, `ne`                               |
+
+          | session.id     | `eq`, `ne`, `is empty`, `is not empty`   |
+
+          | appointment.id | `eq`, `ne`, `is empty`, `is not empty`   |
+
+          | exhibitor.id   | `eq`, `ne`, `is empty`, `is not empty`   |
+
+          | sourceId       | `eq`, `ne`, `is empty`, `is not empty`   |
+
+          | solutionType   | `eq`, `ne`                               |
+
+          | provider       | `eq`, `ne`                               |
+
+          | type           | `eq`, `ne`                               |
+
+          | status         | `eq`, `ne`                               |
+
+          | meetingId      | `eq`, `ne`                               |
+
+          | created        | `eq`, `ne`, `lt`, `le`, `gt`, `ge`       |
+
+          | lastModified   | `eq`, `ne`, `lt`, `le`, `gt`, `ge`       |
+
+          | playerType     | `eq`, `ne`                               |
+
+          '
+        schema:
+          type: string
+          example: event.id eq '04ca6ae2-0dc3-487b-953e-86d6abbdf7d3' and sourceId ne 'sampleWebcastSystemId'
+      tags:
+      - Webcasts
+      responses:
+        '200':
+          description: Successfully retrieved a paginated list of webcasts.
+          headers: {}
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/webcast-paginated-response'
         '400':
           $ref: '#/components/responses/BadRequest1'
         '401':
@@ -62,31 +136,698 @@ paths:
           $ref: '#/components/responses/Forbidden1'
         '429':
           $ref: '#/components/responses/TooManyRequests1'
-  /usage/tier:
+      deprecated: false
+      externalDocs:
+        description: More about OAuth2 authorization code support for administrators
+        url: '#oauth2-auth-code-planner-admin'
+  /webcasts/attendee-links:
     get:
-      tags:
-      - Usage
-      operationId: getUsageTier
-      summary: Get Current Usage Tier
-      description: Returns the current usage tier of the caller's account.
       security:
-      - OAuth2.clientCredentials: []
-      - OAuth2.authorizationCode: []
+      - OAuth2.clientCredentials:
+        - event/attendee-links:read
+      - OAuth2.authorizationCode:
+        - event/attendee-links:read
+      summary: List Attendee Links
+      description: Gets a paginated list of attendee links.
+      operationId: listAttendeeLinks
+      parameters:
+      - $ref: '#/components/parameters/after'
+      - $ref: '#/components/parameters/before'
+      - $ref: '#/components/parameters/limit'
+      - $ref: '#/components/parameters/token'
+      - name: filter
+        in: query
+        required: false
+        description: 'Use filter query parameters to limit results
+
+          to data that matches your criteria. See
+
+          [Filters](https://developers.cvent.com/docs/rest-api/reference/filters) for details.
+
+
+          Supported fields and operators are listed below:
+
+
+          | Field        | Operators                          |
+
+          |--------------| -----------------------------------|
+
+          | id           | `eq`, `ne`                         |
+
+          | sourceId     | `eq`, `ne`                         |
+
+          | attendee.id  | `eq`, `ne`                         |
+
+          | webcast.id   | `eq`, `ne`                         |
+
+          | created      | `eq`, `ne`, `lt`, `le`, `gt`, `ge` |
+
+          | lastModified | `eq`, `ne`, `lt`, `le`, `gt`, `ge` |
+
+          '
+        schema:
+          type: string
+          example: id eq '04ca6ae2-0dc3-487b-953e-86d6abbdf7d3' and event.id eq '55ca6645-0dc3-487b-953e-86d6abbdf7d3'
+      tags:
+      - Webcasts
       responses:
         '200':
-          $ref: '#/components/responses/PublicUsagePlanResponse'
+          description: Successfully retrieved a paginated list of attendee links.
+          headers: {}
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/attendee-link-paginated-response'
+        '400':
+          $ref: '#/components/responses/BadRequest1'
         '401':
           $ref: '#/components/responses/Unauthorized1'
         '403':
           $ref: '#/components/responses/Forbidden1'
         '429':
           $ref: '#/components/responses/TooManyRequests1'
+      deprecated: false
+      externalDocs:
+        description: More about OAuth2 authorization code support for administrators
+        url: '#oauth2-auth-code-planner-admin'
+  /webcasts/players:
+    get:
+      security:
+      - OAuth2.clientCredentials:
+        - event/players:read
+      - OAuth2.authorizationCode:
+        - event/players:read
+      summary: List Players
+      description: Gets a paginated list of player details associated with webcast.
+      operationId: listPlayers
+      parameters:
+      - $ref: '#/components/parameters/after'
+      - $ref: '#/components/parameters/before'
+      - $ref: '#/components/parameters/limit'
+      - $ref: '#/components/parameters/token'
+      - name: filter
+        in: query
+        required: false
+        description: 'Use filter query parameters to limit results
+
+          to data that matches your criteria. See
+
+          [Filters](https://developers.cvent.com/docs/rest-api/reference/filters) for details.
+
+
+          Supported fields and operators are listed below:
+
+
+          | Field        | Operators                          |
+
+          |--------------| -----------------------------------|
+
+          | webcast.id   | `eq`, `ne`                         |
+
+          | id           | `eq`, `ne`                         |
+
+          | created      | `eq`, `ne`, `lt`, `le`, `gt`, `ge` |
+
+          | lastModified | `eq`, `ne`, `lt`, `le`, `gt`, `ge` |
+
+          '
+        schema:
+          type: string
+          example: webcast.id eq '04ca6ae2-0dc3-487b-953e-86d6abbdf7d3'
+      tags:
+      - Webcasts
+      responses:
+        '200':
+          description: Successfully retrieved a paginated list of players.
+          headers: {}
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/player-paginated-response'
+        '400':
+          $ref: '#/components/responses/BadRequest1'
+        '401':
+          $ref: '#/components/responses/Unauthorized1'
+        '403':
+          $ref: '#/components/responses/Forbidden1'
+        '429':
+          $ref: '#/components/responses/TooManyRequests1'
+      deprecated: false
+      externalDocs:
+        description: More about OAuth2 authorization code support for administrators
+        url: '#oauth2-auth-code-planner-admin'
+  /webcasts/{id}:
+    parameters:
+    - $ref: '#/components/parameters/id13'
+    get:
+      summary: Get Webcast
+      description: Retrieve a single webcast details by ID.
+      operationId: getWebcastById
+      security:
+      - OAuth2.clientCredentials:
+        - event/webcasts:read
+      - OAuth2.authorizationCode:
+        - event/webcasts:read
+      tags:
+      - Webcasts
+      responses:
+        '200':
+          description: Successfully retrieved a webcast object.
+          headers: {}
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/existing-webcast'
+        '400':
+          $ref: '#/components/responses/BadRequest1'
+        '401':
+          $ref: '#/components/responses/Unauthorized1'
+        '403':
+          $ref: '#/components/responses/Forbidden1'
+        '404':
+          $ref: '#/components/responses/NotFound1'
+        '429':
+          $ref: '#/components/responses/TooManyRequests1'
+      deprecated: false
+      externalDocs:
+        description: More about OAuth2 authorization code support for administrators
+        url: '#oauth2-auth-code-planner-admin'
+    delete:
+      summary: Delete Webcast
+      description: Delete an existing webcast by ID.
+      operationId: deleteWebcast
+      security:
+      - OAuth2.clientCredentials:
+        - event/webcasts:delete
+      - OAuth2.authorizationCode:
+        - event/webcasts:delete
+      tags:
+      - Webcasts
+      responses:
+        '204':
+          description: Successfully deleted webcast from specific event.
+          headers: {}
+        '401':
+          $ref: '#/components/responses/Unauthorized1'
+        '403':
+          $ref: '#/components/responses/Forbidden1'
+        '404':
+          $ref: '#/components/responses/NotFound1'
+        '429':
+          $ref: '#/components/responses/TooManyRequests1'
+      deprecated: false
+      externalDocs:
+        description: More about OAuth2 authorization code support for administrators
+        url: '#oauth2-auth-code-planner-admin'
+    put:
+      tags:
+      - Webcasts
+      operationId: updateWebcast
+      security:
+      - OAuth2.clientCredentials:
+        - event/webcasts:write
+      - OAuth2.authorizationCode:
+        - event/webcasts:write
+      summary: Update Webcast
+      description: Update info for an existing webcast within a Cvent event.
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/existing-webcast'
+        required: true
+      responses:
+        '200':
+          description: Webcast was successfully updated for specific event.
+          headers: {}
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/existing-webcast'
+        '400':
+          $ref: '#/components/responses/BadRequest1'
+        '401':
+          $ref: '#/components/responses/Unauthorized1'
+        '403':
+          $ref: '#/components/responses/Forbidden1'
+        '404':
+          $ref: '#/components/responses/NotFound1'
+        '409':
+          $ref: '#/components/responses/Conflict1'
+        '429':
+          $ref: '#/components/responses/TooManyRequests1'
+      deprecated: false
+      externalDocs:
+        description: More about OAuth2 authorization code support for administrators
+        url: '#oauth2-auth-code-planner-admin'
+  /webcasts/{id}/attendee-links:
+    parameters:
+    - $ref: '#/components/parameters/id13'
+    post:
+      tags:
+      - Webcasts
+      operationId: createAttendeeLinks
+      security:
+      - OAuth2.clientCredentials:
+        - event/attendee-links:write
+      - OAuth2.authorizationCode:
+        - event/attendee-links:write
+      summary: Create Attendee Link
+      description: Create attendee links in bulk for a given webcast.
+      requestBody:
+        description: Up to **100 attendee links** can be created per call.
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/bulk-attendee-link'
+        required: true
+      responses:
+        '207':
+          description: Attendee links successfully created.
+          headers: {}
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/attendee-link-bulk-response'
+        '400':
+          $ref: '#/components/responses/BadRequest1'
+        '401':
+          $ref: '#/components/responses/Unauthorized1'
+        '403':
+          $ref: '#/components/responses/Forbidden1'
+        '404':
+          $ref: '#/components/responses/NotFound1'
+        '429':
+          $ref: '#/components/responses/TooManyRequests1'
+      deprecated: false
+      externalDocs:
+        description: More about OAuth2 authorization code support for administrators
+        url: '#oauth2-auth-code-planner-admin'
+    put:
+      tags:
+      - Webcasts
+      operationId: updateAttendeeLinks
+      security:
+      - OAuth2.clientCredentials:
+        - event/attendee-links:write
+      - OAuth2.authorizationCode:
+        - event/attendee-links:write
+      summary: Update Attendee Link
+      description: Update data for existing attendee links in bulk for a given webcast.
+      requestBody:
+        description: Up to **100 attendee links** can be updated per call.
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/bulk-existing-attendee-link'
+        required: true
+      responses:
+        '207':
+          description: Attendee links successfully updated.
+          headers: {}
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/attendee-link-bulk-response'
+        '400':
+          $ref: '#/components/responses/BadRequest1'
+        '401':
+          $ref: '#/components/responses/Unauthorized1'
+        '403':
+          $ref: '#/components/responses/Forbidden1'
+        '404':
+          $ref: '#/components/responses/NotFound1'
+        '429':
+          $ref: '#/components/responses/TooManyRequests1'
+      deprecated: false
+      externalDocs:
+        description: More about OAuth2 authorization code support for administrators
+        url: '#oauth2-auth-code-planner-admin'
+    get:
+      security:
+      - OAuth2.clientCredentials:
+        - event/attendee-links:read
+      - OAuth2.authorizationCode:
+        - event/attendee-links:read
+      summary: List Attendee Links
+      description: Gets a paginated list of attendee links in a webcast.
+      operationId: listWebcastAttendeeLinks
+      parameters:
+      - $ref: '#/components/parameters/after'
+      - $ref: '#/components/parameters/before'
+      - $ref: '#/components/parameters/limit'
+      - $ref: '#/components/parameters/token'
+      - name: filter
+        in: query
+        required: false
+        description: 'Use filter query parameters to limit results
+
+          to data that matches your criteria. See
+
+          [Filters](https://developers.cvent.com/docs/rest-api/reference/filters) for details.
+
+
+          Supported fields and operators are listed below:
+
+
+          | Field        | Operators                          |
+
+          |--------------| -----------------------------------|
+
+          | id           | `eq`, `ne`                         |
+
+          | sourceId     | `eq`, `ne`                         |
+
+          | attendee.id  | `eq`, `ne`                         |
+
+          | created      | `eq`, `ne`, `lt`, `le`, `gt`, `ge` |
+
+          | lastModified | `eq`, `ne`, `lt`, `le`, `gt`, `ge` |
+
+          '
+        schema:
+          type: string
+          example: id eq '04ca6ae2-0dc3-487b-953e-86d6abbdf7d3'
+      tags:
+      - Webcasts
+      responses:
+        '200':
+          description: Successfully retrieved a paginated list of attendee links.
+          headers: {}
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/attendee-link-paginated-response'
+        '400':
+          $ref: '#/components/responses/BadRequest1'
+        '401':
+          $ref: '#/components/responses/Unauthorized1'
+        '403':
+          $ref: '#/components/responses/Forbidden1'
+        '404':
+          $ref: '#/components/responses/NotFound1'
+        '429':
+          $ref: '#/components/responses/TooManyRequests1'
+      deprecated: true
+      externalDocs:
+        description: More about OAuth2 authorization code support for administrators
+        url: '#oauth2-auth-code-planner-admin'
+  /webcasts/{id}/attendee-links/{attendeeLinkId}:
+    parameters:
+    - $ref: '#/components/parameters/id13'
+    - $ref: '#/components/parameters/attendeeLinkId'
+    delete:
+      summary: Delete Attendee Link
+      description: Delete attendee links for webcast.
+      operationId: deleteAttendeeLink
+      security:
+      - OAuth2.clientCredentials:
+        - event/attendee-links:delete
+      - OAuth2.authorizationCode:
+        - event/attendee-links:delete
+      tags:
+      - Webcasts
+      responses:
+        '204':
+          description: Successfully deleted webcast attendee link from specific event.
+          headers: {}
+        '401':
+          $ref: '#/components/responses/Unauthorized1'
+        '403':
+          $ref: '#/components/responses/Forbidden1'
+        '404':
+          $ref: '#/components/responses/NotFound1'
+        '429':
+          $ref: '#/components/responses/TooManyRequests1'
+      deprecated: false
       externalDocs:
         description: More about OAuth2 authorization code support for administrators
         url: '#oauth2-auth-code-planner-admin'
 components:
   schemas:
-    Paging:
+    uuid-property:
+      title: UUID Property
+      description: A string that has to be a format matching the industry standard uuid
+      type: string
+      format: uuid
+      example: 04ca6ae2-0dc3-487b-953e-86d6abbdf7d3
+    webcast-delete-bulk-item.json:
+      title: WebcastDeletedBulkResponseItem
+      description: This entity is used to represent a single item that is returned as part of a bulk request call.
+      allOf:
+      - title: BulkResponseItem
+        description: Represents a single item that is returned as part of a Bulk request call.
+        type: object
+        required:
+        - status
+        - data
+        properties:
+          data:
+            type: object
+            description: The data returned for a single item in the bulk request call.
+            example:
+              event_id: 1234
+              attendee_count: 50
+            additionalProperties: true
+          status:
+            type: integer
+            description: http status code representing processing status of a single item
+            example: 400
+          message:
+            type: string
+            description: Quick description of what happened with processing
+            example: Example error message.
+          request:
+            type: object
+            description: The processed request tied to this response. This field is only sent when processing fails.
+            example:
+              operation: PUT
+              headers:
+                header1: header1Value
+                header2: header2Value
+              queryParams:
+                param1: param1Value
+                param2: param2Value
+            additionalProperties: true
+        additionalProperties: false
+      properties:
+        data:
+          title: Webcasts
+          oneOf:
+          - title: WebcastId
+            type: object
+            description: deleted webcast
+            required:
+            - id
+            properties:
+              id:
+                type: string
+                format: uuid
+                description: Id of the webcast.
+                example: 9463c74e-18c6-401a-a710-ae0f485bf059
+          - $ref: '#/components/schemas/error-response'
+    solution-type.json:
+      title: SolutionType
+      enum:
+      - Cvent Video Conferencing
+      - External Platform
+      - Cvent Studio
+      - Embedded Cvent Video Conferencing
+      - Cvent Studio Lite
+      - Embedded Cvent Studio
+      type: string
+      description: This is used to denote the solution type to be used for webcast. The 'Cvent Video Conferencing' refers to the video experience which links out the Attendee hub whereas 'Embedded Cvent Video Conferencing' refers to the video experience within the Attendee hub.
+      readOnly: true
+      example: External Platform
+    player-type.json:
+      title: PlayerType
+      enum:
+      - Cvent Video Player
+      - Brightcove
+      - Vimeo
+      - Weblink
+      type: string
+      description: This is used to denote the type of a video player
+      example: Cvent Video Player
+    webcast-paginated-response:
+      title: WebcastPaginatedResponse
+      description: The response from a request to get the list of webcasts.  This includes the paging object as well as the collection of webcasts.
+      required:
+      - paging
+      - data
+      type: object
+      properties:
+        paging:
+          $ref: '#/components/schemas/paging.json'
+        data:
+          type: array
+          items:
+            $ref: '#/components/schemas/existing-webcast'
+          description: Collection of webcasts.
+    uuid.json:
+      title: UUID
+      description: The reference to the related entity. Contains only the ID of the related entity.
+      required:
+      - id
+      type: object
+      properties:
+        id:
+          $ref: '#/components/schemas/uuid-property'
+    player-type-provider.json:
+      title: PlayerTypeProvider
+      enum:
+      - Brightcove
+      - Amazon IVS
+      - Cvent VOD
+      type: string
+      description: This is used to denote the type of a video player used for the Cvent Video Player
+      example: Amazon IVS
+      readOnly: true
+    schedule.json:
+      title: Schedule
+      description: A scheduled action.
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+          description: Unique ID of the scheduled task.
+        scheduledExecution:
+          type: string
+          format: date-time
+          description: 'The ISO 8601 zoned date time when the session will be moved to the next stage: provisioning, activation, deactivation or archival'
+          example: '2024-03-05T09:00:00Z'
+          readOnly: true
+        action:
+          $ref: '#/components/schemas/schedule-action.json'
+    webcast-host-link.json:
+      title: WebcastHostLink
+      description: Link details for a webcast host.
+      type: object
+      properties:
+        href:
+          type: string
+          description: A url to the webcast.
+          maxLength: 2000
+          example: https://cvent.zoom.us/j/7566652259
+        code:
+          type: string
+          description: Access code of webcast link.
+          maxLength: 100
+          example: 1456ZS78
+        key:
+          type: string
+          description: Host key for the webcast.
+          maxLength: 100
+          example: abcd1234
+    live-stream-recording-status.json:
+      title: LiveStreamRecordingStatus
+      enum:
+      - error
+      - waiting
+      - waiting_finish_live
+      - processing
+      - cancelling
+      - cancelled
+      - finished
+      - failed
+      - creating_asset
+      type: string
+      description: This is used to denote the status of the live stream recording job
+      example: finished
+      readOnly: true
+    webcast-type.json:
+      title: WebcastType
+      enum:
+      - Meeting
+      - Webinar
+      - Presentation
+      type: string
+      description: This is used to denote the type of a webcast
+      example: Meeting
+    existing-attendee-link:
+      title: ExistingAttendeeLink
+      description: An existing attendee link.
+      type: object
+      required:
+      - id
+      allOf:
+      - title: AttendeeLink
+        description: An attendee link.
+        type: object
+        required:
+        - webcast
+        - attendee
+        allOf:
+        - $ref: '#/components/schemas/webcast/allOf/0'
+        properties:
+          webcast:
+            $ref: '#/components/schemas/uuid.json'
+          event:
+            $ref: '#/components/schemas/uuid.json'
+          session:
+            $ref: '#/components/schemas/uuid.json'
+          attendee:
+            $ref: '#/components/schemas/uuid.json'
+          sourceId:
+            type: string
+            description: Source Id of the webcast provider
+            maxLength: 50
+            example: kBBBAAcccdddd8U==
+          join:
+            $ref: '#/components/schemas/webcast-link.json'
+      properties:
+        id:
+          type: string
+          format: uuid
+          description: Attendee-link ID
+          readOnly: true
+    pagination-links.json:
+      title: PaginationLinks
+      type: object
+      description: Represents pagination links for navigating between pages of data.
+      properties:
+        next:
+          $ref: '#/components/schemas/link.json'
+        self:
+          $ref: '#/components/schemas/link.json'
+        prev:
+          $ref: '#/components/schemas/link.json'
+    webcast-links.json:
+      title: WebcastLinks
+      description: webcast link references
+      type: object
+      properties:
+        join:
+          $ref: '#/components/schemas/webcast-link.json'
+        speaker:
+          $ref: '#/components/schemas/webcast-link.json'
+        host:
+          $ref: '#/components/schemas/webcast-host-link.json'
+        recording:
+          $ref: '#/components/schemas/webcast-link.json'
+    ErrorResponse:
+      title: ErrorResponse
+      description: Represents an error response with additional details of cascading error messages.
+      allOf:
+      - $ref: '#/components/schemas/ErrorResponseBase'
+      type: object
+      required:
+      - code
+      - message
+      properties:
+        details:
+          type: array
+          items:
+            $ref: '#/components/schemas/ErrorResponseBase'
+          description: Additional details of cascading error messages.
+    bulk-attendee-link:
+      title: AttendeeLinkBulk
+      description: Collection of attendee links.
+      type: array
+      items:
+        $ref: '#/components/schemas/existing-attendee-link/allOf/0'
+    paging.json:
       title: Paging
       required:
       - _links
@@ -114,8 +855,361 @@ components:
           description: The total number of records available. This field may return blank, even if there are more records. To confirm if there are more records, check the `nextToken` field.
           example: 2
         _links:
-          $ref: '#/components/schemas/PaginationLinks'
-    ErrorResponse:
+          $ref: '#/components/schemas/pagination-links.json'
+    format.json:
+      title: Format
+      enum:
+      - Live
+      - Pre-recorded
+      type: string
+      default: Live
+      description: This is used to denote the format of a webcast
+      example: Pre-recorded
+    live-stream-session.json:
+      title: LiveStreamSession
+      type: object
+      properties:
+        id:
+          type: string
+          description: An identifier for the current streaming session
+          example: st-1A2b3c4D5e6F78ghij9Klmn
+      description: Provides information about the livestream's current streaming session
+    existing-webcast:
+      title: ExistingWebcast
+      description: An existing webcast.
+      type: object
+      allOf:
+      - title: Webcast
+        description: A webcast
+        type: object
+        allOf:
+        - $ref: '#/components/schemas/webcast/allOf/0'
+        properties:
+          event:
+            $ref: '#/components/schemas/uuid.json'
+          session:
+            $ref: '#/components/schemas/uuid.json'
+          appointment:
+            $ref: '#/components/schemas/uuid.json'
+          solutionType:
+            $ref: '#/components/schemas/solution-type.json'
+          exhibitor:
+            $ref: '#/components/schemas/uuid.json'
+          format:
+            $ref: '#/components/schemas/format.json'
+          type:
+            $ref: '#/components/schemas/webcast-type.json'
+          provider:
+            $ref: '#/components/schemas/webcast-provider.json'
+          status:
+            $ref: '#/components/schemas/webcast-status.json'
+          playerType:
+            $ref: '#/components/schemas/player-type.json'
+          simulatedLive:
+            type: boolean
+            description: Indicates if the webcast is simulated live or not
+            example: false
+          recordLiveStream:
+            type: boolean
+            description: Indicates if the live stream recording is enabled
+            example: false
+          autoAddToLibrary:
+            type: boolean
+            description: Indicates if the live stream recording will be added to the library automatically
+            example: false
+            default: false
+          onDemandVideo:
+            type: boolean
+            description: Indicates if the on demand video is available
+            example: false
+          sourceId:
+            type: string
+            description: Source Id of the webcast provider
+            maxLength: 50
+            example: kBBBAAcccdddd8U==
+          title:
+            type: string
+            description: Title of the webcast
+            maxLength: 500
+            example: Webinar Connect Event
+          meetingId:
+            type: string
+            description: Id of meeting within a webcast.
+            maxLength: 300
+            example: 123ERt
+          _links:
+            $ref: '#/components/schemas/webcast-links.json'
+          details:
+            type: string
+            description: Additional information related to the webcast
+            maxLength: 2000
+            example: This is free of cost event
+          video:
+            type: object
+            description: Video for the webcast.
+            readOnly: true
+            properties:
+              id:
+                type: string
+                format: uuid
+                description: The unique identifier of the video.
+                example: 35b43fce-e87f-4a52-8685-2ba09fb53f53
+                readOnly: true
+      properties:
+        id:
+          type: string
+          format: uuid
+          description: Webcast ID
+          readOnly: true
+    bulk-existing-attendee-link:
+      title: ExistingAttendeeLinkBulk
+      description: Collection of existing attendee links.
+      type: array
+      items:
+        $ref: '#/components/schemas/existing-attendee-link'
+    webcast-status.json:
+      title: WebcastStatus
+      enum:
+      - Not Started
+      - Started
+      - Finished
+      - Cancelled
+      type: string
+      description: This is used to denote the status of a webcast
+      example: Started
+    existing-player:
+      title: ExistingPlayer
+      description: An existing webcast player.
+      type: object
+      allOf:
+      - title: Player
+        description: A Webcast player details.
+        type: object
+        allOf:
+        - $ref: '#/components/schemas/webcast/allOf/0'
+        properties:
+          webcast:
+            $ref: '#/components/schemas/uuid.json'
+          videoId:
+            type: string
+            description: ID of the video to be played.
+            maxLength: 100
+            example: 123ERt
+          videoUrl:
+            type: string
+            description: URL to play video
+            format: uri
+            example: https://80a8541ebf4d.us-east-1.playback.live-video.net/api/video/v1/us-east-1.572724207364.channel.L7FiQgC4MUt6.m3u8
+          password:
+            type: string
+            description: Password to access the video.
+            example: 123ERt
+          stream:
+            $ref: '#/components/schemas/live-stream.json'
+          region:
+            $ref: '#/components/schemas/region.json'
+          duration:
+            type: integer
+            description: Video duration (milliseconds)
+            example: 3600000
+          schedule:
+            $ref: '#/components/schemas/schedule.json'
+          playerTypeProvider:
+            $ref: '#/components/schemas/player-type-provider.json'
+          simuliveOffset:
+            type: integer
+            description: Offset (seconds) to determine start date for simulated live video.
+            example: 300
+      properties:
+        id:
+          type: string
+          format: uuid
+          description: Player ID
+          readOnly: true
+    webcast-provider.json:
+      title: WebcastProvider
+      enum:
+      - Adobe Connect
+      - Amazon Chime
+      - BlueJeans
+      - Brightcove
+      - Cisco Webex
+      - Facebook Live
+      - GlobalMeet
+      - GoToMeeting
+      - GoToWebinar
+      - Goldcast
+      - Intrado
+      - Microsoft Teams
+      - None
+      - ON24
+      - Other
+      - Vimeo
+      - YouTube Live
+      - Zoom
+      type: string
+      description: Name of the webcast provider.
+      example: Zoom
+    player-paginated-response:
+      title: PlayerPaginatedResponse
+      description: The response from a request to get the list of players.  This includes the paging object as well as the collection of players.
+      required:
+      - paging
+      - data
+      type: object
+      properties:
+        paging:
+          $ref: '#/components/schemas/paging.json'
+        data:
+          type: array
+          items:
+            $ref: '#/components/schemas/existing-player'
+          description: Collection of players.
+    link.json:
+      title: Link
+      required:
+      - href
+      type: object
+      description: Represents a link to a related resource.
+      properties:
+        href:
+          type: string
+          description: A url provided that can be followed for linking
+          example: ?token=90c5f062-76ad-4ea4-aa53-00eb698d9262
+    schedule-action.json:
+      title: ScheduleAction
+      enum:
+      - provision
+      - activate
+      - deactivate
+      - archive
+      type: string
+      description: This is used to denote the action to perform with the scheduled task
+      example: activate
+      readOnly: true
+    webcast:
+      title: Webcast
+      description: A webcast
+      type: object
+      allOf:
+      - title: Audit
+        description: Audit information
+        type: object
+        properties:
+          created:
+            type: string
+            format: date-time
+            description: The ISO 8601 zoned date time when this record was created.
+            readOnly: true
+            example: '2017-01-02T02:00:00Z'
+          createdBy:
+            type: string
+            description: The identifier of the user that created this record.
+            readOnly: true
+            example: hporter
+          lastModified:
+            type: string
+            format: date-time
+            description: The ISO 8601 zoned date time when this record was updated.
+            readOnly: true
+            example: '2019-02-12T03:00:00Z'
+          lastModifiedBy:
+            type: string
+            description: The identifier of the user that last updated this record.
+            readOnly: true
+            example: hporter
+      properties:
+        event:
+          $ref: '#/components/schemas/uuid.json'
+        session:
+          $ref: '#/components/schemas/uuid.json'
+        appointment:
+          $ref: '#/components/schemas/uuid.json'
+        solutionType:
+          $ref: '#/components/schemas/solution-type.json'
+        exhibitor:
+          $ref: '#/components/schemas/uuid.json'
+        format:
+          $ref: '#/components/schemas/format.json'
+        type:
+          $ref: '#/components/schemas/webcast-type.json'
+        provider:
+          $ref: '#/components/schemas/webcast-provider.json'
+        status:
+          $ref: '#/components/schemas/webcast-status.json'
+        playerType:
+          $ref: '#/components/schemas/player-type.json'
+        simulatedLive:
+          type: boolean
+          description: Indicates if the webcast is simulated live or not
+          example: false
+        recordLiveStream:
+          type: boolean
+          description: Indicates if the live stream recording is enabled
+          example: false
+        autoAddToLibrary:
+          type: boolean
+          description: Indicates if the live stream recording will be added to the library automatically
+          example: false
+          default: false
+        onDemandVideo:
+          type: boolean
+          description: Indicates if the on demand video is available
+          example: false
+        sourceId:
+          type: string
+          description: Source Id of the webcast provider
+          maxLength: 50
+          example: kBBBAAcccdddd8U==
+        title:
+          type: string
+          description: Title of the webcast
+          maxLength: 500
+          example: Webinar Connect Event
+        meetingId:
+          type: string
+          description: Id of meeting within a webcast.
+          maxLength: 300
+          example: 123ERt
+        _links:
+          $ref: '#/components/schemas/webcast-links.json'
+        details:
+          type: string
+          description: Additional information related to the webcast
+          maxLength: 2000
+          example: This is free of cost event
+        video:
+          type: object
+          description: Video for the webcast.
+          readOnly: true
+          properties:
+            id:
+              type: string
+              format: uuid
+              description: The unique identifier of the video.
+              example: 35b43fce-e87f-4a52-8685-2ba09fb53f53
+              readOnly: true
+    attendee-link-bulk-response:
+      title: AttendeeLinkBulkResponse
+      description: Collection of attendee linking responses.
+      type: array
+      items:
+        $ref: '#/components/schemas/attendee-link-bulk-response-item.json'
+    region.json:
+      title: Region
+      enum:
+      - Oregon
+      - Virginia
+      - Tokyo
+      - Singapore
+      - Sydney
+      - Mumbai
+      - Frankfurt
+      - Ireland
+      type: string
+      description: Region where the live stream originates (These regions are only for Brightcove player)
+      example: Oregon
+    error-response:
       title: ErrorResponse
       description: Represents an error response with additional details of cascading error messages.
       allOf:
@@ -130,103 +1224,64 @@ components:
           items:
             $ref: '#/components/schemas/ErrorResponseBase'
           description: Additional details of cascading error messages.
-    Usage:
-      title: Usage
-      description: A usage object represents the usage of a resource on a given day
-      required:
-      - date
-      - used
-      - remaining
-      - total
-      type: object
+    attendee-link-bulk-response-item.json:
+      title: AttendeeLinkBulkResponseItem
+      description: This entity is used to represent a single item that is returned as part of a bulk request call.
       allOf:
-      - $ref: '#/components/schemas/UsageQuotaFields'
+      - $ref: '#/components/schemas/webcast-delete-bulk-item.json/allOf/0'
       properties:
-        date:
-          type: string
-          description: The date the usage occurred, as an ISO8601 date
-          example: '2020-01-01'
-    UsageQuotaFields:
-      title: Usage Quota Fields
-      description: Fields representing usage quota information. Usage quota represents the number of API requests that can be made in a given usage period. Usage periods reset daily at midnight UTC.
+        data:
+          anyOf:
+          - $ref: '#/components/schemas/existing-attendee-link'
+          - $ref: '#/components/schemas/error-response'
+    webcast-link.json:
+      title: WebcastLink
+      description: Link details for a webcast.
       type: object
-      required:
-      - used
-      - remaining
-      - total
       properties:
-        used:
-          type: integer
-          description: The number of API requests that have been made in the current usage period. Usage periods reset daily at midnight UTC.
-          example: 40000
-        remaining:
-          type: integer
-          description: The number of API requests remaining in the current usage period. Usage periods reset daily at midnight UTC.
-          example: 260000
-        total:
-          type: integer
-          description: The total number of API requests allowed in the current usage period. Usage periods reset daily at midnight UTC.
-          example: 300000
-    usage-paginated-response:
-      title: Usage Paginated Response
-      description: The list of usage for the caller's account in the date range specified.
+        href:
+          type: string
+          description: A url to the webcast.
+          maxLength: 2000
+          example: https://cvent.zoom.us/j/7566652259
+        code:
+          type: string
+          description: Access code of webcast link.
+          maxLength: 100
+          example: 1456ZS78
+    live-stream-status.json:
+      title: LiveStreamStatus
+      enum:
+      - Error
+      - Standby
+      - Waiting
+      - Processing
+      - Disconnected
+      - Cancelling
+      - Finishing
+      - Cancelled
+      - Finished
+      - Failed
+      - Scheduled
+      - Starving
+      type: string
+      description: This is used to denote the status of the stream
+      example: Standby
+    attendee-link-paginated-response:
+      title: AttendeeLinkPaginatedResponse
+      description: The response from a request to get the list of attendee links. This includes the paging object as well as the collection of attendee links.
       required:
+      - paging
       - data
       type: object
       properties:
         paging:
-          $ref: '#/components/schemas/Paging'
+          $ref: '#/components/schemas/paging.json'
         data:
           type: array
           items:
-            $ref: '#/components/schemas/Usage'
-          description: Collection of usage objects.
-    public-usage-plan:
-      title: Public Usage Plan
-      description: Object representing an API Platform Usage Tier, including information when the usage plan is scheduled to revert to a previous plan, if any.
-      type: object
-      allOf:
-      - $ref: '#/components/schemas/UsagePlan'
-      properties:
-        switchBackPlan:
-          $ref: '#/components/schemas/SwitchBackTargetUsagePlan'
-    UsagePlan:
-      title: Usage Plan
-      description: Object representing an API Platform Usage Tier
-      required:
-      - name
-      - quota
-      - burstLimit
-      - rateLimit
-      type: object
-      properties:
-        name:
-          type: string
-          description: The name of the usage tier
-          example: API_Platform_Free_Tier
-        quota:
-          type: number
-          description: The daily quota of the usage tier. If this value is null, this means the usage tier is unlimited.
-          example: 1000
-        burstLimit:
-          type: number
-          description: The burst limit capacity of the usage tier
-          example: 1
-        rateLimit:
-          type: number
-          description: The per-second steady rate-limit of the usage tier
-          example: 2
-    PaginationLinks:
-      title: PaginationLinks
-      type: object
-      description: Represents pagination links for navigating between pages of data.
-      properties:
-        next:
-          $ref: '#/components/schemas/Link'
-        self:
-          $ref: '#/components/schemas/Link'
-        prev:
-          $ref: '#/components/schemas/Link'
+            $ref: '#/components/schemas/existing-attendee-link'
+          description: Collection of webcast attendee links.
     ErrorResponseBase:
       title: ErrorResponseBase
       type: object
@@ -247,41 +1302,46 @@ components:
           type: string
           description: The target resource of the error.
           example: example target
-    Link:
-      title: Link
-      required:
-      - href
+    live-stream-recording.json:
+      title: LiveStreamRecording
       type: object
-      description: Represents a link to a related resource.
       properties:
-        href:
+        id:
           type: string
-          description: A url provided that can be followed for linking
-          example: ?token=90c5f062-76ad-4ea4-aa53-00eb698d9262
-    SwitchBackTargetUsagePlan:
-      title: Switch Back Target Usage Plan
-      description: Object representing the target usage plan and the date when the current plan is scheduled to revert to it. This object is only present when a switch-back is scheduled.
+          description: Unique ID of the live stream recording job.
+          example: 62989518f9294e19b2f7e184e8141d72
+        status:
+          $ref: '#/components/schemas/live-stream-recording-status.json'
+      description: Provides information about the livestream's recording
+    live-stream.json:
+      title: LiveStream
+      description: A webcast Live Stream.
       type: object
-      required:
-      - name
-      - time
       properties:
-        name:
+        id:
           type: string
-          description: Name of the target usage plan to switch back to. This field is only present when the usage plan is scheduled to revert to a previous plan.
-          example: API_Platform_Standard_Tier
-        time:
+          description: Unique ID of the stream.
+          example: stream1256wet
+        url:
           type: string
-          format: date-time
-          description: The date and time when the usage plan is scheduled to revert to a previous plan. This field is only present when the usage plan is scheduled to revert to a previous plan. The date and time cannot be more than 14 days from the current date.
-          example: '2023-10-01T12:00:00Z'
+          maxLength: 2000
+          description: A RTMP url of the stream.
+          example: https://cvent.zoom.us/j/7566652259
+        key:
+          type: string
+          description: Access key of the stream.
+          example: 145asa16ZS78
+        status:
+          $ref: '#/components/schemas/live-stream-status.json'
+        session:
+          $ref: '#/components/schemas/live-stream-session.json'
+        page:
+          type: string
+          description: A url of the page where live stream to be streamed.
+          example: https://cvent.zoom.aspx/j/7566652259
+        recording:
+          $ref: '#/components/schemas/live-stream-recording.json'
   responses:
-    PublicUsagePlanResponse:
-      description: The Usage Tier assigned to the account
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/public-usage-plan'
     TooManyRequests1:
       description: Too many requests
       content:
@@ -291,6 +1351,15 @@ components:
           example:
             code: 429
             message: Limit Exceeded
+    NotFound1:
+      description: Resource not found
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+          example:
+            code: 404
+            message: Not found
     Forbidden1:
       description: You do not have access to the resource
       content:
@@ -300,12 +1369,6 @@ components:
           example:
             code: 403
             message: Access Forbidden
-    usage-paginated-response:
-      description: Usage metrics for the dates requested
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/usage-paginated-response'
     Unauthorized1:
       description: Bad or expired token
       content:
@@ -324,6 +1387,73 @@ components:
           example:
             code: 400
             message: Bad Request
+    Conflict1:
+      description: The request conflicts with current state of the target resource
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+          example:
+            code: 409
+            message: Conflict
+  parameters:
+    before:
+      name: before
+      required: false
+      in: query
+      description: Used to query records that have been added or updated before this time point.
+      schema:
+        type: string
+        format: date-time
+        example: '2017-01-02T02:00:00Z'
+    limit:
+      name: limit
+      in: query
+      description: The maximum number of records to return per page.
+      style: form
+      explode: true
+      schema:
+        maximum: 200
+        minimum: 1
+        type: integer
+        default: 100
+        example: 100
+    id13:
+      in: path
+      name: id
+      description: The identifier of the webcast.
+      required: true
+      schema:
+        $ref: '#/components/schemas/uuid-property'
+    attendeeLinkId:
+      in: path
+      name: attendeeLinkId
+      description: The identifier of an attendee link in a webcast.
+      required: true
+      schema:
+        $ref: '#/components/schemas/uuid-property'
+    token:
+      name: token
+      in: query
+      description: 'The continuation token returned from a previous class. This must be a valid UUID v4 if provided.
+
+        This will override any other pageable parameters provided.
+
+        '
+      style: form
+      explode: true
+      schema:
+        type: string
+        example: 0e28af57-511f-47ab-ae46-46cd1ca51a1a
+    after:
+      name: after
+      required: false
+      description: Used to query records that have been added or updated after this time point. Default to the beginning of time of the data store.
+      in: query
+      schema:
+        type: string
+        format: date-time
+        example: '2017-01-02T02:00:00Z'
   securitySchemes:
     OAuth2.authorizationCode:
       type: oauth2

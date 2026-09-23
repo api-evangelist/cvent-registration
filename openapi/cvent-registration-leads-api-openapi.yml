@@ -1,6 +1,6 @@
 openapi: 3.2.0
 info:
-  title: Cvent REST Usage API
+  title: Cvent REST Leads API
   description: '# Introduction
 
     The Cvent API Platform is built around REST.'
@@ -12,69 +12,67 @@ servers:
 - url: https://api-platform.cvent.com/ea
 - url: https://api-platform-eur.cvent.com/ea
 tags:
-- name: Usage
-  description: Use these APIs view your REST API usage and limits metrics. For more details on limits - Rate Limits
+- name: Leads
+  description: '* **Leads -** Leads include leads gathered by LeadCapture, Appointments, and Inbound Leads. Use this API to get information for the lead and how it was captured.
+
+
+    * **Lead Qualification Question -** Custom questions created by each exhibitor to qualify a lead. Questions and answers are their own endpoints.
+
+
+    * **Eliterature Requests -** List of E-literature requests data sent to lead.'
 paths:
-  /usage:
+  /eliterature-requests:
     get:
+      summary: List E-literature Requests
+      description: Gets a paginated list of eliterature requests data
+      operationId: getEliteratureRequests
       tags:
-      - Usage
-      operationId: getUsage
-      summary: Get Current Usage
-      description: 'Returns API call usage for the last seven days, or between some date range (up to the past seven days) for
-
-        the current caller''s account.'
+      - Leads
       security:
-      - OAuth2.clientCredentials: []
+      - OAuth2.clientCredentials:
+        - exhibitor/eliterature-requests:read
+      - OAuth2.authorizationCode:
+        - exhibitor/eliterature-requests:read
       parameters:
-      - name: before
+      - $ref: '#/components/parameters/limit'
+      - $ref: '#/components/parameters/token'
+      - $ref: '#/components/parameters/before'
+      - $ref: '#/components/parameters/after'
+      - name: filter
         in: query
-        description: 'Returns usage for the seven days before (inclusive) the date provided. If after is also provided, then
+        required: false
+        description: 'A filter query string narrows search results and supports the combination of logical and comparison operators.
 
-          only the dates between (inclusive) those dates are returned. before must be a valid ISO8601 date stamp.
+          The filter adheres to the pattern filter=''field'' comparisonType ''value''.
 
-          before and after must not be more then seven days apart.
+
+          These are the comparison types that can be used in filter expressions:
+
+          * equal: eq
+
+
+          The following fields are filterable:
+
+          * event.id (eq)
+
+          * exhibitor.id (eq)
+
+          * lead.id (eq)
 
           '
-        required: false
         schema:
           type: string
-      - name: after
-        in: query
-        description: 'Returns usage for the seven days after (inclusive) the date provided. If before is also provided, then
-
-          only the dates between (inclusive) those dates are returned. after must be a valid ISO8601 date stamp.
-
-          after and before must not be more then seven days apart.
-
-          '
-        required: false
-        schema:
-          type: string
+          example: event.id eq '{UUID}' and exhibitor.id eq '{UUID}' and lead.id eq '{UUID}'
       responses:
         '200':
-          $ref: '#/components/responses/usage-paginated-response'
+          description: Successfully retrieved a paginated list of eliterature requests data.
+          headers: {}
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/eliterature-request-paginated-response'
         '400':
           $ref: '#/components/responses/BadRequest1'
-        '401':
-          $ref: '#/components/responses/Unauthorized1'
-        '403':
-          $ref: '#/components/responses/Forbidden1'
-        '429':
-          $ref: '#/components/responses/TooManyRequests1'
-  /usage/tier:
-    get:
-      tags:
-      - Usage
-      operationId: getUsageTier
-      summary: Get Current Usage Tier
-      description: Returns the current usage tier of the caller's account.
-      security:
-      - OAuth2.clientCredentials: []
-      - OAuth2.authorizationCode: []
-      responses:
-        '200':
-          $ref: '#/components/responses/PublicUsagePlanResponse'
         '401':
           $ref: '#/components/responses/Unauthorized1'
         '403':
@@ -84,8 +82,178 @@ paths:
       externalDocs:
         description: More about OAuth2 authorization code support for administrators
         url: '#oauth2-auth-code-planner-admin'
+  /events/{id}/exhibitors/{exhibitorId}/leads/{leadId}/answers:
+    get:
+      summary: List Qualification Answers
+      description: Gets a list of answers to lead qualification questions for a given lead id.
+      operationId: getLeadQualificationAnswers
+      tags:
+      - Leads
+      security:
+      - OAuth2.clientCredentials:
+        - exhibitor/lead-qualification-answers:read
+      - OAuth2.authorizationCode:
+        - exhibitor/lead-qualification-answers:read
+      parameters:
+      - $ref: '#/components/parameters/id6'
+      - $ref: '#/components/parameters/exhibitorId'
+      - $ref: '#/components/parameters/leadId'
+      responses:
+        '200':
+          description: Successfully retrieved a list of Lead Qualification Answers.
+          headers: {}
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/lead-qualification-answers-list-response'
+        '401':
+          $ref: '#/components/responses/Unauthorized1'
+        '403':
+          $ref: '#/components/responses/Forbidden1'
+        '404':
+          $ref: '#/components/responses/NotFound1'
+        '429':
+          $ref: '#/components/responses/TooManyRequests1'
+      externalDocs:
+        description: More about OAuth2 authorization code support for administrators
+        url: '#oauth2-auth-code-planner-admin'
+  /leads:
+    get:
+      summary: List Leads
+      description: Gets a paginated list of leads
+      operationId: getLeads
+      tags:
+      - Leads
+      security:
+      - OAuth2.clientCredentials:
+        - exhibitor/leads:read
+      - OAuth2.authorizationCode:
+        - exhibitor/leads:read
+      parameters:
+      - $ref: '#/components/parameters/limit'
+      - $ref: '#/components/parameters/token'
+      - $ref: '#/components/parameters/before'
+      - $ref: '#/components/parameters/after'
+      - name: filter
+        in: query
+        required: false
+        description: 'A filter query string narrows search results and supports the combination of logical and comparison operators.
+
+          The filter adheres to the pattern filter=''field'' comparisonType ''value''.
+
+
+          These are the comparison types that can be used in filter expressions:
+
+          * equal: eq
+
+
+          The following fields are filterable:
+
+          * event.id (eq)
+
+          * exhibitor.id (eq)
+
+          * deleted (eq)
+
+          '
+        schema:
+          type: string
+          example: deleted eq 'true' and event.id eq '{UUID}' and exhibitor.id eq '{UUID}'
+      responses:
+        '200':
+          description: Successfully retrieved a paginated list of leads.
+          headers: {}
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/leads-paginated-response'
+        '400':
+          $ref: '#/components/responses/BadRequest1'
+        '401':
+          $ref: '#/components/responses/Unauthorized1'
+        '403':
+          $ref: '#/components/responses/Forbidden1'
+        '404':
+          $ref: '#/components/responses/NotFound1'
+        '429':
+          $ref: '#/components/responses/TooManyRequests1'
+      externalDocs:
+        description: More about OAuth2 authorization code support for administrators
+        url: '#oauth2-auth-code-planner-admin'
+  /leads/filter:
+    post:
+      summary: List Leads
+      description: Gets a paginated list of leads
+      operationId: getLeadsPostFiltersData
+      tags:
+      - Leads
+      security:
+      - OAuth2.clientCredentials:
+        - exhibitor/leads:read
+      - OAuth2.authorizationCode:
+        - exhibitor/leads:read
+      parameters:
+      - $ref: '#/components/parameters/limit'
+      - $ref: '#/components/parameters/token'
+      - $ref: '#/components/parameters/before'
+      - $ref: '#/components/parameters/after'
+      requestBody:
+        description: See the filter query parameter of <a href="#operation/getLeads">GET  Gets a paginated list of leads</a> for full filtering information
+        required: false
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/filter'
+            example:
+              filter: id eq '04ca6ae2-0dc3-487b-953e-86d6abbdf7d3' AND attendee.id eq 'edf40757-3bc3-4a66-8180-93bff15b890b'
+      responses:
+        '200':
+          description: Successfully retrieved a paginated list of leads.
+          headers: {}
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/leads-paginated-response'
+        '400':
+          $ref: '#/components/responses/BadRequest1'
+        '401':
+          $ref: '#/components/responses/Unauthorized1'
+        '403':
+          $ref: '#/components/responses/Forbidden1'
+        '404':
+          $ref: '#/components/responses/NotFound1'
+        '429':
+          $ref: '#/components/responses/TooManyRequests1'
+      externalDocs:
+        description: More about OAuth2 authorization code support for administrators
+        url: '#oauth2-auth-code-planner-admin'
 components:
   schemas:
+    ELiteratureRequestDataForLead:
+      title: E-literature Request Data for Lead
+      type: object
+      description: E-literature request data containing event, exhibitor, lead, and documents information.
+      required:
+      - event
+      - exhibitor
+      - lead
+      - documents
+      allOf:
+      - $ref: '#/components/schemas/Audit'
+      properties:
+        event:
+          $ref: '#/components/schemas/Event4'
+        exhibitor:
+          $ref: '#/components/schemas/Exhibitor'
+        lead:
+          $ref: '#/components/schemas/Lead-2'
+        documents:
+          type: array
+          items:
+            $ref: '#/components/schemas/ELiteratureDocument'
+          minItems: 1
+          maxItems: 25
+          description: Collection of E-literature documents sent to lead.
     Paging:
       title: Paging
       required:
@@ -115,6 +283,123 @@ components:
           example: 2
         _links:
           $ref: '#/components/schemas/PaginationLinks'
+    eliterature-request-paginated-response:
+      title: E-literature Request Paginated Response
+      type: object
+      description: A paginated response for E-literature requests.
+      properties:
+        paging:
+          $ref: '#/components/schemas/Paging'
+        data:
+          type: array
+          items:
+            $ref: '#/components/schemas/ExistingELiteratureRequestDataForLead'
+          description: Collection of E-literature request data.
+    Audit:
+      title: Audit
+      description: Audit information
+      type: object
+      properties:
+        created:
+          type: string
+          format: date-time
+          description: The ISO 8601 zoned date time when this record was created.
+          readOnly: true
+          example: '2017-01-02T02:00:00Z'
+        createdBy:
+          type: string
+          description: The identifier of the user that created this record.
+          readOnly: true
+          example: hporter
+        lastModified:
+          type: string
+          format: date-time
+          description: The ISO 8601 zoned date time when this record was updated.
+          readOnly: true
+          example: '2019-02-12T03:00:00Z'
+        lastModifiedBy:
+          type: string
+          description: The identifier of the user that last updated this record.
+          readOnly: true
+          example: hporter
+    ELiteratureDocument:
+      title: E-literature Document
+      type: object
+      description: A JSON schema representing an E-literature Document
+      required:
+      - id
+      - displayName
+      - type
+      properties:
+        id:
+          type: string
+          format: uuid
+          example: 04ca6ae2-0dc3-487b-953e-86d6abbdf7d3
+          description: Document identifier
+        displayName:
+          type: string
+          example: Marketing Material
+          description: Document display name
+        type:
+          description: Type of eliterature document
+          enum:
+          - FILE
+          - LINK
+          type: string
+          example: FILE
+    Lead:
+      title: Lead
+      type: object
+      description: A JSON Schema file for Lead.
+      allOf:
+      - $ref: '#/components/schemas/Lead-1'
+      properties:
+        id:
+          type: string
+          format: uuid
+          example: cdd0d110-3a84-4bc5-a420-37c007716c73
+          description: ID of Lead.
+          readOnly: true
+    Event4:
+      description: The Associated Event.
+      title: Event
+      type: object
+      required:
+      - id
+      properties:
+        id:
+          type: string
+          format: uuid
+          example: 3db28cfc-db22-11eb-8d19-0242ac130003
+          description: Event id
+    Answer-1:
+      title: Answer
+      type: object
+      required:
+      - type
+      description: An object representing the possible answers for lead qualification questions.
+      properties:
+        type:
+          $ref: '#/components/schemas/AnswerType'
+        value:
+          type: string
+          description: 'Answered value like: Choice text, text answer input etc.'
+          example: Choice A
+        choice:
+          $ref: '#/components/schemas/UUID'
+    Device:
+      title: Device
+      type: object
+      description: A JSON object representing an electronic device used to capture leads.
+      properties:
+        id:
+          type: string
+          description: The id of device used to capture lead
+          example: EKEK993IF9F
+        name:
+          type: string
+          description: The name of device used to capture lead
+          example: North Gate
     ErrorResponse:
       title: ErrorResponse
       description: Represents an error response with additional details of cascading error messages.
@@ -130,92 +415,45 @@ components:
           items:
             $ref: '#/components/schemas/ErrorResponseBase'
           description: Additional details of cascading error messages.
-    Usage:
-      title: Usage
-      description: A usage object represents the usage of a resource on a given day
-      required:
-      - date
-      - used
-      - remaining
-      - total
+    Attendee-1:
+      title: Attendee
       type: object
-      allOf:
-      - $ref: '#/components/schemas/UsageQuotaFields'
+      description: A JSON schema representing the Attendee object
       properties:
-        date:
+        id:
           type: string
-          description: The date the usage occurred, as an ISO8601 date
-          example: '2020-01-01'
-    UsageQuotaFields:
-      title: Usage Quota Fields
-      description: Fields representing usage quota information. Usage quota represents the number of API requests that can be made in a given usage period. Usage periods reset daily at midnight UTC.
+          format: uuid
+          example: 04ca6ae2-0dc3-487b-953e-86d6abbdf7d3
+          description: Attendee id
+    lead-qualification-answers-list-response:
+      title: Lead Qualification Answers List Response
       type: object
-      required:
-      - used
-      - remaining
-      - total
+      description: A JSON schema representing the response for a list of lead qualification answers.
       properties:
-        used:
-          type: integer
-          description: The number of API requests that have been made in the current usage period. Usage periods reset daily at midnight UTC.
-          example: 40000
-        remaining:
-          type: integer
-          description: The number of API requests remaining in the current usage period. Usage periods reset daily at midnight UTC.
-          example: 260000
-        total:
-          type: integer
-          description: The total number of API requests allowed in the current usage period. Usage periods reset daily at midnight UTC.
-          example: 300000
-    usage-paginated-response:
-      title: Usage Paginated Response
-      description: The list of usage for the caller's account in the date range specified.
-      required:
-      - data
-      type: object
-      properties:
-        paging:
-          $ref: '#/components/schemas/Paging'
         data:
           type: array
           items:
-            $ref: '#/components/schemas/Usage'
-          description: Collection of usage objects.
-    public-usage-plan:
-      title: Public Usage Plan
-      description: Object representing an API Platform Usage Tier, including information when the usage plan is scheduled to revert to a previous plan, if any.
-      type: object
-      allOf:
-      - $ref: '#/components/schemas/UsagePlan'
-      properties:
-        switchBackPlan:
-          $ref: '#/components/schemas/SwitchBackTargetUsagePlan'
-    UsagePlan:
-      title: Usage Plan
-      description: Object representing an API Platform Usage Tier
-      required:
-      - name
-      - quota
-      - burstLimit
-      - rateLimit
+            $ref: '#/components/schemas/LeadQualificationAnswers'
+          description: Collection of Lead Qualification Answers.
+    filter:
+      title: A filter sent in the body of a request
+      description: A filter which is sent through the body of the request.
       type: object
       properties:
-        name:
+        filter:
           type: string
-          description: The name of the usage tier
-          example: API_Platform_Free_Tier
-        quota:
-          type: number
-          description: The daily quota of the usage tier. If this value is null, this means the usage tier is unlimited.
-          example: 1000
-        burstLimit:
-          type: number
-          description: The burst limit capacity of the usage tier
-          example: 1
-        rateLimit:
-          type: number
-          description: The per-second steady rate-limit of the usage tier
-          example: 2
+          example: property eq 'value'
+          description: Filter included in the request.
+    BoothStaff:
+      title: Booth Staff
+      type: object
+      description: A JSON schema representing Booth Staff entity
+      properties:
+        id:
+          type: string
+          format: uuid
+          example: 04ca6ae2-0dc3-487b-953e-86d6abbdf7d3
+          description: Booth Staff id
     PaginationLinks:
       title: PaginationLinks
       type: object
@@ -227,6 +465,219 @@ components:
           $ref: '#/components/schemas/Link'
         prev:
           $ref: '#/components/schemas/Link'
+    Appointment1:
+      title: Appointment
+      description: A JSON schema representing the structure of an appointment object.
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+          example: 04ca6ae2-0dc3-487b-953e-86d6abbdf7d3
+          description: Appointment id
+    UUID:
+      title: UUID
+      description: The reference to the related entity. Contains only the ID of the related entity.
+      required:
+      - id
+      type: object
+      properties:
+        id:
+          $ref: '#/components/schemas/UUIDProperty'
+    leads-paginated-response:
+      title: LeadsPaginatedResponse
+      type: object
+      properties:
+        paging:
+          $ref: '#/components/schemas/Paging'
+        data:
+          type: array
+          items:
+            $ref: '#/components/schemas/Lead'
+          description: Collection of leads.
+      description: A paginated response of leads.
+    Exhibitor:
+      description: The Associated Exhibitor.
+      title: Exhibitor
+      type: object
+      required:
+      - id
+      properties:
+        id:
+          type: string
+          format: uuid
+          example: 4888db54-db22-11eb-8d19-0242ac130003
+          description: Exhibitor id
+    Address-11:
+      title: Address
+      description: Schema for address information
+      type: object
+      properties:
+        address1:
+          type: string
+          description: The first line of an address
+          example: Cvent Inc.
+        address2:
+          type: string
+          description: The second line of an address
+          example: 4001 West Parmer Lane
+        city:
+          type: string
+          description: The name of the city.
+          example: Austin
+        region:
+          type: string
+          description: The name of the state/province/region of the address.
+          example: Texas
+        regionCode:
+          type: string
+          description: The abbreviation of the state/province/region of the address.
+          example: TX
+        postalCode:
+          type: string
+          description: postal code (also known as zipcode) of the address
+          example: '78727'
+        country:
+          type: string
+          description: Name of the country for example, 'United States'
+          example: United States of America
+        countryCode:
+          type: string
+          description: ISO 3166 two-letter (alpha-2) country code
+          example: US
+    UUIDProperty:
+      title: UUID Property
+      description: A string that has to be a format matching the industry standard uuid
+      type: string
+      format: uuid
+      example: 04ca6ae2-0dc3-487b-953e-86d6abbdf7d3
+    Lead-1:
+      title: Lead
+      type: object
+      description: Lead object representing a lead captured at an event
+      allOf:
+      - $ref: '#/components/schemas/Audit'
+      properties:
+        event:
+          $ref: '#/components/schemas/Event4'
+        exhibitor:
+          $ref: '#/components/schemas/Exhibitor'
+        attendee:
+          $ref: '#/components/schemas/Attendee-1'
+        boothStaff:
+          $ref: '#/components/schemas/BoothStaff'
+        device:
+          $ref: '#/components/schemas/Device'
+        appointment:
+          $ref: '#/components/schemas/Appointment1'
+        title:
+          type: string
+          description: The title of the lead
+          example: Mr.
+        firstName:
+          type: string
+          description: The first name of the lead
+          example: Henry
+        lastName:
+          type: string
+          description: The last name of the lead
+          example: Potterfield
+        email:
+          type: string
+          format: email
+          description: The email address of the lead
+          example: h.potterfield@test.com
+        company:
+          type: string
+          description: The company/organization the lead belongs to.
+          example: Cvent Inc
+        mobilePhone:
+          type: string
+          description: Mobile phone number of the lead
+          maxLength: 30
+          example: 555-555-5555
+        homeAddress:
+          $ref: '#/components/schemas/Address-11'
+        homePhone:
+          type: string
+          description: Home phone number of the lead
+          example: 555-555-5555
+        workAddress:
+          $ref: '#/components/schemas/Address-11'
+        workPhone:
+          type: string
+          description: Work Phone number of the lead
+          example: 555-555-5555
+        type:
+          description: The type of lead.
+          type: string
+          default: leadcapture
+          enum:
+          - leadcapture
+          - inbound
+          - appointment
+        application:
+          description: The application used to capture lead.
+          type: string
+          default: leadcapture
+          enum:
+          - leadcapture
+          - attendeehub_mobile
+          - attendeehub_web
+          - appointment_app
+        source:
+          description: The source of entry for the lead
+          type: string
+          enum:
+          - scanned
+          - manual
+          - business_card_scanned
+          - ulc_scanned
+          - inbound
+          - appointment
+        deleted:
+          description: A boolean indicating whether a lead is deleted or not
+          type: boolean
+          default: false
+        comments:
+          type: string
+          description: Comments about the lead
+          example: I am interested in your product.
+        licenseCode:
+          description: License (access code) that was used to capture the lead
+          type: string
+          example: nag1248
+        matched:
+          description: A boolean indicating whether the lead is matched or not
+          type: boolean
+          example: true
+        transcriptionStatus:
+          description: Current status of business card transcription
+          type: string
+          enum:
+          - pending
+          - submitted
+          - completed
+          - failed
+        qualified:
+          description: A boolean indicating whether a lead is qualified or not
+          type: boolean
+          example: true
+        additionalBadgekitFields:
+          description: Map containing extra properties from badgekit provider
+          type: object
+    Lead-2:
+      title: Lead
+      type: object
+      required:
+      - id
+      properties:
+        id:
+          type: string
+          format: uuid
+          example: 4e74f930-db22-11eb-8d19-0242ac130003
+          description: Lead id
+      description: JSON schema for the Lead object
     ErrorResponseBase:
       title: ErrorResponseBase
       type: object
@@ -247,6 +698,55 @@ components:
           type: string
           description: The target resource of the error.
           example: example target
+    LeadQualificationAnswers:
+      title: Lead Qualification Answers
+      description: This JSON schema file represents lead qualification answers
+      type: object
+      allOf:
+      - $ref: '#/components/schemas/Audit'
+      properties:
+        id:
+          type: string
+          format: uuid
+          example: 04ca6ae2-0dc3-487b-953e-86d6abbdf7d3
+          description: Lead Qualification Answer id
+        question:
+          $ref: '#/components/schemas/UUID'
+        event:
+          $ref: '#/components/schemas/Event4'
+        exhibitor:
+          $ref: '#/components/schemas/Exhibitor'
+        lead:
+          $ref: '#/components/schemas/Lead-2'
+        answers:
+          description: List of answers
+          type: array
+          items:
+            $ref: '#/components/schemas/Answer-1'
+    AnswerType:
+      title: AnswerType
+      enum:
+      - Choice
+      - Text
+      - ChoiceText
+      - Other
+      - NA
+      type: string
+      description: Type of answer
+      example: File
+    ExistingELiteratureRequestDataForLead:
+      title: Existing E-literature Request Data for Lead
+      type: object
+      allOf:
+      - $ref: '#/components/schemas/ELiteratureRequestDataForLead'
+      properties:
+        id:
+          type: string
+          format: uuid
+          example: 04ca6ae2-0dc3-487b-953e-86d6abbdf7d3
+          description: Request identifier
+          readOnly: true
+      description: A JSON Schema for an existing e-literature request data for a lead.
     Link:
       title: Link
       required:
@@ -258,30 +758,7 @@ components:
           type: string
           description: A url provided that can be followed for linking
           example: ?token=90c5f062-76ad-4ea4-aa53-00eb698d9262
-    SwitchBackTargetUsagePlan:
-      title: Switch Back Target Usage Plan
-      description: Object representing the target usage plan and the date when the current plan is scheduled to revert to it. This object is only present when a switch-back is scheduled.
-      type: object
-      required:
-      - name
-      - time
-      properties:
-        name:
-          type: string
-          description: Name of the target usage plan to switch back to. This field is only present when the usage plan is scheduled to revert to a previous plan.
-          example: API_Platform_Standard_Tier
-        time:
-          type: string
-          format: date-time
-          description: The date and time when the usage plan is scheduled to revert to a previous plan. This field is only present when the usage plan is scheduled to revert to a previous plan. The date and time cannot be more than 14 days from the current date.
-          example: '2023-10-01T12:00:00Z'
   responses:
-    PublicUsagePlanResponse:
-      description: The Usage Tier assigned to the account
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/public-usage-plan'
     TooManyRequests1:
       description: Too many requests
       content:
@@ -291,6 +768,15 @@ components:
           example:
             code: 429
             message: Limit Exceeded
+    NotFound1:
+      description: Resource not found
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+          example:
+            code: 404
+            message: Not found
     Forbidden1:
       description: You do not have access to the resource
       content:
@@ -300,12 +786,6 @@ components:
           example:
             code: 403
             message: Access Forbidden
-    usage-paginated-response:
-      description: Usage metrics for the dates requested
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/usage-paginated-response'
     Unauthorized1:
       description: Bad or expired token
       content:
@@ -324,6 +804,77 @@ components:
           example:
             code: 400
             message: Bad Request
+  parameters:
+    leadId:
+      in: path
+      name: leadId
+      description: ID of a lead.
+      required: true
+      schema:
+        type: string
+        format: uuid
+        example: cdd0d110-3a84-4bc5-a420-37c007716c73
+    limit:
+      name: limit
+      in: query
+      description: The maximum number of records to return per page.
+      style: form
+      explode: true
+      schema:
+        maximum: 200
+        minimum: 1
+        type: integer
+        default: 100
+        example: 100
+    before:
+      name: before
+      required: false
+      in: query
+      description: Used to query records that have been added or updated before this time point.
+      schema:
+        type: string
+        format: date-time
+        example: '2017-01-02T02:00:00Z'
+    token:
+      name: token
+      in: query
+      description: 'The continuation token returned from a previous class. This must be a valid UUID v4 if provided.
+
+        This will override any other pageable parameters provided.
+
+        '
+      style: form
+      explode: true
+      schema:
+        type: string
+        example: 0e28af57-511f-47ab-ae46-46cd1ca51a1a
+    exhibitorId:
+      in: path
+      name: exhibitorId
+      description: ID of an exhibitor.
+      required: true
+      schema:
+        type: string
+        format: uuid
+        example: 4888db54-db22-11eb-8d19-0242ac130003
+    after:
+      name: after
+      required: false
+      description: Used to query records that have been added or updated after this time point. Default to the beginning of time of the data store.
+      in: query
+      schema:
+        type: string
+        format: date-time
+        example: '2017-01-02T02:00:00Z'
+    id6:
+      in: path
+      name: id
+      description: ID of an event.
+      required: true
+      schema:
+        type: string
+        format: uuid
+        example: 3db28cfc-db22-11eb-8d19-0242ac130003
   securitySchemes:
     OAuth2.authorizationCode:
       type: oauth2

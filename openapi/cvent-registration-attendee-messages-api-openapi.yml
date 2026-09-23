@@ -1,6 +1,6 @@
 openapi: 3.2.0
 info:
-  title: Cvent REST Usage API
+  title: Cvent REST Attendee Messages API
   description: '# Introduction
 
     The Cvent API Platform is built around REST.'
@@ -12,80 +12,155 @@ servers:
 - url: https://api-platform.cvent.com/ea
 - url: https://api-platform-eur.cvent.com/ea
 tags:
-- name: Usage
-  description: Use these APIs view your REST API usage and limits metrics. For more details on limits - Rate Limits
+- name: Attendee Messages
+  description: These APIs retrieve and manage attendee messages—communications exchanged between attendees within channels. Channels are virtual spaces created for one-on-one or group conversations, allowing attendees to communicate directly or in groups during an event.
 paths:
-  /usage:
+  /events/{eventId}/attendee-messages/members:
     get:
+      operationId: getAttendeeMessagesMembers
+      summary: Get Messaging Members
+      description: 'When attendee initiates a chat with other attendee(s), a channel is created for attendees to communicate over.
+
+        This endpoint is used to retrieve the members of these channels using channel ids to filter the results.
+
+        The results will include all the channel members; even the ones that left the channel at some point.'
       tags:
-      - Usage
-      operationId: getUsage
-      summary: Get Current Usage
-      description: 'Returns API call usage for the last seven days, or between some date range (up to the past seven days) for
-
-        the current caller''s account.'
+      - Attendee Messages
       security:
-      - OAuth2.clientCredentials: []
+      - OAuth2.clientCredentials:
+        - event/attendee-messages:read
+      - OAuth2.authorizationCode:
+        - event/attendee-messages:read
       parameters:
-      - name: before
+      - $ref: '#/components/parameters/eventId5'
+      - $ref: '#/components/parameters/limit'
+      - $ref: '#/components/parameters/token'
+      - name: filter
         in: query
-        description: 'Returns usage for the seven days before (inclusive) the date provided. If after is also provided, then
-
-          only the dates between (inclusive) those dates are returned. before must be a valid ISO8601 date stamp.
-
-          before and after must not be more then seven days apart.
-
-          '
-        required: false
+        required: true
         schema:
           type: string
-      - name: after
-        in: query
-        description: 'Returns usage for the seven days after (inclusive) the date provided. If before is also provided, then
+        description: 'Filters narrow results returned based on the criteria you supply.
 
-          only the dates between (inclusive) those dates are returned. after must be a valid ISO8601 date stamp.
 
-          after and before must not be more then seven days apart.
+          Filters follow the pattern `filter=''field'' operator ''value''`.
+
+
+          The following comparison operators are supported:
+
+          - `eq`: equals to
+
+          - `in`: match any of the values in the list
+
+
+          The following fields are supported:
+
+
+          | Field            | Operators                          |
+
+          |------------------|------------------------------------|
+
+          | channel.id       | `eq`, `in`                         |
+
+
+          The following logical operators are supported for combining filters:
+
+          - `or`
+
+
+          **Examples:**
+
+
+          Filter channel IDs:
+
+          * `filter=channel.id in (''production_group_0cb93bab-32d2-4f82-b430-e1911f2348ac'', ''production_group_f6dfb98a-c734-487c-97e1-7c7a09a9125f'')`
+
+          * `filter=channel.id eq ''production_attendee_616241fd-e97d-48c5-8c4b-4b926f50e8c3'' or channel.id eq ''production_group_616241fd-e97d-48c5-8c4b-4b926f50e8c3''`
 
           '
-        required: false
-        schema:
-          type: string
       responses:
         '200':
-          $ref: '#/components/responses/usage-paginated-response'
+          description: Successfully retrieved the list of members.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/message-recipients-paginated-response'
         '400':
           $ref: '#/components/responses/BadRequest1'
         '401':
           $ref: '#/components/responses/Unauthorized1'
         '403':
           $ref: '#/components/responses/Forbidden1'
-        '429':
-          $ref: '#/components/responses/TooManyRequests1'
-  /usage/tier:
-    get:
-      tags:
-      - Usage
-      operationId: getUsageTier
-      summary: Get Current Usage Tier
-      description: Returns the current usage tier of the caller's account.
-      security:
-      - OAuth2.clientCredentials: []
-      - OAuth2.authorizationCode: []
-      responses:
-        '200':
-          $ref: '#/components/responses/PublicUsagePlanResponse'
-        '401':
-          $ref: '#/components/responses/Unauthorized1'
-        '403':
-          $ref: '#/components/responses/Forbidden1'
+        '404':
+          $ref: '#/components/responses/NotFound1'
         '429':
           $ref: '#/components/responses/TooManyRequests1'
       externalDocs:
         description: More about OAuth2 authorization code support for administrators
         url: '#oauth2-auth-code-planner-admin'
 components:
+  responses:
+    TooManyRequests1:
+      description: Too many requests
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+          example:
+            code: 429
+            message: Limit Exceeded
+    NotFound1:
+      description: Resource not found
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+          example:
+            code: 404
+            message: Not found
+    Forbidden1:
+      description: You do not have access to the resource
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+          example:
+            code: 403
+            message: Access Forbidden
+    Unauthorized1:
+      description: Bad or expired token
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+          example:
+            code: 401
+            message: Unauthorized
+    BadRequest1:
+      description: Bad request
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+          example:
+            code: 400
+            message: Bad Request
   schemas:
+    message-recipients-paginated-response:
+      title: Paginated Channel Members Response
+      description: The response matching the filter criteria for the list of channel members.
+      required:
+      - paging
+      - data
+      type: object
+      properties:
+        paging:
+          $ref: '#/components/schemas/Paging'
+        data:
+          type: array
+          items:
+            $ref: '#/components/schemas/MessageRecipientResponse'
+          description: Collection of channel members.
     Paging:
       title: Paging
       required:
@@ -130,92 +205,46 @@ components:
           items:
             $ref: '#/components/schemas/ErrorResponseBase'
           description: Additional details of cascading error messages.
-    Usage:
-      title: Usage
-      description: A usage object represents the usage of a resource on a given day
-      required:
-      - date
-      - used
-      - remaining
-      - total
-      type: object
-      allOf:
-      - $ref: '#/components/schemas/UsageQuotaFields'
-      properties:
-        date:
-          type: string
-          description: The date the usage occurred, as an ISO8601 date
-          example: '2020-01-01'
-    UsageQuotaFields:
-      title: Usage Quota Fields
-      description: Fields representing usage quota information. Usage quota represents the number of API requests that can be made in a given usage period. Usage periods reset daily at midnight UTC.
+    MessageRecipientResponse:
+      title: Message Recipient Response
+      description: Members of the channel who received a message.
       type: object
       required:
-      - used
-      - remaining
-      - total
+      - attendee
+      - channel
       properties:
-        used:
-          type: integer
-          description: The number of API requests that have been made in the current usage period. Usage periods reset daily at midnight UTC.
-          example: 40000
-        remaining:
-          type: integer
-          description: The number of API requests remaining in the current usage period. Usage periods reset daily at midnight UTC.
-          example: 260000
-        total:
-          type: integer
-          description: The total number of API requests allowed in the current usage period. Usage periods reset daily at midnight UTC.
-          example: 300000
-    usage-paginated-response:
-      title: Usage Paginated Response
-      description: The list of usage for the caller's account in the date range specified.
-      required:
-      - data
-      type: object
-      properties:
-        paging:
-          $ref: '#/components/schemas/Paging'
-        data:
-          type: array
-          items:
-            $ref: '#/components/schemas/Usage'
-          description: Collection of usage objects.
-    public-usage-plan:
-      title: Public Usage Plan
-      description: Object representing an API Platform Usage Tier, including information when the usage plan is scheduled to revert to a previous plan, if any.
-      type: object
-      allOf:
-      - $ref: '#/components/schemas/UsagePlan'
-      properties:
-        switchBackPlan:
-          $ref: '#/components/schemas/SwitchBackTargetUsagePlan'
-    UsagePlan:
-      title: Usage Plan
-      description: Object representing an API Platform Usage Tier
-      required:
-      - name
-      - quota
-      - burstLimit
-      - rateLimit
-      type: object
-      properties:
-        name:
-          type: string
-          description: The name of the usage tier
-          example: API_Platform_Free_Tier
-        quota:
-          type: number
-          description: The daily quota of the usage tier. If this value is null, this means the usage tier is unlimited.
-          example: 1000
-        burstLimit:
-          type: number
-          description: The burst limit capacity of the usage tier
-          example: 1
-        rateLimit:
-          type: number
-          description: The per-second steady rate-limit of the usage tier
-          example: 2
+        attendee:
+          type: object
+          description: The attendee object
+          required:
+          - id
+          - active
+          properties:
+            id:
+              type: string
+              description: Unique identifier for the attendee.
+              example: 0a459133-1f5e-43b2-8694-7da9541b3f58
+            active:
+              type: boolean
+              description: True indicates the recipient is active in the channel.
+              example: false
+            leftChannelAt:
+              type:
+              - string
+              - 'null'
+              format: date-time
+              description: ISO 8601 formatted timestamp when the attendee left the channel, if applicable.
+              example: '2025-03-13T18:00:00.000Z'
+        channel:
+          type: object
+          description: The channel object
+          required:
+          - id
+          properties:
+            id:
+              type: string
+              description: Identifier for the channel.
+              example: production_group_0cb93bab-32d2-4f82-b430-e1911f2348ac
     PaginationLinks:
       title: PaginationLinks
       type: object
@@ -227,6 +256,12 @@ components:
           $ref: '#/components/schemas/Link'
         prev:
           $ref: '#/components/schemas/Link'
+    event-id1:
+      title: Event ID
+      description: The UUID identifier for an Event.
+      type: string
+      format: uuid
+      example: eeeeb4b4-d132-4db4-aaa7-5ec58efd65c8
     ErrorResponseBase:
       title: ErrorResponseBase
       type: object
@@ -258,72 +293,39 @@ components:
           type: string
           description: A url provided that can be followed for linking
           example: ?token=90c5f062-76ad-4ea4-aa53-00eb698d9262
-    SwitchBackTargetUsagePlan:
-      title: Switch Back Target Usage Plan
-      description: Object representing the target usage plan and the date when the current plan is scheduled to revert to it. This object is only present when a switch-back is scheduled.
-      type: object
-      required:
-      - name
-      - time
-      properties:
-        name:
-          type: string
-          description: Name of the target usage plan to switch back to. This field is only present when the usage plan is scheduled to revert to a previous plan.
-          example: API_Platform_Standard_Tier
-        time:
-          type: string
-          format: date-time
-          description: The date and time when the usage plan is scheduled to revert to a previous plan. This field is only present when the usage plan is scheduled to revert to a previous plan. The date and time cannot be more than 14 days from the current date.
-          example: '2023-10-01T12:00:00Z'
-  responses:
-    PublicUsagePlanResponse:
-      description: The Usage Tier assigned to the account
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/public-usage-plan'
-    TooManyRequests1:
-      description: Too many requests
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/ErrorResponse'
-          example:
-            code: 429
-            message: Limit Exceeded
-    Forbidden1:
-      description: You do not have access to the resource
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/ErrorResponse'
-          example:
-            code: 403
-            message: Access Forbidden
-    usage-paginated-response:
-      description: Usage metrics for the dates requested
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/usage-paginated-response'
-    Unauthorized1:
-      description: Bad or expired token
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/ErrorResponse'
-          example:
-            code: 401
-            message: Unauthorized
-    BadRequest1:
-      description: Bad request
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/ErrorResponse'
-          example:
-            code: 400
-            message: Bad Request
+  parameters:
+    limit:
+      name: limit
+      in: query
+      description: The maximum number of records to return per page.
+      style: form
+      explode: true
+      schema:
+        maximum: 200
+        minimum: 1
+        type: integer
+        default: 100
+        example: 100
+    token:
+      name: token
+      in: query
+      description: 'The continuation token returned from a previous class. This must be a valid UUID v4 if provided.
+
+        This will override any other pageable parameters provided.
+
+        '
+      style: form
+      explode: true
+      schema:
+        type: string
+        example: 0e28af57-511f-47ab-ae46-46cd1ca51a1a
+    eventId5:
+      in: path
+      name: eventId
+      description: Unique ID of an event
+      required: true
+      schema:
+        $ref: '#/components/schemas/event-id1'
   securitySchemes:
     OAuth2.authorizationCode:
       type: oauth2

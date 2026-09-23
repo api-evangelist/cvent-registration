@@ -1,6 +1,6 @@
 openapi: 3.2.0
 info:
-  title: Cvent REST Usage API
+  title: Cvent REST Exhibitor Content API
   description: '# Introduction
 
     The Cvent API Platform is built around REST.'
@@ -12,73 +12,348 @@ servers:
 - url: https://api-platform.cvent.com/ea
 - url: https://api-platform-eur.cvent.com/ea
 tags:
-- name: Usage
-  description: Use these APIs view your REST API usage and limits metrics. For more details on limits - Rate Limits
+- name: Exhibitor Content
+  description: Exhibitor Content operations for an exhibitor. This API allows you to upload & get exhibitor content data such as files, weblinks.
 paths:
-  /usage:
+  /events/{id}/exhibitors/{exhibitorId}/files:
     get:
+      summary: List Exhibitor Files
+      description: Retrieves a list of files associated with an exhibitor.
+      operationId: listExhibitorFiles
       tags:
-      - Usage
-      operationId: getUsage
-      summary: Get Current Usage
-      description: 'Returns API call usage for the last seven days, or between some date range (up to the past seven days) for
-
-        the current caller''s account.'
+      - Exhibitor Content
       security:
-      - OAuth2.clientCredentials: []
+      - OAuth2.clientCredentials:
+        - exhibitor/exhibitor-contents:read
+      - OAuth2.authorizationCode:
+        - exhibitor/exhibitor-contents:read
       parameters:
-      - name: before
-        in: query
-        description: 'Returns usage for the seven days before (inclusive) the date provided. If after is also provided, then
-
-          only the dates between (inclusive) those dates are returned. before must be a valid ISO8601 date stamp.
-
-          before and after must not be more then seven days apart.
-
-          '
-        required: false
-        schema:
-          type: string
-      - name: after
-        in: query
-        description: 'Returns usage for the seven days after (inclusive) the date provided. If before is also provided, then
-
-          only the dates between (inclusive) those dates are returned. after must be a valid ISO8601 date stamp.
-
-          after and before must not be more then seven days apart.
-
-          '
-        required: false
-        schema:
-          type: string
+      - $ref: '#/components/parameters/id6'
+      - $ref: '#/components/parameters/exhibitorId'
       responses:
         '200':
-          $ref: '#/components/responses/usage-paginated-response'
+          description: Successfully retrieved a list of files.
+          headers: {}
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/file-list-response'
         '400':
           $ref: '#/components/responses/BadRequest1'
         '401':
           $ref: '#/components/responses/Unauthorized1'
         '403':
           $ref: '#/components/responses/Forbidden1'
+        '404':
+          $ref: '#/components/responses/NotFound1'
         '429':
           $ref: '#/components/responses/TooManyRequests1'
-  /usage/tier:
+      externalDocs:
+        description: More about OAuth2 authorization code support for administrators
+        url: '#oauth2-auth-code-planner-admin'
+  /events/{id}/exhibitors/{exhibitorId}/files/{fileId}:
     get:
+      summary: Get Exhibitor File
+      description: Get a single file for an exhibitor.
+      operationId: getExhibitorFile
       tags:
-      - Usage
-      operationId: getUsageTier
-      summary: Get Current Usage Tier
-      description: Returns the current usage tier of the caller's account.
+      - Exhibitor Content
       security:
-      - OAuth2.clientCredentials: []
-      - OAuth2.authorizationCode: []
+      - OAuth2.clientCredentials:
+        - exhibitor/exhibitor-contents:read
+      - OAuth2.authorizationCode:
+        - exhibitor/exhibitor-contents:read
+      parameters:
+      - $ref: '#/components/parameters/id6'
+      - $ref: '#/components/parameters/exhibitorId'
+      - $ref: '#/components/parameters/fileId1'
       responses:
         '200':
-          $ref: '#/components/responses/PublicUsagePlanResponse'
+          description: Successfully retrieved exhibitor file.
+          headers: {}
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/existing-file'
+        '400':
+          $ref: '#/components/responses/BadRequest1'
         '401':
           $ref: '#/components/responses/Unauthorized1'
         '403':
           $ref: '#/components/responses/Forbidden1'
+        '404':
+          $ref: '#/components/responses/NotFound1'
+        '429':
+          $ref: '#/components/responses/TooManyRequests1'
+      externalDocs:
+        description: More about OAuth2 authorization code support for administrators
+        url: '#oauth2-auth-code-planner-admin'
+    put:
+      summary: Associate Exhibitor File
+      description: Associate a file to an exhibitor using a file ID taken from the file upload endpoint.
+      operationId: updateExhibitorFile
+      tags:
+      - Exhibitor Content
+      security:
+      - OAuth2.clientCredentials:
+        - exhibitor/exhibitor-contents:write
+      - OAuth2.authorizationCode:
+        - exhibitor/exhibitor-contents:write
+      parameters:
+      - $ref: '#/components/parameters/id6'
+      - $ref: '#/components/parameters/exhibitorId'
+      - $ref: '#/components/parameters/fileId1'
+      requestBody:
+        description: Exhibitor file content to be updated.
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/file'
+      responses:
+        '200':
+          description: Successfully added the exhibitor file content.
+          headers: {}
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/existing-file'
+        '400':
+          $ref: '#/components/responses/BadRequest1'
+        '401':
+          $ref: '#/components/responses/Unauthorized1'
+        '403':
+          $ref: '#/components/responses/Forbidden1'
+        '404':
+          $ref: '#/components/responses/NotFound1'
+        '422':
+          $ref: '#/components/responses/UnprocessableEntity1'
+        '429':
+          $ref: '#/components/responses/TooManyRequests1'
+      externalDocs:
+        description: More about OAuth2 authorization code support for administrators
+        url: '#oauth2-auth-code-planner-admin'
+    delete:
+      summary: Disassociate Exhibitor File
+      description: Disassociate a single file from an exhibitor.
+      operationId: disassociateExhibitorFile
+      tags:
+      - Exhibitor Content
+      security:
+      - OAuth2.clientCredentials:
+        - exhibitor/exhibitor-contents:delete
+      - OAuth2.authorizationCode:
+        - exhibitor/exhibitor-contents:delete
+      parameters:
+      - $ref: '#/components/parameters/id6'
+      - $ref: '#/components/parameters/exhibitorId'
+      - $ref: '#/components/parameters/fileId1'
+      responses:
+        '204':
+          description: Successfully disassociated exhibitor file.
+          headers: {}
+        '400':
+          $ref: '#/components/responses/BadRequest1'
+        '401':
+          $ref: '#/components/responses/Unauthorized1'
+        '403':
+          $ref: '#/components/responses/Forbidden1'
+        '404':
+          $ref: '#/components/responses/NotFound1'
+        '429':
+          $ref: '#/components/responses/TooManyRequests1'
+      externalDocs:
+        description: More about OAuth2 authorization code support for administrators
+        url: '#oauth2-auth-code-planner-admin'
+  /events/{id}/exhibitors/{exhibitorId}/weblinks:
+    get:
+      summary: List Exhibitor Weblinks
+      description: Retrieves a list of content weblinks associated with an exhibitor.
+      operationId: listExhibitorWeblinks
+      tags:
+      - Exhibitor Content
+      security:
+      - OAuth2.clientCredentials:
+        - exhibitor/exhibitor-contents:read
+      - OAuth2.authorizationCode:
+        - exhibitor/exhibitor-contents:read
+      parameters:
+      - $ref: '#/components/parameters/id6'
+      - $ref: '#/components/parameters/exhibitorId'
+      responses:
+        '200':
+          description: Successfully retrieved a list of weblinks.
+          headers: {}
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/weblink-list-response'
+        '400':
+          $ref: '#/components/responses/BadRequest1'
+        '401':
+          $ref: '#/components/responses/Unauthorized1'
+        '403':
+          $ref: '#/components/responses/Forbidden1'
+        '404':
+          $ref: '#/components/responses/NotFound1'
+        '429':
+          $ref: '#/components/responses/TooManyRequests1'
+      externalDocs:
+        description: More about OAuth2 authorization code support for administrators
+        url: '#oauth2-auth-code-planner-admin'
+    post:
+      summary: Create Exhibitor Weblink
+      description: Creates a single content weblink for an exhibitor.
+      operationId: createExhibitorWeblink
+      tags:
+      - Exhibitor Content
+      security:
+      - OAuth2.clientCredentials:
+        - exhibitor/exhibitor-contents:write
+      - OAuth2.authorizationCode:
+        - exhibitor/exhibitor-contents:write
+      parameters:
+      - $ref: '#/components/parameters/id6'
+      - $ref: '#/components/parameters/exhibitorId'
+      requestBody:
+        description: Exhibitor content weblink details.
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/weblink'
+      responses:
+        '201':
+          description: Successfully created the exhibitor weblink.
+          headers: {}
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/existing-weblink'
+        '400':
+          $ref: '#/components/responses/BadRequest1'
+        '401':
+          $ref: '#/components/responses/Unauthorized1'
+        '403':
+          $ref: '#/components/responses/Forbidden1'
+        '404':
+          $ref: '#/components/responses/NotFound1'
+        '422':
+          $ref: '#/components/responses/UnprocessableEntity1'
+        '429':
+          $ref: '#/components/responses/TooManyRequests1'
+      externalDocs:
+        description: More about OAuth2 authorization code support for administrators
+        url: '#oauth2-auth-code-planner-admin'
+  /events/{id}/exhibitors/{exhibitorId}/weblinks/{weblinkId}:
+    get:
+      summary: Get Exhibitor Weblink
+      description: Retrieves a single content weblink for an exhibitor.
+      operationId: getExhibitorWeblink
+      tags:
+      - Exhibitor Content
+      security:
+      - OAuth2.clientCredentials:
+        - exhibitor/exhibitor-contents:read
+      - OAuth2.authorizationCode:
+        - exhibitor/exhibitor-contents:read
+      parameters:
+      - $ref: '#/components/parameters/id6'
+      - $ref: '#/components/parameters/exhibitorId'
+      - $ref: '#/components/parameters/weblinkId'
+      responses:
+        '200':
+          description: Successfully retrieved exhibitor weblink.
+          headers: {}
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/existing-weblink'
+        '400':
+          $ref: '#/components/responses/BadRequest1'
+        '401':
+          $ref: '#/components/responses/Unauthorized1'
+        '403':
+          $ref: '#/components/responses/Forbidden1'
+        '404':
+          $ref: '#/components/responses/NotFound1'
+        '429':
+          $ref: '#/components/responses/TooManyRequests1'
+      externalDocs:
+        description: More about OAuth2 authorization code support for administrators
+        url: '#oauth2-auth-code-planner-admin'
+    put:
+      summary: Update Exhibitor Weblink
+      description: Updates content weblink data in an event for a given exhibitor ID.
+      operationId: updateExhibitorWeblink
+      tags:
+      - Exhibitor Content
+      security:
+      - OAuth2.clientCredentials:
+        - exhibitor/exhibitor-contents:write
+      - OAuth2.authorizationCode:
+        - exhibitor/exhibitor-contents:write
+      parameters:
+      - $ref: '#/components/parameters/id6'
+      - $ref: '#/components/parameters/exhibitorId'
+      - $ref: '#/components/parameters/weblinkId'
+      requestBody:
+        description: Exhibitor content to be updated.
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/weblink'
+      responses:
+        '200':
+          description: Successfully updated exhibitor content.
+          headers: {}
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/existing-weblink'
+        '400':
+          $ref: '#/components/responses/BadRequest1'
+        '401':
+          $ref: '#/components/responses/Unauthorized1'
+        '403':
+          $ref: '#/components/responses/Forbidden1'
+        '404':
+          $ref: '#/components/responses/NotFound1'
+        '422':
+          $ref: '#/components/responses/UnprocessableEntity1'
+        '429':
+          $ref: '#/components/responses/TooManyRequests1'
+      externalDocs:
+        description: More about OAuth2 authorization code support for administrators
+        url: '#oauth2-auth-code-planner-admin'
+    delete:
+      summary: Delete Exhibitor Weblink
+      description: Deletes a single exhibitor content weblink.
+      operationId: deleteExhibitorWeblink
+      tags:
+      - Exhibitor Content
+      security:
+      - OAuth2.clientCredentials:
+        - exhibitor/exhibitor-contents:delete
+      - OAuth2.authorizationCode:
+        - exhibitor/exhibitor-contents:delete
+      parameters:
+      - $ref: '#/components/parameters/id6'
+      - $ref: '#/components/parameters/exhibitorId'
+      - $ref: '#/components/parameters/weblinkId'
+      responses:
+        '204':
+          description: Successfully deleted exhibitor weblink.
+          headers: {}
+        '400':
+          $ref: '#/components/responses/BadRequest1'
+        '401':
+          $ref: '#/components/responses/Unauthorized1'
+        '403':
+          $ref: '#/components/responses/Forbidden1'
+        '404':
+          $ref: '#/components/responses/NotFound1'
         '429':
           $ref: '#/components/responses/TooManyRequests1'
       externalDocs:
@@ -86,35 +361,64 @@ paths:
         url: '#oauth2-auth-code-planner-admin'
 components:
   schemas:
-    Paging:
-      title: Paging
-      required:
-      - _links
+    uuid-property:
+      title: UUID Property
+      description: A string that has to be a format matching the industry standard uuid
+      type: string
+      format: uuid
+      example: 04ca6ae2-0dc3-487b-953e-86d6abbdf7d3
+    Audit:
+      title: Audit
+      description: Audit information
       type: object
-      description: Represents pagination information for a collection of resources.
       properties:
-        previousToken:
+        created:
           type: string
-          description: The pagination token for the previous page, if one exists. You can use this token to navigate to the previous page of data.
-          example: 1a2b3c4d5e6f7g8h9i10j11k
-        nextToken:
+          format: date-time
+          description: The ISO 8601 zoned date time when this record was created.
+          readOnly: true
+          example: '2017-01-02T02:00:00Z'
+        createdBy:
           type: string
-          description: The pagination token for the next page. If this value is present in the response, there is another page of data you can fetch.
-          example: 1a2b3c4d5e6f7g8h9i10j11k
-        currentToken:
+          description: The identifier of the user that created this record.
+          readOnly: true
+          example: hporter
+        lastModified:
           type: string
-          description: The pagination token for the current page.
-          example: 1a2b3c4d5e6f7g8h9i10j11k
-        limit:
-          type: integer
-          description: The number of records to return on the page. Not to exceed 200.
-          example: 100
-        totalCount:
-          type: integer
-          description: The total number of records available. This field may return blank, even if there are more records. To confirm if there are more records, check the `nextToken` field.
-          example: 2
-        _links:
-          $ref: '#/components/schemas/PaginationLinks'
+          format: date-time
+          description: The ISO 8601 zoned date time when this record was updated.
+          readOnly: true
+          example: '2019-02-12T03:00:00Z'
+        lastModifiedBy:
+          type: string
+          description: The identifier of the user that last updated this record.
+          readOnly: true
+          example: hporter
+    Event4:
+      description: The Associated Event.
+      title: Event
+      type: object
+      required:
+      - id
+      properties:
+        id:
+          type: string
+          format: uuid
+          example: 3db28cfc-db22-11eb-8d19-0242ac130003
+          description: Event id
+    existing-file:
+      description: Content of existing exhibitor file
+      title: File Response
+      type: object
+      allOf:
+      - $ref: '#/components/schemas/file'
+      properties:
+        id:
+          description: Unique ID of the file.
+          readOnly: true
+          format: uuid
+          example: 3d44b9e4-8c1a-403d-a20a-0b981f539935
+          type: string
     ErrorResponse:
       title: ErrorResponse
       description: Represents an error response with additional details of cascading error messages.
@@ -130,103 +434,119 @@ components:
           items:
             $ref: '#/components/schemas/ErrorResponseBase'
           description: Additional details of cascading error messages.
-    Usage:
-      title: Usage
-      description: A usage object represents the usage of a resource on a given day
-      required:
-      - date
-      - used
-      - remaining
-      - total
+    weblink:
+      description: Content of exhibitor weblink.
+      title: Weblink Request
       type: object
       allOf:
-      - $ref: '#/components/schemas/UsageQuotaFields'
+      - $ref: '#/components/schemas/Audit'
       properties:
-        date:
+        event:
+          $ref: '#/components/schemas/Event4'
+        exhibitor:
+          $ref: '#/components/schemas/Exhibitor'
+        name:
+          description: Display name of the weblink.
+          example: Marketing Page
           type: string
-          description: The date the usage occurred, as an ISO8601 date
-          example: '2020-01-01'
-    UsageQuotaFields:
-      title: Usage Quota Fields
-      description: Fields representing usage quota information. Usage quota represents the number of API requests that can be made in a given usage period. Usage periods reset daily at midnight UTC.
+          minLength: 1
+        url:
+          type: string
+          format: uri
+          description: The URL of the weblink.
+          example: http://www.example.com
+        hidden:
+          type: boolean
+          description: True indicates the weblink is hidden from attendees.
+          default: false
+        order:
+          description: Display order for exhibitor weblink content.
+          type: integer
+          example: 3
+          minimum: 1
+      required:
+      - event
+      - exhibitor
+      - url
+      - name
+      - order
+    existing-weblink:
+      description: Content of existing exhibitor weblink
+      title: Weblink Response
+      type: object
+      allOf:
+      - $ref: '#/components/schemas/weblink'
+      properties:
+        id:
+          description: Unique ID of the weblink.
+          readOnly: true
+          format: uuid
+          example: 4d44b9e4-8c1a-403d-a20a-0b981f539935
+          type: string
+    Exhibitor:
+      description: The Associated Exhibitor.
+      title: Exhibitor
       type: object
       required:
-      - used
-      - remaining
-      - total
+      - id
       properties:
-        used:
-          type: integer
-          description: The number of API requests that have been made in the current usage period. Usage periods reset daily at midnight UTC.
-          example: 40000
-        remaining:
-          type: integer
-          description: The number of API requests remaining in the current usage period. Usage periods reset daily at midnight UTC.
-          example: 260000
-        total:
-          type: integer
-          description: The total number of API requests allowed in the current usage period. Usage periods reset daily at midnight UTC.
-          example: 300000
-    usage-paginated-response:
-      title: Usage Paginated Response
-      description: The list of usage for the caller's account in the date range specified.
-      required:
-      - data
+        id:
+          type: string
+          format: uuid
+          example: 4888db54-db22-11eb-8d19-0242ac130003
+          description: Exhibitor id
+    weblink-list-response:
+      title: WeblinkListResponse
       type: object
+      description: A response object containing a list of weblinks associated with an exhibitor.
       properties:
-        paging:
-          $ref: '#/components/schemas/Paging'
         data:
           type: array
+          maxItems: 50
           items:
-            $ref: '#/components/schemas/Usage'
-          description: Collection of usage objects.
-    public-usage-plan:
-      title: Public Usage Plan
-      description: Object representing an API Platform Usage Tier, including information when the usage plan is scheduled to revert to a previous plan, if any.
+            $ref: '#/components/schemas/existing-weblink'
+          description: List of weblinks associated with an exhibitor.
+    file-list-response:
+      title: FileListResponse
+      description: A JSON object containing a list of files associated with an exhibitor.
+      type: object
+      properties:
+        data:
+          type: array
+          maxItems: 50
+          items:
+            $ref: '#/components/schemas/existing-file'
+          description: List of files associated with an exhibitor.
+    file:
+      description: Content of exhibitor file.
+      title: File Request
       type: object
       allOf:
-      - $ref: '#/components/schemas/UsagePlan'
+      - $ref: '#/components/schemas/Audit'
       properties:
-        switchBackPlan:
-          $ref: '#/components/schemas/SwitchBackTargetUsagePlan'
-    UsagePlan:
-      title: Usage Plan
-      description: Object representing an API Platform Usage Tier
-      required:
-      - name
-      - quota
-      - burstLimit
-      - rateLimit
-      type: object
-      properties:
-        name:
+        event:
+          $ref: '#/components/schemas/Event4'
+        exhibitor:
+          $ref: '#/components/schemas/Exhibitor'
+        displayName:
+          description: Display name of the file.
+          example: Marketing Page
           type: string
-          description: The name of the usage tier
-          example: API_Platform_Free_Tier
-        quota:
-          type: number
-          description: The daily quota of the usage tier. If this value is null, this means the usage tier is unlimited.
-          example: 1000
-        burstLimit:
-          type: number
-          description: The burst limit capacity of the usage tier
-          example: 1
-        rateLimit:
-          type: number
-          description: The per-second steady rate-limit of the usage tier
-          example: 2
-    PaginationLinks:
-      title: PaginationLinks
-      type: object
-      description: Represents pagination links for navigating between pages of data.
-      properties:
-        next:
-          $ref: '#/components/schemas/Link'
-        self:
-          $ref: '#/components/schemas/Link'
-        prev:
-          $ref: '#/components/schemas/Link'
+          minLength: 1
+        hidden:
+          type: boolean
+          description: True indicates the file is hidden from attendees.
+          default: false
+        order:
+          description: Display order for exhibitor file content.
+          type: integer
+          example: 3
+          minimum: 1
+      required:
+      - event
+      - exhibitor
+      - displayName
+      - order
     ErrorResponseBase:
       title: ErrorResponseBase
       type: object
@@ -247,41 +567,7 @@ components:
           type: string
           description: The target resource of the error.
           example: example target
-    Link:
-      title: Link
-      required:
-      - href
-      type: object
-      description: Represents a link to a related resource.
-      properties:
-        href:
-          type: string
-          description: A url provided that can be followed for linking
-          example: ?token=90c5f062-76ad-4ea4-aa53-00eb698d9262
-    SwitchBackTargetUsagePlan:
-      title: Switch Back Target Usage Plan
-      description: Object representing the target usage plan and the date when the current plan is scheduled to revert to it. This object is only present when a switch-back is scheduled.
-      type: object
-      required:
-      - name
-      - time
-      properties:
-        name:
-          type: string
-          description: Name of the target usage plan to switch back to. This field is only present when the usage plan is scheduled to revert to a previous plan.
-          example: API_Platform_Standard_Tier
-        time:
-          type: string
-          format: date-time
-          description: The date and time when the usage plan is scheduled to revert to a previous plan. This field is only present when the usage plan is scheduled to revert to a previous plan. The date and time cannot be more than 14 days from the current date.
-          example: '2023-10-01T12:00:00Z'
   responses:
-    PublicUsagePlanResponse:
-      description: The Usage Tier assigned to the account
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/public-usage-plan'
     TooManyRequests1:
       description: Too many requests
       content:
@@ -291,6 +577,24 @@ components:
           example:
             code: 429
             message: Limit Exceeded
+    UnprocessableEntity1:
+      description: Was not able to process the request.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+          example:
+            code: 422
+            message: Unprocessable Entity
+    NotFound1:
+      description: Resource not found
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+          example:
+            code: 404
+            message: Not found
     Forbidden1:
       description: You do not have access to the resource
       content:
@@ -300,12 +604,6 @@ components:
           example:
             code: 403
             message: Access Forbidden
-    usage-paginated-response:
-      description: Usage metrics for the dates requested
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/usage-paginated-response'
     Unauthorized1:
       description: Bad or expired token
       content:
@@ -324,6 +622,41 @@ components:
           example:
             code: 400
             message: Bad Request
+  parameters:
+    fileId1:
+      in: path
+      name: fileId
+      description: ID of a file.
+      required: true
+      schema:
+        $ref: '#/components/schemas/uuid-property'
+    exhibitorId:
+      in: path
+      name: exhibitorId
+      description: ID of an exhibitor.
+      required: true
+      schema:
+        type: string
+        format: uuid
+        example: 4888db54-db22-11eb-8d19-0242ac130003
+    weblinkId:
+      in: path
+      name: weblinkId
+      description: ID of an exhibitor weblink.
+      required: true
+      schema:
+        type: string
+        format: uuid
+        example: 4d44b9e4-8c1a-403d-a20a-0b981f539935
+    id6:
+      in: path
+      name: id
+      description: ID of an event.
+      required: true
+      schema:
+        type: string
+        format: uuid
+        example: 3db28cfc-db22-11eb-8d19-0242ac130003
   securitySchemes:
     OAuth2.authorizationCode:
       type: oauth2

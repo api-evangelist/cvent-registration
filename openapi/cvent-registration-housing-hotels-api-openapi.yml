@@ -1,6 +1,6 @@
 openapi: 3.2.0
 info:
-  title: Cvent REST Usage API
+  title: Cvent REST Housing Hotels API
   description: '# Introduction
 
     The Cvent API Platform is built around REST.'
@@ -12,109 +12,97 @@ servers:
 - url: https://api-platform.cvent.com/ea
 - url: https://api-platform-eur.cvent.com/ea
 tags:
-- name: Usage
-  description: Use these APIs view your REST API usage and limits metrics. For more details on limits - Rate Limits
+- name: Housing Hotels
+  description: APIs for managing hotel-related operations.
 paths:
-  /usage:
-    get:
+  /housing-hotels/{hotelCode}/rooms/{roomCode}/rates:
+    put:
       tags:
-      - Usage
-      operationId: getUsage
-      summary: Get Current Usage
-      description: 'Returns API call usage for the last seven days, or between some date range (up to the past seven days) for
-
-        the current caller''s account.'
+      - Housing Hotels
+      summary: Update Hotel Room Rates
+      description: Updates the given hotel's room rate details based on data in the request body.
+      operationId: updateHotelRoomRates
       security:
-      - OAuth2.clientCredentials: []
+      - OAuth2.clientCredentials:
+        - housing/hotel-room-rates:write
       parameters:
-      - name: before
-        in: query
-        description: 'Returns usage for the seven days before (inclusive) the date provided. If after is also provided, then
-
-          only the dates between (inclusive) those dates are returned. before must be a valid ISO8601 date stamp.
-
-          before and after must not be more then seven days apart.
-
-          '
-        required: false
-        schema:
-          type: string
-      - name: after
-        in: query
-        description: 'Returns usage for the seven days after (inclusive) the date provided. If before is also provided, then
-
-          only the dates between (inclusive) those dates are returned. after must be a valid ISO8601 date stamp.
-
-          after and before must not be more then seven days apart.
-
-          '
-        required: false
-        schema:
-          type: string
+      - $ref: '#/components/parameters/hotelCode'
+      - $ref: '#/components/parameters/roomCode'
+      requestBody:
+        description: Hotel room rates request.
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/HotelRoomRatesRequest'
       responses:
         '200':
-          $ref: '#/components/responses/usage-paginated-response'
+          description: Hotel room rates updated successfully.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HotelRoomRatesResponse'
         '400':
           $ref: '#/components/responses/BadRequest1'
         '401':
           $ref: '#/components/responses/Unauthorized1'
         '403':
           $ref: '#/components/responses/Forbidden1'
+        '404':
+          $ref: '#/components/responses/NotFound1'
         '429':
           $ref: '#/components/responses/TooManyRequests1'
-  /usage/tier:
-    get:
-      tags:
-      - Usage
-      operationId: getUsageTier
-      summary: Get Current Usage Tier
-      description: Returns the current usage tier of the caller's account.
-      security:
-      - OAuth2.clientCredentials: []
-      - OAuth2.authorizationCode: []
-      responses:
-        '200':
-          $ref: '#/components/responses/PublicUsagePlanResponse'
-        '401':
-          $ref: '#/components/responses/Unauthorized1'
-        '403':
-          $ref: '#/components/responses/Forbidden1'
-        '429':
-          $ref: '#/components/responses/TooManyRequests1'
-      externalDocs:
-        description: More about OAuth2 authorization code support for administrators
-        url: '#oauth2-auth-code-planner-admin'
 components:
   schemas:
-    Paging:
-      title: Paging
-      required:
-      - _links
+    HotelRoomRatesResponse:
+      description: Represents hotel room rates response.
+      title: HotelRoomRatesResponse
       type: object
-      description: Represents pagination information for a collection of resources.
+      required:
+      - hotelCode
+      - roomCode
+      - startDate
+      - endDate
+      - roomRate
+      - currencyCode
+      allOf:
+      - description: Represents hotel room rates request.
+        title: HotelRoomRatesRequest
+        type: object
+        required:
+        - startDate
+        - endDate
+        - roomRate
+        properties:
+          rateCode:
+            type: string
+            description: The rate code.
+            example: VIPRATE
+          startDate:
+            description: The start of the date range the rate applies. Date is in ISO 8601 format.
+            type: string
+            example: '2025-03-25'
+            format: date
+          endDate:
+            description: The end of the date range the rate applies. Date is in ISO 8601 format.
+            type: string
+            example: '2025-03-25'
+            format: date
+          roomRate:
+            description: Cost of room per night.
+            type: number
+            example: 150
+          currencyCode:
+            $ref: '#/components/schemas/currency.json'
       properties:
-        previousToken:
+        hotelCode:
           type: string
-          description: The pagination token for the previous page, if one exists. You can use this token to navigate to the previous page of data.
-          example: 1a2b3c4d5e6f7g8h9i10j11k
-        nextToken:
+          description: The hotel code.
+          example: HOTELCODE
+        roomCode:
           type: string
-          description: The pagination token for the next page. If this value is present in the response, there is another page of data you can fetch.
-          example: 1a2b3c4d5e6f7g8h9i10j11k
-        currentToken:
-          type: string
-          description: The pagination token for the current page.
-          example: 1a2b3c4d5e6f7g8h9i10j11k
-        limit:
-          type: integer
-          description: The number of records to return on the page. Not to exceed 200.
-          example: 100
-        totalCount:
-          type: integer
-          description: The total number of records available. This field may return blank, even if there are more records. To confirm if there are more records, check the `nextToken` field.
-          example: 2
-        _links:
-          $ref: '#/components/schemas/PaginationLinks'
+          description: The room code.
+          example: VLR
     ErrorResponse:
       title: ErrorResponse
       description: Represents an error response with additional details of cascading error messages.
@@ -130,103 +118,12 @@ components:
           items:
             $ref: '#/components/schemas/ErrorResponseBase'
           description: Additional details of cascading error messages.
-    Usage:
-      title: Usage
-      description: A usage object represents the usage of a resource on a given day
-      required:
-      - date
-      - used
-      - remaining
-      - total
-      type: object
-      allOf:
-      - $ref: '#/components/schemas/UsageQuotaFields'
-      properties:
-        date:
-          type: string
-          description: The date the usage occurred, as an ISO8601 date
-          example: '2020-01-01'
-    UsageQuotaFields:
-      title: Usage Quota Fields
-      description: Fields representing usage quota information. Usage quota represents the number of API requests that can be made in a given usage period. Usage periods reset daily at midnight UTC.
-      type: object
-      required:
-      - used
-      - remaining
-      - total
-      properties:
-        used:
-          type: integer
-          description: The number of API requests that have been made in the current usage period. Usage periods reset daily at midnight UTC.
-          example: 40000
-        remaining:
-          type: integer
-          description: The number of API requests remaining in the current usage period. Usage periods reset daily at midnight UTC.
-          example: 260000
-        total:
-          type: integer
-          description: The total number of API requests allowed in the current usage period. Usage periods reset daily at midnight UTC.
-          example: 300000
-    usage-paginated-response:
-      title: Usage Paginated Response
-      description: The list of usage for the caller's account in the date range specified.
-      required:
-      - data
-      type: object
-      properties:
-        paging:
-          $ref: '#/components/schemas/Paging'
-        data:
-          type: array
-          items:
-            $ref: '#/components/schemas/Usage'
-          description: Collection of usage objects.
-    public-usage-plan:
-      title: Public Usage Plan
-      description: Object representing an API Platform Usage Tier, including information when the usage plan is scheduled to revert to a previous plan, if any.
-      type: object
-      allOf:
-      - $ref: '#/components/schemas/UsagePlan'
-      properties:
-        switchBackPlan:
-          $ref: '#/components/schemas/SwitchBackTargetUsagePlan'
-    UsagePlan:
-      title: Usage Plan
-      description: Object representing an API Platform Usage Tier
-      required:
-      - name
-      - quota
-      - burstLimit
-      - rateLimit
-      type: object
-      properties:
-        name:
-          type: string
-          description: The name of the usage tier
-          example: API_Platform_Free_Tier
-        quota:
-          type: number
-          description: The daily quota of the usage tier. If this value is null, this means the usage tier is unlimited.
-          example: 1000
-        burstLimit:
-          type: number
-          description: The burst limit capacity of the usage tier
-          example: 1
-        rateLimit:
-          type: number
-          description: The per-second steady rate-limit of the usage tier
-          example: 2
-    PaginationLinks:
-      title: PaginationLinks
-      type: object
-      description: Represents pagination links for navigating between pages of data.
-      properties:
-        next:
-          $ref: '#/components/schemas/Link'
-        self:
-          $ref: '#/components/schemas/Link'
-        prev:
-          $ref: '#/components/schemas/Link'
+    currency.json:
+      description: ISO 4217 currency code.
+      title: Currency
+      type: string
+      example: USD
+      default: USD
     ErrorResponseBase:
       title: ErrorResponseBase
       type: object
@@ -247,41 +144,36 @@ components:
           type: string
           description: The target resource of the error.
           example: example target
-    Link:
-      title: Link
-      required:
-      - href
-      type: object
-      description: Represents a link to a related resource.
-      properties:
-        href:
-          type: string
-          description: A url provided that can be followed for linking
-          example: ?token=90c5f062-76ad-4ea4-aa53-00eb698d9262
-    SwitchBackTargetUsagePlan:
-      title: Switch Back Target Usage Plan
-      description: Object representing the target usage plan and the date when the current plan is scheduled to revert to it. This object is only present when a switch-back is scheduled.
+    HotelRoomRatesRequest:
+      description: Represents hotel room rates request.
+      title: HotelRoomRatesRequest
       type: object
       required:
-      - name
-      - time
+      - startDate
+      - endDate
+      - roomRate
       properties:
-        name:
+        rateCode:
           type: string
-          description: Name of the target usage plan to switch back to. This field is only present when the usage plan is scheduled to revert to a previous plan.
-          example: API_Platform_Standard_Tier
-        time:
+          description: The rate code.
+          example: VIPRATE
+        startDate:
+          description: The start of the date range the rate applies. Date is in ISO 8601 format.
           type: string
-          format: date-time
-          description: The date and time when the usage plan is scheduled to revert to a previous plan. This field is only present when the usage plan is scheduled to revert to a previous plan. The date and time cannot be more than 14 days from the current date.
-          example: '2023-10-01T12:00:00Z'
+          example: '2025-03-25'
+          format: date
+        endDate:
+          description: The end of the date range the rate applies. Date is in ISO 8601 format.
+          type: string
+          example: '2025-03-25'
+          format: date
+        roomRate:
+          description: Cost of room per night.
+          type: number
+          example: 150
+        currencyCode:
+          $ref: '#/components/schemas/currency.json'
   responses:
-    PublicUsagePlanResponse:
-      description: The Usage Tier assigned to the account
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/public-usage-plan'
     TooManyRequests1:
       description: Too many requests
       content:
@@ -291,6 +183,15 @@ components:
           example:
             code: 429
             message: Limit Exceeded
+    NotFound1:
+      description: Resource not found
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+          example:
+            code: 404
+            message: Not found
     Forbidden1:
       description: You do not have access to the resource
       content:
@@ -300,12 +201,6 @@ components:
           example:
             code: 403
             message: Access Forbidden
-    usage-paginated-response:
-      description: Usage metrics for the dates requested
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/usage-paginated-response'
     Unauthorized1:
       description: Bad or expired token
       content:
@@ -324,6 +219,23 @@ components:
           example:
             code: 400
             message: Bad Request
+  parameters:
+    hotelCode:
+      in: path
+      name: hotelCode
+      description: The hotel code.
+      required: true
+      schema:
+        type: string
+        example: HOTELCODE
+    roomCode:
+      in: path
+      name: roomCode
+      description: The room code.
+      required: true
+      schema:
+        type: string
+        example: VLR
   securitySchemes:
     OAuth2.authorizationCode:
       type: oauth2

@@ -1,6 +1,6 @@
 openapi: 3.2.0
 info:
-  title: Cvent REST Usage API
+  title: Cvent REST Card Tokens API
   description: '# Introduction
 
     The Cvent API Platform is built around REST.'
@@ -12,48 +12,32 @@ servers:
 - url: https://api-platform.cvent.com/ea
 - url: https://api-platform-eur.cvent.com/ea
 tags:
-- name: Usage
-  description: Use these APIs view your REST API usage and limits metrics. For more details on limits - Rate Limits
+- name: Card Tokens
+  description: '**Card Tokenization**: Tokenization is the process Cvent uses to collect sensitive card details and
+
+    personally identifiable information (PII), directly from your customers in a secure manner.'
 paths:
-  /usage:
-    get:
+  /card-tokens:
+    post:
+      summary: Create a Credit Card Token
+      servers:
+      - url: https://secure-ecommerce.api-platform-eur.cvent.com/ea
+      - url: https://secure-ecommerce.api-platform.cvent.com/ea
+      description: Creates a short-lived token representing a credit card. This token replaces the credit card in API methods. It can be used multiple times within a 15-minute time-to-live (TTL) period. After 15 minutes, the token will expire and can no longer be used. If the same credit card is needed to perform additional API methods after the 15-minute TTL, the card will need to be resubmitted for another short-lived token.
+      operationId: createCardTokens
       tags:
-      - Usage
-      operationId: getUsage
-      summary: Get Current Usage
-      description: 'Returns API call usage for the last seven days, or between some date range (up to the past seven days) for
-
-        the current caller''s account.'
+      - Card Tokens
       security:
-      - OAuth2.clientCredentials: []
-      parameters:
-      - name: before
-        in: query
-        description: 'Returns usage for the seven days before (inclusive) the date provided. If after is also provided, then
-
-          only the dates between (inclusive) those dates are returned. before must be a valid ISO8601 date stamp.
-
-          before and after must not be more then seven days apart.
-
-          '
-        required: false
-        schema:
-          type: string
-      - name: after
-        in: query
-        description: 'Returns usage for the seven days after (inclusive) the date provided. If before is also provided, then
-
-          only the dates between (inclusive) those dates are returned. after must be a valid ISO8601 date stamp.
-
-          after and before must not be more then seven days apart.
-
-          '
-        required: false
-        schema:
-          type: string
+      - OAuth2.clientCredentials:
+        - secure-ecommerce/card-tokens:write
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/cardTokenRequest'
       responses:
-        '200':
-          $ref: '#/components/responses/usage-paginated-response'
+        '201':
+          $ref: '#/components/responses/CardTokenResponse'
         '400':
           $ref: '#/components/responses/BadRequest1'
         '401':
@@ -62,59 +46,51 @@ paths:
           $ref: '#/components/responses/Forbidden1'
         '429':
           $ref: '#/components/responses/TooManyRequests1'
-  /usage/tier:
-    get:
-      tags:
-      - Usage
-      operationId: getUsageTier
-      summary: Get Current Usage Tier
-      description: Returns the current usage tier of the caller's account.
-      security:
-      - OAuth2.clientCredentials: []
-      - OAuth2.authorizationCode: []
-      responses:
-        '200':
-          $ref: '#/components/responses/PublicUsagePlanResponse'
-        '401':
-          $ref: '#/components/responses/Unauthorized1'
-        '403':
-          $ref: '#/components/responses/Forbidden1'
-        '429':
-          $ref: '#/components/responses/TooManyRequests1'
-      externalDocs:
-        description: More about OAuth2 authorization code support for administrators
-        url: '#oauth2-auth-code-planner-admin'
 components:
+  responses:
+    TooManyRequests1:
+      description: Too many requests
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+          example:
+            code: 429
+            message: Limit Exceeded
+    Forbidden1:
+      description: You do not have access to the resource
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+          example:
+            code: 403
+            message: Access Forbidden
+    CardTokenResponse:
+      description: Successfully created a card token.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/cardTokenResponse'
+    Unauthorized1:
+      description: Bad or expired token
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+          example:
+            code: 401
+            message: Unauthorized
+    BadRequest1:
+      description: Bad request
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+          example:
+            code: 400
+            message: Bad Request
   schemas:
-    Paging:
-      title: Paging
-      required:
-      - _links
-      type: object
-      description: Represents pagination information for a collection of resources.
-      properties:
-        previousToken:
-          type: string
-          description: The pagination token for the previous page, if one exists. You can use this token to navigate to the previous page of data.
-          example: 1a2b3c4d5e6f7g8h9i10j11k
-        nextToken:
-          type: string
-          description: The pagination token for the next page. If this value is present in the response, there is another page of data you can fetch.
-          example: 1a2b3c4d5e6f7g8h9i10j11k
-        currentToken:
-          type: string
-          description: The pagination token for the current page.
-          example: 1a2b3c4d5e6f7g8h9i10j11k
-        limit:
-          type: integer
-          description: The number of records to return on the page. Not to exceed 200.
-          example: 100
-        totalCount:
-          type: integer
-          description: The total number of records available. This field may return blank, even if there are more records. To confirm if there are more records, check the `nextToken` field.
-          example: 2
-        _links:
-          $ref: '#/components/schemas/PaginationLinks'
     ErrorResponse:
       title: ErrorResponse
       description: Represents an error response with additional details of cascading error messages.
@@ -130,103 +106,183 @@ components:
           items:
             $ref: '#/components/schemas/ErrorResponseBase'
           description: Additional details of cascading error messages.
-    Usage:
-      title: Usage
-      description: A usage object represents the usage of a resource on a given day
-      required:
-      - date
-      - used
-      - remaining
-      - total
+    cardTokenResponse:
+      title: Existing Card Token Resource
+      description: Card token resource created in response to generating a card token for a credit card.
       type: object
-      allOf:
-      - $ref: '#/components/schemas/UsageQuotaFields'
       properties:
-        date:
+        id:
           type: string
-          description: The date the usage occurred, as an ISO8601 date
-          example: '2020-01-01'
-    UsageQuotaFields:
-      title: Usage Quota Fields
-      description: Fields representing usage quota information. Usage quota represents the number of API requests that can be made in a given usage period. Usage periods reset daily at midnight UTC.
+          format: uuid
+          description: A token that can be used to reference the credit card for a transaction.
+          example: 00000000-0000-0000-0000-000000000000
+        creditCard:
+          $ref: '#/components/schemas/credit-card-response.json'
+    credit-card-type.json:
+      title: Credit Card Type
+      type:
+      - string
+      - 'null'
+      description: Credit Card Type
+      enum:
+      - AMERICAN_EXPRESS
+      - CHINA_UNIONPAY
+      - DANKORT
+      - DINERS_CLUB_CARTEBLANCHE
+      - DINERS_CLUB_ENROUTE
+      - DINERS_CLUB_INTERNATIONAL
+      - DISCOVER
+      - INSTA_PAYMENT
+      - JCB
+      - MAESTRO
+      - MASTERCARD
+      - UATP
+      - VISA
+      - UNKNOWN
+      readOnly: true
+      example: VISA
+    cardTokenRequest:
+      title: Card Token Resource
+      description: Generate a card token for a credit card.
       type: object
       required:
-      - used
-      - remaining
-      - total
+      - creditCard
       properties:
-        used:
+        creditCard:
+          $ref: '#/components/schemas/credit-card-request.json'
+    credit-card.json:
+      title: Credit Card
+      type: object
+      description: Credit Card Object
+      properties:
+        cardType:
+          $ref: '#/components/schemas/credit-card-type.json'
+        last4Digits:
+          type:
+          - string
+          - 'null'
+          description: Last 4 digits of the credit card.
+          readOnly: true
+          example: '4444'
+        accountHolderName:
+          type:
+          - string
+          - 'null'
+          description: Name on the credit card.
+          minLength: 1
+          maxLength: 255
+          example: John Doe
+        expMonth:
           type: integer
-          description: The number of API requests that have been made in the current usage period. Usage periods reset daily at midnight UTC.
-          example: 40000
-        remaining:
+          description: Credit card expiration month.
+          minimum: 1
+          maximum: 12
+          example: 11
+        expYear:
           type: integer
-          description: The number of API requests remaining in the current usage period. Usage periods reset daily at midnight UTC.
-          example: 260000
-        total:
-          type: integer
-          description: The total number of API requests allowed in the current usage period. Usage periods reset daily at midnight UTC.
-          example: 300000
-    usage-paginated-response:
-      title: Usage Paginated Response
-      description: The list of usage for the caller's account in the date range specified.
-      required:
-      - data
-      type: object
-      properties:
-        paging:
-          $ref: '#/components/schemas/Paging'
-        data:
-          type: array
-          items:
-            $ref: '#/components/schemas/Usage'
-          description: Collection of usage objects.
-    public-usage-plan:
-      title: Public Usage Plan
-      description: Object representing an API Platform Usage Tier, including information when the usage plan is scheduled to revert to a previous plan, if any.
-      type: object
-      allOf:
-      - $ref: '#/components/schemas/UsagePlan'
-      properties:
-        switchBackPlan:
-          $ref: '#/components/schemas/SwitchBackTargetUsagePlan'
-    UsagePlan:
-      title: Usage Plan
-      description: Object representing an API Platform Usage Tier
-      required:
-      - name
-      - quota
-      - burstLimit
-      - rateLimit
-      type: object
-      properties:
-        name:
-          type: string
-          description: The name of the usage tier
-          example: API_Platform_Free_Tier
-        quota:
-          type: number
-          description: The daily quota of the usage tier. If this value is null, this means the usage tier is unlimited.
-          example: 1000
-        burstLimit:
-          type: number
-          description: The burst limit capacity of the usage tier
-          example: 1
-        rateLimit:
-          type: number
-          description: The per-second steady rate-limit of the usage tier
-          example: 2
-    PaginationLinks:
-      title: PaginationLinks
-      type: object
-      description: Represents pagination links for navigating between pages of data.
-      properties:
-        next:
-          $ref: '#/components/schemas/Link'
-        self:
-          $ref: '#/components/schemas/Link'
-        prev:
-          $ref: '#/components/schemas/Link'
+          format: YYYY
+          description: Credit card expiration year.
+          minimum: 0
+          maximum: 9980
+          example: 2026
+        cvv:
+          type:
+          - string
+          - 'null'
+          pattern: (|\w{3,4})
+          description: Credit card security code (CVV).
+          writeOnly: true
+          example: '123'
+        addressLine1:
+          type:
+          - string
+          - 'null'
+          description: Billing address line 1, typically used for the number and name of the street.
+          maxLength: 255
+          writeOnly: true
+          example: 123 Main Street
+        addressLine2:
+          type:
+          - string
+          - 'null'
+          description: Billing address line 2, typically used for adding any additional information regarding the address.
+          maxLength: 255
+          writeOnly: true
+          example: First Floor
+        addressLine3:
+          type:
+          - string
+          - 'null'
+          description: Billing address line 3, typically used for adding any additional information regarding the address.
+          maxLength: 255
+          writeOnly: true
+          example: Apt 101
+        addressCity:
+          type:
+          - string
+          - 'null'
+          description: City of billing address.
+          maxLength: 255
+          writeOnly: true
+          example: McLean
+        addressState:
+          type:
+          - string
+          - 'null'
+          description: State of billing address.
+          maxLength: 255
+          writeOnly: true
+          example: VA
+          deprecated: true
+        addressStateProvince:
+          type:
+          - string
+          - 'null'
+          description: State or Province of billing address.
+          maxLength: 255
+          writeOnly: true
+          example: VA
+        addressPostalCode:
+          type:
+          - string
+          - 'null'
+          description: ZIP or postal code of billing address.
+          maxLength: 255
+          writeOnly: true
+          example: '12345'
+        addressCountry:
+          type:
+          - string
+          - 'null'
+          pattern: (|\w{3})
+          description: Country of billing address in ISO 3166 alpha-3 format.
+          writeOnly: true
+          example: USA
+        addressCountryAlpha2:
+          type:
+          - string
+          - 'null'
+          pattern: (|\w{2})
+          description: Country of billing address in ISO 3166 alpha-2 format.
+          writeOnly: true
+          example: US
+        contactPhone:
+          type:
+          - string
+          - 'null'
+          description: Cardholder's phone number.
+          maxLength: 100
+          writeOnly: true
+          example: 910-999-9999
+        email:
+          type:
+          - string
+          - 'null'
+          pattern: (|[^@]+@[^@]+\.[^@]+)
+          description: Cardholder's email address.
+          maxLength: 320
+          writeOnly: true
+          example: jdoe@example.com
     ErrorResponseBase:
       title: ErrorResponseBase
       type: object
@@ -247,83 +303,37 @@ components:
           type: string
           description: The target resource of the error.
           example: example target
-    Link:
-      title: Link
-      required:
-      - href
+    credit-card-response.json:
+      title: Credit Card Response Object
       type: object
-      description: Represents a link to a related resource.
+      description: Credit Card Response Object
+      allOf:
+      - $ref: '#/components/schemas/credit-card.json'
       properties:
-        href:
+        number:
           type: string
-          description: A url provided that can be followed for linking
-          example: ?token=90c5f062-76ad-4ea4-aa53-00eb698d9262
-    SwitchBackTargetUsagePlan:
-      title: Switch Back Target Usage Plan
-      description: Object representing the target usage plan and the date when the current plan is scheduled to revert to it. This object is only present when a switch-back is scheduled.
+          description: Masked credit card number.
+          minLength: 10
+          maxLength: 100
+          example: '************1111'
+    credit-card-request.json:
+      title: Credit Card Request Object
       type: object
+      description: Credit Card Request Object
       required:
-      - name
-      - time
+      - number
+      - expMonth
+      - expYear
+      - accountHolderName
+      allOf:
+      - $ref: '#/components/schemas/credit-card.json'
       properties:
-        name:
+        number:
           type: string
-          description: Name of the target usage plan to switch back to. This field is only present when the usage plan is scheduled to revert to a previous plan.
-          example: API_Platform_Standard_Tier
-        time:
-          type: string
-          format: date-time
-          description: The date and time when the usage plan is scheduled to revert to a previous plan. This field is only present when the usage plan is scheduled to revert to a previous plan. The date and time cannot be more than 14 days from the current date.
-          example: '2023-10-01T12:00:00Z'
-  responses:
-    PublicUsagePlanResponse:
-      description: The Usage Tier assigned to the account
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/public-usage-plan'
-    TooManyRequests1:
-      description: Too many requests
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/ErrorResponse'
-          example:
-            code: 429
-            message: Limit Exceeded
-    Forbidden1:
-      description: You do not have access to the resource
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/ErrorResponse'
-          example:
-            code: 403
-            message: Access Forbidden
-    usage-paginated-response:
-      description: Usage metrics for the dates requested
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/usage-paginated-response'
-    Unauthorized1:
-      description: Bad or expired token
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/ErrorResponse'
-          example:
-            code: 401
-            message: Unauthorized
-    BadRequest1:
-      description: Bad request
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/ErrorResponse'
-          example:
-            code: 400
-            message: Bad Request
+          description: Credit card number.
+          minLength: 10
+          maxLength: 100
+          example: '4111111111111111'
   securitySchemes:
     OAuth2.authorizationCode:
       type: oauth2

@@ -1,6 +1,6 @@
 openapi: 3.2.0
 info:
-  title: Cvent REST Event Travel API
+  title: Cvent REST Meeting Request API
   description: '# Introduction
 
     The Cvent API Platform is built around REST.'
@@ -12,33 +12,36 @@ servers:
 - url: https://api-platform.cvent.com/ea
 - url: https://api-platform-eur.cvent.com/ea
 tags:
-- name: Event Travel
-  description: Event travel lets planners capture air & hotel requests from attendees and track air actuals, hotel reservations and alternate travel answers at your event. Use these endpoints to retrieve your air, hotel, housing reservation request and alternate travel answers data from your events. **Housing Reservation Request** - An association between an attendee's information in a registration event and a Cvent Passkey event. Also known as a Passkey bridge.
+- name: Meeting Request
+  description: When planning an event, meeting request forms are customizable online questionnaires to capture information about the event and facilitate the approval of events. When a meeting request form is submitted it becomes a meeting request. Use this API to view forms, create meeting requests and track the status of meeting requests. **Legacy meeting request forms are not supported by this API.**
 paths:
-  /events/{id}/event-travel/air-actuals:
-    parameters:
-    - $ref: '#/components/parameters/id2'
+  /events/{id}/meeting-requests:
     get:
-      summary: Get Air Actual
-      description: Get attendee air actual details for an event.
-      operationId: getAirActualDetail
       tags:
-      - Event Travel
+      - Meeting Request
       security:
       - OAuth2.clientCredentials:
-        - event/air-request:read
+        - event/meeting-requests:read
       - OAuth2.authorizationCode:
-        - event/air-request:read
+        - event/meeting-requests:read
+      summary: Get MR by Event ID
+      description: Gets a meeting request connected to a given event.
+      operationId: getMeetingRequestByEventId
+      parameters:
+      - name: id
+        in: path
+        required: true
+        description: ID of an event.
+        schema:
+          $ref: '#/components/schemas/uuid-property'
       responses:
         '200':
-          description: Successfully retrieved the air actual details.
+          description: Successfully retrieved a meeting request.
           headers: {}
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/air-actual-detail'
-        '400':
-          $ref: '#/components/responses/BadRequest1'
+                $ref: '#/components/schemas/meeting-request'
         '401':
           $ref: '#/components/responses/Unauthorized1'
         '403':
@@ -48,156 +51,136 @@ paths:
         '429':
           $ref: '#/components/responses/TooManyRequests1'
       deprecated: false
-      parameters:
-      - $ref: '#/components/parameters/after'
-      - $ref: '#/components/parameters/before'
-      - $ref: '#/components/parameters/limit'
-      - $ref: '#/components/parameters/token'
-      - $ref: '#/components/parameters/expandAirActualQuestionAnswer'
-      - $ref: '#/components/parameters/sortForAirActual'
-      - $ref: '#/components/parameters/filter2'
-  /events/{id}/event-travel/air-requests:
-    parameters:
-    - $ref: '#/components/parameters/id2'
+      externalDocs:
+        description: More about OAuth2 authorization code support for administrators
+        url: '#oauth2-auth-code-planner-admin'
+  /meeting-request-forms:
     get:
-      summary: Get Air Requests
-      description: Get attendee air request details for an event.
-      operationId: getAirRequests
       tags:
-      - Event Travel
+      - Meeting Request
       security:
       - OAuth2.clientCredentials:
-        - event/air-request:read
+        - event/meeting-request-forms:read
       - OAuth2.authorizationCode:
-        - event/air-request:read
+        - event/meeting-request-forms:read
+      parameters:
+      - $ref: '#/components/parameters/limit3'
+      - $ref: '#/components/parameters/token'
+      - name: filter
+        in: query
+        required: false
+        description: "A filter query string narrows search results and supports the combination of logical and comparison operators. The filter adheres to the pattern filter='field' comparisonType 'value'.\nThis is the comparison type that can be used in filter expressions:\n  * equal: eq\n\nThe following field is filterable:\n  * active (eq)\n"
+        schema:
+          type: string
+          example: active eq 'true'
+      summary: List MR Forms
+      description: Get a paginated list of meeting request forms.
+      operationId: listMRF
       responses:
         '200':
-          description: Successfully retrieved the air request detail.
+          description: Successfully retrieved a paginated list of meeting request forms.
           headers: {}
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/air-reservation-detail'
+                $ref: '#/components/schemas/meeting-request-form-paginated-response'
         '400':
           $ref: '#/components/responses/BadRequest1'
         '401':
           $ref: '#/components/responses/Unauthorized1'
         '403':
           $ref: '#/components/responses/Forbidden1'
-        '404':
-          $ref: '#/components/responses/NotFound1'
         '429':
           $ref: '#/components/responses/TooManyRequests1'
       deprecated: false
-      parameters:
-      - $ref: '#/components/parameters/after'
-      - $ref: '#/components/parameters/before'
-      - $ref: '#/components/parameters/limit'
-      - $ref: '#/components/parameters/token'
-      - $ref: '#/components/parameters/sortForAirRequest'
-      - $ref: '#/components/parameters/filter2'
-      - $ref: '#/components/parameters/expandAirRequestQuestionAnswer'
-  /events/{id}/event-travel/alternate-answers:
+      externalDocs:
+        description: More about OAuth2 authorization code support for administrators
+        url: '#oauth2-auth-code-planner-admin'
+  /meeting-request-forms/{id}:
     parameters:
-    - $ref: '#/components/parameters/id2'
+    - name: id
+      in: path
+      description: ID of a meeting request form.
+      required: true
+      schema:
+        $ref: '#/components/schemas/uuid-property'
     get:
-      summary: Get Alternate Travel Answers
-      description: Get alternate travel answers submitted by attendees who opt out of air or hotel bookings for an event.
-      operationId: getAlternateTravelAnswers
       tags:
-      - Event Travel
+      - Meeting Request
       security:
       - OAuth2.clientCredentials:
-        - event/alternate-travel:read
+        - event/meeting-request-forms:read
       - OAuth2.authorizationCode:
-        - event/alternate-travel:read
+        - event/meeting-request-forms:read
+      summary: Get MR Form
+      description: Get a single meeting request form by ID.
+      operationId: getMRFById
       responses:
         '200':
-          description: Successfully retrieved the alternate travel answers.
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/alternate-travel-paginated-response'
-        '400':
-          $ref: '#/components/responses/BadRequest1'
-        '401':
-          $ref: '#/components/responses/Unauthorized1'
-        '403':
-          $ref: '#/components/responses/Forbidden1'
-        '404':
-          $ref: '#/components/responses/NotFound1'
-        '429':
-          $ref: '#/components/responses/TooManyRequests1'
-      deprecated: false
-      parameters:
-      - $ref: '#/components/parameters/after'
-      - $ref: '#/components/parameters/before'
-      - $ref: '#/components/parameters/limit'
-      - $ref: '#/components/parameters/token'
-      - $ref: '#/components/parameters/filter2'
-  /events/{id}/event-travel/hotel-requests:
-    parameters:
-    - $ref: '#/components/parameters/id2'
-    get:
-      summary: Get Hotel Requests
-      description: Get attendee hotel requests for an event.
-      operationId: getHotelRequests
-      tags:
-      - Event Travel
-      security:
-      - OAuth2.clientCredentials:
-        - event/hotel-request:read
-      - OAuth2.authorizationCode:
-        - event/hotel-request:read
-      responses:
-        '200':
-          description: Successfully retrieved the hotel request detail.
+          description: Successfully retrieved a meeting request form.
           headers: {}
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/hotel-reservation-detail'
-        '400':
-          $ref: '#/components/responses/BadRequest1'
+                $ref: '#/components/schemas/meeting-request-form'
         '401':
           $ref: '#/components/responses/Unauthorized1'
         '403':
           $ref: '#/components/responses/Forbidden1'
         '404':
           $ref: '#/components/responses/NotFound1'
+        '422':
+          $ref: '#/components/responses/UnprocessableEntity1'
         '429':
           $ref: '#/components/responses/TooManyRequests1'
       deprecated: false
-      parameters:
-      - $ref: '#/components/parameters/after'
-      - $ref: '#/components/parameters/before'
-      - $ref: '#/components/parameters/limit'
-      - $ref: '#/components/parameters/token'
-      - $ref: '#/components/parameters/expandHotelRequestQuestionAnswer'
-      - $ref: '#/components/parameters/sortForHotelRequest'
-      - $ref: '#/components/parameters/filter2'
-  /events/{id}/event-travel/housing-reservation-requests:
+      externalDocs:
+        description: More about OAuth2 authorization code support for administrators
+        url: '#oauth2-auth-code-planner-admin'
+  /meeting-request-forms/{id}/requests:
     parameters:
-    - $ref: '#/components/parameters/id2'
-    get:
-      summary: Get Housing Requests
-      description: Get attendee housing reservation request details for an event.
-      operationId: getHousingReservationRequests
+    - name: id
+      required: true
+      description: Meeting request form ID.
+      in: path
+      schema:
+        $ref: '#/components/schemas/uuid-property'
+    post:
       tags:
-      - Event Travel
+      - Meeting Request
+      operationId: createMeetingRequest
       security:
       - OAuth2.clientCredentials:
-        - event/hotel-request:read
+        - event/meeting-requests:write
       - OAuth2.authorizationCode:
-        - event/hotel-request:read
+        - event/meeting-requests:write
+      summary: Create MR (Bulk)
+      description: 'Creates a collection of meeting requests for a given active form. For complex questions such as Meeting Room Requirements, Sleeping Room Requirements, or Budget Estimates, send the answer as a JSON-serialized string. See the question schema and the Complex Questions Guide for details.
+
+
+        **Note:** If the meeting request form is configured to auto-create an event upon submission, the `event.id` field may not be populated in the response at the time of initial creation. Event creation is processed asynchronously after the meeting request is saved. To retrieve the associated event ID once it is available, poll the Get MR endpoint.'
+      parameters:
+      - in: query
+        name: skipRequiredQuestionValidation
+        required: false
+        schema:
+          type: boolean
+        description: Flag `true` to skip required field validation.
+      requestBody:
+        description: Up to **5 meeting requests** can be created per call.
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/meeting-request-bulk-create'
+        required: true
       responses:
-        '200':
-          description: Successfully retrieved the reservation request detail.
+        '207':
+          description: Meeting request(s) were successfully created.
           headers: {}
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/reservation-request-paginated-response'
+                $ref: '#/components/schemas/meeting-request-bulk-response'
         '400':
           $ref: '#/components/responses/BadRequest1'
         '401':
@@ -209,14 +192,235 @@ paths:
         '429':
           $ref: '#/components/responses/TooManyRequests1'
       deprecated: false
+      externalDocs:
+        description: More about OAuth2 authorization code support for administrators
+        url: '#oauth2-auth-code-planner-admin'
+    put:
+      tags:
+      - Meeting Request
+      operationId: updateMeetingRequest
+      security:
+      - OAuth2.clientCredentials:
+        - event/meeting-requests:write
+      - OAuth2.authorizationCode:
+        - event/meeting-requests:write
+      summary: Update MR (Bulk)
+      description: 'Updates a collection of meeting requests for a given form, adding information to the existing meeting requests. For complex questions such as Meeting Room Requirements, Sleeping Room Requirements, or Budget Estimates, send the answer as a JSON-serialized string. See the question schema and the Complex Questions Guide for details.
+
+
+        **Note:** If the meeting request form is configured to auto-create an event upon submission, the `event.id` field may not be populated in the response at the time of the update. Event creation is processed asynchronously after the meeting request is saved. To retrieve the associated event ID once it is available, poll the Get MR endpoint.'
       parameters:
+      - in: query
+        name: skipRequiredQuestionValidation
+        required: false
+        schema:
+          type: boolean
+        description: Flag `true` to skip required field validation.
+      requestBody:
+        description: Up to **5 meeting requests** can be updated per call.
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/meeting-request-bulk-update'
+        required: true
+      responses:
+        '207':
+          description: Meeting request was successfully updated.
+          headers: {}
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/meeting-request-bulk-response'
+        '400':
+          $ref: '#/components/responses/BadRequest1'
+        '401':
+          $ref: '#/components/responses/Unauthorized1'
+        '403':
+          $ref: '#/components/responses/Forbidden1'
+        '404':
+          $ref: '#/components/responses/NotFound1'
+        '429':
+          $ref: '#/components/responses/TooManyRequests1'
+      deprecated: false
+      externalDocs:
+        description: More about OAuth2 authorization code support for administrators
+        url: '#oauth2-auth-code-planner-admin'
+    get:
+      tags:
+      - Meeting Request
+      security:
+      - OAuth2.clientCredentials:
+        - event/meeting-requests:read
+      - OAuth2.authorizationCode:
+        - event/meeting-requests:read
+      summary: List MR
+      description: Gets a paginated list of meeting requests for a given form.
+      operationId: listMeetingRequest
+      parameters:
+      - $ref: '#/components/parameters/limit3'
+      - $ref: '#/components/parameters/token'
       - $ref: '#/components/parameters/after'
       - $ref: '#/components/parameters/before'
-      - $ref: '#/components/parameters/limit'
+      - name: filter
+        in: query
+        required: false
+        description: "A filter query string narrows search results and supports the combination of logical and comparison operators. The filter adheres to the pattern filter='field' comparisonType 'value'.\nThese are the comparison types that can be used in filter expressions:\n  * equal: eq\n  * not equal: ne\n\nThe following fields are filterable:\n  * meeting-request.id (eq)\n  * sourceId (eq)\n  * status (eq|ne)\n"
+        schema:
+          type: string
+          example: meeting-request.id eq '775b7a6c-de7f-4dfe-8d16-966acdc0e848'
+      responses:
+        '200':
+          description: Successfully retrieved a paginated list of meeting requests.
+          headers: {}
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/meeting-request-paginated-response'
+        '400':
+          $ref: '#/components/responses/BadRequest1'
+        '401':
+          $ref: '#/components/responses/Unauthorized1'
+        '403':
+          $ref: '#/components/responses/Forbidden1'
+        '404':
+          $ref: '#/components/responses/NotFound1'
+        '429':
+          $ref: '#/components/responses/TooManyRequests1'
+      deprecated: false
+      externalDocs:
+        description: More about OAuth2 authorization code support for administrators
+        url: '#oauth2-auth-code-planner-admin'
+  /meeting-request-forms/{id}/requests/{requestId}:
+    parameters:
+    - name: id
+      required: true
+      description: The meeting request form ID.
+      in: path
+      schema:
+        $ref: '#/components/schemas/uuid-property'
+    - name: requestId
+      required: true
+      description: The meeting request ID.
+      in: path
+      schema:
+        $ref: '#/components/schemas/uuid-property'
+    get:
+      tags:
+      - Meeting Request
+      security:
+      - OAuth2.clientCredentials:
+        - event/meeting-requests:read
+      - OAuth2.authorizationCode:
+        - event/meeting-requests:read
+      summary: Get MR
+      description: Gets a single meeting request by ID.
+      operationId: getMeetingRequestById
+      responses:
+        '200':
+          description: Successfully retrieved a meeting request.
+          headers: {}
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/meeting-request'
+        '401':
+          $ref: '#/components/responses/Unauthorized1'
+        '403':
+          $ref: '#/components/responses/Forbidden1'
+        '404':
+          $ref: '#/components/responses/NotFound1'
+        '429':
+          $ref: '#/components/responses/TooManyRequests1'
+      deprecated: false
+      externalDocs:
+        description: More about OAuth2 authorization code support for administrators
+        url: '#oauth2-auth-code-planner-admin'
+  /meeting-requests/{requestId}/documents:
+    parameters:
+    - name: requestId
+      in: path
+      required: true
+      description: Meeting request ID.
+      schema:
+        $ref: '#/components/schemas/uuid-property'
+    get:
+      tags:
+      - Meeting Request
+      summary: List MR Documents
+      description: Gets a paginated list of documents for a given meeting request ID. When a meeting request form is submitted, it becomes a meeting request. Some meeting requests have document attachments.
+      operationId: listMeetingRequestDocuments
+      security:
+      - OAuth2.clientCredentials:
+        - event/meeting-requests:read
+      - OAuth2.authorizationCode:
+        - event/meeting-requests:read
+      parameters:
+      - name: limit
+        in: query
+        required: false
+        description: The maximum number of Documents that can be fetched at once.
+        schema:
+          type: integer
+          maximum: 20
+          minimum: 1
+          default: 10
       - $ref: '#/components/parameters/token'
-      - $ref: '#/components/parameters/filter2'
+      - name: includeReferenceLink
+        in: query
+        required: false
+        description: Set to `false` to exclude the field `referenceLink` from the response.
+        schema:
+          type: boolean
+          default: true
+      - name: filter
+        in: query
+        required: false
+        description: "A filter query string narrows search results and supports the combination of logical and comparison operators. The filter adheres to the pattern filter='field' comparisonType 'value'.\n\nThe following comparison types can be used in filter expressions:\n  * equal: eq\n  * not equal: ne\n  * greater or equal: ge\n  * less than or equal: le\n\nThe following fields are filterable:\n  * id (eq|ne)\n  * name (eq|ne)\n  * lastModified (le|ge)\n"
+        schema:
+          type: string
+          example: lastModified lt '2024-12-12T03:00:00Z'
+      responses:
+        '200':
+          description: Successfully retrieved the paginated list of documents for the meeting request.
+          headers: {}
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/meeting-request-document-paginated-response'
+        '400':
+          $ref: '#/components/responses/BadRequest1'
+        '401':
+          $ref: '#/components/responses/Unauthorized1'
+        '403':
+          $ref: '#/components/responses/Forbidden1'
+        '404':
+          $ref: '#/components/responses/NotFound1'
+        '429':
+          $ref: '#/components/responses/TooManyRequests1'
+      deprecated: false
 components:
   schemas:
+    meeting-request-document-paginated-response:
+      title: MeetingRequestDocumentPaginatedResponse
+      description: Paginated collection of meeting request documents.
+      required:
+      - data
+      - paging
+      type: object
+      properties:
+        paging:
+          $ref: '#/components/schemas/Paging'
+        data:
+          type: array
+          items:
+            $ref: '#/components/schemas/MeetingRequestDocument'
+          description: Collection of meeting request object documents.
+    uuid-property:
+      title: UUID Property
+      description: A string that has to be a format matching the industry standard uuid
+      type: string
+      format: uuid
+      example: 04ca6ae2-0dc3-487b-953e-86d6abbdf7d3
     Paging:
       title: Paging
       required:
@@ -246,12 +450,14 @@ components:
           example: 2
         _links:
           $ref: '#/components/schemas/PaginationLinks'
-    uuid-property:
-      title: UUID Property
-      description: A string that has to be a format matching the industry standard uuid
+    BudgetCostType:
+      title: BudgetCostType
+      enum:
+      - FIXED
+      - VARIABLE
       type: string
-      format: uuid
-      example: 04ca6ae2-0dc3-487b-953e-86d6abbdf7d3
+      description: Denotes the cost type of a budget item. FIXED costs stay the same regardless of quantity. VARIABLE costs are based on a quantity.
+      example: FIXED
     Audit:
       title: Audit
       description: Audit information
@@ -279,225 +485,157 @@ components:
           description: The identifier of the user that last updated this record.
           readOnly: true
           example: hporter
-    HotelRoomRate:
-      title: HotelRoomRate
-      description: Representation of a hotel room rate
+    meeting-request-bulk-create:
+      title: MeetingRequestBulkCreate
+      description: Meeting requests to create.
+      type: array
+      items:
+        $ref: '#/components/schemas/MeetingRequestCreate'
+    MeetingRequestCreate:
+      title: MeetingRequestCreate
+      description: A meeting request to create.
       type: object
+      required:
+      - name
+      - questions
       properties:
-        roomNight:
+        name:
           type: string
-          format: date-time
-          description: The ISO 8601 date-time (in UTC) of the night for which the room has been booked.
-          example: '2023-05-19T00:00:00Z'
-        roomRate:
+          description: The name of the specific meeting request.
+          example: '####test'
+        sourceId:
+          type: string
+          description: 'The ID for the meeting request in an external system. NOTE: This value is expected to be unique for each meeting request within an account. Consider adding the external system name as part of the ID.'
+          example: sourceId12
+        questions:
+          description: Questions for the meeting request.
+          type: array
+          items:
+            $ref: '#/components/schemas/MeetingRequestQuestion'
+    MeetingRequestCustomField:
+      title: MeetingRequestCustomField
+      description: Custom field for a meeting request.
+      required:
+      - id
+      allOf:
+      - $ref: '#/components/schemas/CustomField'
+      properties:
+        field:
+          type: boolean
+          description: True indicates the question is of the field type.
+          example: true
+        fieldName:
+          type: string
+          description: The fixed field name.
+          example: Event Theme Color
+        name:
+          type: string
+          description: The displayed field name which can be customized.
+          readOnly: true
+          example: What is your favorite color?
+        hidden:
+          type: boolean
+          description: True indicates a question on the meeting request form should be hidden from the user filling out the meeting request.
+          example: false
+        required:
+          type: boolean
+          description: True indicates the given question must be answered.
+          example: true
+        minLength:
           type: number
-          description: The nightly rate at which the room has been booked.
+          description: The minimum length of a text field.
+          example: 0
+        maxLength:
+          type: number
+          description: The maximum length of a text field.
           example: 100
-    reservation-request-paginated-response:
-      title: HousingReservationPaginatedResponse
-      description: The response from a request to get the list of housing reservation request details for the attendees. This includes the paging object as well as the collection of housing reservation request details.
-      required:
-      - paging
-      - data
-      type: object
-      properties:
-        paging:
-          $ref: '#/components/schemas/Paging'
-        data:
+        minChoice:
+          type: number
+          description: The minimum number of choices required for a multi-choice field.
+          example: 0
+        maxChoice:
+          type: number
+          description: The maximum number of choices allowed for a multi-choice field.
+          example: 10
+        minDate:
+          type: string
+          description: The ISO 8601 minimum date value for a date field.
+          example: '1970-12-23'
+        maxDate:
+          type: string
+          description: The ISO 8601 maximum date value for a date field.
+          example: '2100-12-31'
+        answerTypes:
+          description: List of non-null answer types applicable to the question, such as `Other` or `NA`. This field is omitted when no non-default answer type is defined for the question.
           type: array
+          uniqueItems: true
           items:
-            $ref: '#/components/schemas/HousingReservationResponse'
-          description: Collection of reservation request details for attendees.
-    Gender1:
-      title: Gender
-      description: Gender of the requester.
-      enum:
-      - Male
-      - Female
-      - Non-binary
-      - Rather not say
-      type: string
-      example: Male
-    hotel-reservation-detail:
-      title: HotelReservationPaginatedResponse
-      description: The response from a request to get the list of hotel reservation for the attendees.  This includes the paging object as well as the collection of air actual details.
-      required:
-      - paging
-      - data
-      type: object
-      properties:
-        paging:
-          $ref: '#/components/schemas/Paging'
-        data:
-          type: array
-          items:
-            $ref: '#/components/schemas/HotelReservationDetail'
-          description: Collection of hotel reservation for attendees.
-    HotelReservationDetail:
-      title: HotelReservationDetail
-      description: Representation of a hotel reservation detail response.
-      type: object
-      properties:
-        attendee:
-          $ref: '#/components/schemas/Attendee3'
-        hotelRequestDetails:
-          description: List of all the hotel requests by attendee and its guest.
-          type: array
-          items:
-            $ref: '#/components/schemas/HotelRequest'
-    TicketType:
-      title: TicketType
-      description: Category of the passenger's ticket class for an air booking.
-      type: string
-      enum:
-      - Economy/Coach
-      - Business
-      - FirstClass
-      example: Economy/Coach
-    AirRequest:
-      title: AirRequest
-      description: Representation of an air request.
+            $ref: '#/components/schemas/AnswerType1'
+    MeetingRequestDocument:
+      title: MeetingRequestDocument
+      description: Document attached to a meeting request that can be downloaded.
       type: object
       allOf:
-      - $ref: '#/components/schemas/Audit'
-      properties:
-        airRequestId:
-          type: string
-          format: uuid
-          description: ID of the air request.
-          example: 3b2359a7-4583-40ed-8afd-67e5f15373d3
-        requesterId:
-          type: string
-          format: uuid
-          description: ID of the flight requester. For an event attendee, this field is contact ID. For guest, this field is guest ID. For any other passenger, this fields contains null.
-          example: 3b2359a7-4583-40ed-8afd-67e5f15373d3
-        requesterType:
-          $ref: '#/components/schemas/AirRequesterType'
-        requesterFirstName:
-          type: string
-          description: First name of the flight requester.
-          example: John
-          maxLength: 50
-        requesterMiddleName:
-          type: string
-          description: Middle name of the flight requester.
-          example: Frances
-          maxLength: 30
-        requesterLastName:
-          type: string
-          description: Last name of the flight requester.
-          example: Doe
-          maxLength: 50
-        requesterSuffix:
-          type: string
-          description: Suffix of the flight requester.
-          enum:
-          - II
-          - III
-          - IV
-          - V
-          - Sr.
-          - Jr.
-          example: Jr.
-        fullName:
-          type: string
-          description: Full name of the requester.
-          example: John Doe
-        redressNumber:
-          type: string
-          description: TSA redress number for the passenger.
-          example: '1234567'
-        knownTravelerNumber:
-          type: string
-          description: TSA known traveller number for the passenger.
-          example: '1234567'
-        outgoingLeg:
-          $ref: '#/components/schemas/LegDetail'
-        incomingLeg:
-          $ref: '#/components/schemas/LegDetail'
-        seatType:
-          $ref: '#/components/schemas/SeatType'
-        ticketType:
-          $ref: '#/components/schemas/TicketType'
-        foodPreference:
-          type: string
-          description: Additional text related to the passenger's meal.
-          example: Please provide vegetarian meal.
-          maxLength: 300
-        specialRequest:
-          type: string
-          description: Additional text associated with air request.
-          example: Please provide blanket
-          maxLength: 300
-        airlinePreference:
-          description: Requester's preferred airlines.
-          type: array
-          items:
-            $ref: '#/components/schemas/AirlinePreference'
-          maxItems: 3
-        ageCategory:
-          type: string
-          description: Age category of the requester.
-          enum:
-          - Adult
-          - Senior
-          - Child
-          - Infant
-          example: Adult
-        status:
-          $ref: '#/components/schemas/TravelRequestStatus'
-        dateOfBirth:
-          type: string
-          description: Date of birth of the requester.
-          example: '1980-03-04'
-        gender:
-          $ref: '#/components/schemas/Gender1'
-        plannerMemo:
-          type: string
-          description: Additional note by, or intended for, event planners.
-          example: Some planner related text.
-          maxLength: 300
-        airRequestAnswers:
-          type: array
-          description: Answer provided by requester to the air request related question.
-          items:
-            $ref: '#/components/schemas/AttendeeAnswer1'
-    BaseAddress:
-      title: Base Address
-      description: Base Address Model
+      - $ref: '#/components/schemas/Document'
+      - properties:
+          mimeType:
+            type: string
+            description: The MIME type of the document
+            example: application/pdf
+          referenceLink:
+            $ref: '#/components/schemas/MeetingRequestDocumentReferenceLink'
+          meetingRequest:
+            type: object
+            description: The meeting request this document is attached to.
+            properties:
+              id:
+                description: Meeting Request ID.
+                type: string
+                format: uuid
+    meeting-request-bulk-response:
+      title: MeetingRequestBulkResponse
+      description: Created meeting requests.
+      type: array
+      items:
+        $ref: '#/components/schemas/MeetingRequestBulkResponseItem'
+    Document:
+      title: document
+      description: The base model for the document metadata.
       type: object
+      required:
+      - id
       properties:
-        address1:
+        id:
+          description: Unique identifier of the document.
           type: string
-          maxLength: 40
-          description: The first line of an address.
-          example: Cvent Inc.
-        address2:
+          format: uuid
+        name:
           type: string
-          maxLength: 40
-          description: The second line of an address.
-          example: 4001 West Parmer Lane
-        address3:
+          maxLength: 255
+          description: Name of the document.
+          example: Agenda
+        size:
+          type: integer
+          description: Size of the document in bytes
+          example: 204800
+        uploaded:
           type: string
-          maxLength: 40
-          description: The third line of an address.
-          example: PO Box 123
-        city:
+          format: date-time
+          description: The ISO-8601 formatted date and time when the document was uploaded.
+          example: '2024-06-15T13:45:30Z'
+        uploadedBy:
           type: string
-          maxLength: 40
-          description: The name of the city.
-          example: Austin
-        countryCode:
+          description: The user who uploaded the document.
+          example: John Doe
+        lastModified:
           type: string
-          maxLength: 3
-          minLength: 2
-          description: ISO 3166 two-letter (alpha-2) country code.
-          example: US
-        postalCode:
+          format: date-time
+          description: The ISO-8601 formatted date and time when this document was last updated.
+          example: '2024-10-12T03:00:00Z'
+        lastModifiedBy:
           type: string
-          maxLength: 25
-          description: Postal code (also known as zipcode) of the address.
-          example: '78727'
+          description: The user who last updated the document.
+          example: John Doe
     ErrorResponse:
       title: ErrorResponse
       description: Represents an error response with additional details of cascading error messages.
@@ -513,131 +651,185 @@ components:
           items:
             $ref: '#/components/schemas/ErrorResponseBase'
           description: Additional details of cascading error messages.
-    AirlinePreference:
-      title: Airline Preference
-      description: Representation of airlines based on preference
+    SleepingRoomRequirement:
+      title: SleepingRoomRequirement
+      description: The requirements of a sleeping room on the specified date.
+      required:
+      - date
+      properties:
+        date:
+          type: string
+          description: The date for the sleeping room, in format of YYYY-MM-DD.
+          example: '2099-12-11'
+        any:
+          type: integer
+          description: The number of any sleeping rooms.
+          example: 10
+        single:
+          type: integer
+          description: The number of 1 bed sleeping rooms.
+          example: 10
+        double:
+          type: integer
+          description: The number of 2 beds sleeping rooms.
+          example: 10
+        suite:
+          type: integer
+          description: The number of suite sleeping rooms.
+          example: 10
+        staff:
+          type: integer
+          description: The number of sleeping rooms for staff.
+          example: 10
+    MeetingRoomAgendaItemType:
+      title: MeetingRoomAgendaItemType
+      description: Defines the agenda item types of a meeting room requirement.
+      example: Breakout
+      readOnly: true
+      enum:
+      - Break
+      - Breakfast
+      - Breakout
+      - Dinner
+      - Exhibit
+      - General Session
+      - Hospitality Desk
+      - Hospitality Suite
+      - Lunch
+      - Meeting
+      - Office
+      - Other
+      - Reception
+      - Registration
+      - Setup
+      - Snack
+      - Speaker Room
+      - Storage Room
+      - Teardown
+    MeetingRequestDocumentReferenceLink:
+      title: MeetingRequestDocumentReferenceLink
+      description: A reference link contains the URL that provides direct access to download the file for the document. The expiration of the URL can be included if applicable.
       type: object
       properties:
-        airlineName:
+        url:
           type: string
-          description: Name of preferred airline.
-          example: Emirates
-        rewardsCode:
+          format: uri
+          description: The URL to download the file resource for the document. This URL will expire after the time indicated by the field expiration. If not provided, the URL is considered dynamic and not guaranteed to remain constant. Clients should always retrieve the latest URL before attempting to download the file, as it may change over time.
+          example: https://custom.cvent.com/4B31940730B6475A8D6A7785748A67EE/files/smm/8cfc2168a00342f5ba9e13f7a808df8e/78ce60fbf1da4cf5af139a65f59aed60.pdf
+        expiration:
           type: string
-          description: Loyalty program number for the preferred airline.
-          example: SKYWARD12345
-    AirActual:
-      title: AirActual
-      description: Representation of an air actual.
+          format: date-time
+          description: The ISO 8601 formatted date and time at which the reference document will expire if an explicit expiration is defined.
+          example: '2025-12-31T23:59:59Z'
+    BudgetSubCategory:
+      title: BudgetSubCategory
       type: object
-      allOf:
-      - $ref: '#/components/schemas/Audit'
+      description: This is used to denote the sub category for a budget.
       properties:
-        airActualId:
-          type: string
-          format: uuid
-          description: ID of the air actual.
-          example: 04ca6ae2-0dc3-487b-953e-86d6abbdf7d3
-        requesterId:
-          type: string
-          format: uuid
-          description: ID of the flight requester. For an event attendee, this field is contact ID. For guest, this field is guest ID. For any other passenger, this fields contains null.
-          example: 04ca6ae2-0dc3-487b-953e-86d6abbdf7d3
-        status:
-          $ref: '#/components/schemas/TravelRequestStatus'
-        requesterType:
-          $ref: '#/components/schemas/AirRequesterType'
+        id:
+          $ref: '#/components/schemas/uuid-property'
         name:
           type: string
-          description: Name of the attendee booked for the flight.
-          example: John Doe
-        confirmationNumber:
-          type: string
-          description: Confirmation Number of the flight.
-          example: 123-456-XYZ
-        totalAmount:
-          type: number
-          description: Total cost of the flight.
-          example: 500
-        currencyCode:
-          type: string
-          description: ISO 4217 currency code for the cost of the flight.
-          example: USD
-          maxLength: 3
-        note:
-          type: string
-          description: Additional note associated to the air actual.
-          maxLength: 300
-          example: Additional note here.
-        recordLocatorGDS:
-          type: string
-          description: The unique reservation number associated with the Global Distribution System (GDS) where the flight was booked.
-          example: ABC123
-        noteGDS:
-          type: string
-          description: Additional note from the GDS associated to the air actual.
-          example: GDS note.
-        journeyType:
-          $ref: '#/components/schemas/JourneyType'
-        flightDetail:
-          description: List of all the flight details taken by attendee and its guest
-          type: array
-          items:
-            $ref: '#/components/schemas/FlightDetail'
-        airActualAnswers:
-          type: array
-          description: Answer provided by requester to the air actual related question.
-          items:
-            $ref: '#/components/schemas/AttendeeAnswer1'
-    JourneyType:
-      title: JourneyType
-      description: Type of journey for an air booking.
-      type: string
-      enum:
-      - Oneway
-      - RoundTrip
-      example: RoundTrip
-    Address7:
-      title: Address
-      description: Address of the hotel.
+          description: Name of the budget subcategory assigned to the budget item.
+          readOnly: true
+          example: utilities
+    CustomField:
+      title: CustomField
+      description: A Custom Field
       type: object
       allOf:
-      - $ref: '#/components/schemas/BaseAddress'
+      - $ref: '#/components/schemas/CustomFieldBase'
       properties:
-        region:
+        type:
+          description: The type of data collected by a custom field.
           type: string
-          description: The name of the state/province/region of the address.
-          readOnly: true
-          example: Texas
-        regionCode:
+          allOf:
+          - $ref: '#/components/schemas/CustomFieldType'
+          - readOnly: true
+            example: MultiSelect
+    CompositeValue:
+      title: CompositeValue
+      description: 'The structured representation of a complex question answer. Contains the same data as `value`, parsed into typed objects instead of JSON-serialized strings. This field is **read-only** — to write complex question answers, use `value` instead.
+
+
+        The structure of the array depends on the question `type`.'
+      oneOf:
+      - type: array
+        title: Meeting Room Requirement Set
+        items:
+          $ref: '#/components/schemas/MeetingRoomRequirement'
+      - type: array
+        title: Sleeping Room Requirement Set
+        items:
+          $ref: '#/components/schemas/SleepingRoomRequirement'
+      - type: array
+        title: Budget Estimate Set
+        items:
+          $ref: '#/components/schemas/BudgetEstimate'
+      readOnly: true
+    MeetingRoomRequirement:
+      title: MeetingRoomRequirement
+      description: The requirement of a meeting room on the specified date.
+      required:
+      - date
+      properties:
+        date:
           type: string
-          description: The abbreviation of the state/province/region of the address.
-          minLength: 2
-          maxLength: 10
-          example: TX
-        country:
+          description: The date for the meeting room, in format of YYYY-MM-DD.
+          example: '2099-12-11'
+        startTime:
           type: string
-          description: Name of the country.
-          readOnly: true
-          example: United States of America
-    AirReservationDetail:
-      title: AirReservationDetail
-      description: Representation of an air reservation detail response.
+          description: The start time for the meeting room, in format of HH:MM:SS.
+          example: 09:30:00
+        endTime:
+          type: string
+          description: The end time for the meeting room, in format of HH:MM:SS.
+          example: '14:45:00'
+        agendaItem:
+          type: string
+          description: The agenda item for the meeting room.
+          example: Meeting Room Agenda point 1.
+        agendaItemType:
+          type: array
+          description: For the meeting requests, this is the selection of agenda item type. In this case, up to one agenda item type is allowed. For the meeting request forms, this is the list of all the available agenda item types.
+          items:
+            $ref: '#/components/schemas/MeetingRoomAgendaItemType'
+        setupType:
+          type: array
+          description: For the meeting requests, this is the selection of setup type. In this case, up to one setup type is allowed. For the meeting request forms, this is the list of all the available setup types.
+          items:
+            $ref: '#/components/schemas/MeetingRoomSetupType'
+        roomSize:
+          type: number
+          description: The size of the meeting room. It can be in any measurement the user chooses, e.g., square feet, number of seats, number of tables, etc.
+          example: 100
+        numberOfPeople:
+          type: integer
+          description: The number of people for the meeting room.
+          example: 250
+        twentyFourHourHold:
+          type: boolean
+          description: True indicates the meeting room is held for 24 hours.
+          example: false
+        note:
+          type: string
+          description: The meeting room requirement note.
+          example: Meeting room note.
+    meeting-request-form-paginated-response:
+      title: MeetingRequestFormResponse
+      description: The response from a request to get the list of meeting request forms. This includes the paging object as well as the collection of meeting request forms.
+      required:
+      - paging
+      - data
       type: object
       properties:
-        attendee:
-          $ref: '#/components/schemas/Attendee3'
-        airRequestDetails:
-          description: List of all air request by attendee and its guest.
+        paging:
+          $ref: '#/components/schemas/Paging'
+        data:
           type: array
           items:
-            $ref: '#/components/schemas/AirRequest'
-    lastModified:
-      type: string
-      format: date-time
-      description: The ISO 8601 zoned date time when this record was updated.
-      readOnly: true
-      example: '2019-02-12T03:00:00Z'
+            $ref: '#/components/schemas/meeting-request-form'
+          description: Collection of meeting request form objects.
     PaginationLinks:
       title: PaginationLinks
       type: object
@@ -649,479 +841,412 @@ components:
           $ref: '#/components/schemas/Link'
         prev:
           $ref: '#/components/schemas/Link'
-    SeatType:
-      title: SeatType
-      description: Preferred or assigned seat type for an air booking.
-      type: string
+    MeetingRoomSetupType:
+      title: MeetingRoomSetupType
+      description: Defines the setup types of a meeting room requirement.
+      example: Classroom
+      readOnly: true
       enum:
-      - Aisle
-      - Window
-      example: Window
-    AirActualDetail:
-      title: AirActualDetail
-      description: Representation of an air actual detail response.
-      type: object
-      properties:
-        attendee:
-          $ref: '#/components/schemas/Attendee3'
-        airActualDetails:
-          description: List of air actual details for the attendee and its guest.
-          type: array
-          items:
-            $ref: '#/components/schemas/AirActual'
-          minItems: 0
-          maxItems: 200
-    TravelRequestStatus:
-      title: TravelRequestStatus
-      enum:
-      - SUBMITTED
-      - PROCESSING
-      - APPROVED
-      - RESERVED
-      - DENIED
-      - NOT_AVAILABLE
-      - CANCELLED
-      - PENDING
-      - TICKETED
-      - WAITLISTED
-      type: string
-      description: Status of the travel request done by attendee.
-      example: SUBMITTED
-    FlightDetail:
-      title: FlightDetail
-      description: Representation of a flight's details.
-      type: object
-      properties:
-        airline:
-          type: string
-          description: Name of the airline.
-          example: Emirates
-        flightNumber:
-          type: string
-          description: Number assigned to a particular flight by the airline.
-          example: EK 516
-        origin:
-          type: string
-          description: Origin airport of the flight.
-          example: Delhi - Indira Gandhi Intl - (DEL)
-        originCode:
-          type: string
-          description: IATA airport code of the origin airport.
-          maxLength: 3
-          minLength: 3
-          example: DEL
-        destination:
-          type: string
-          description: Destination airport of the flight.
-          example: New York - John F Kennedy Intl - (JFK)
-        destinationCode:
-          type: string
-          description: IATA airport code of the destination airport.
-          maxLength: 3
-          minLength: 3
-          example: JFK
-        departing:
-          type: string
-          format: date-time
-          description: The ISO 8601 zoned date time (in UTC) of flight departure.
-          example: '2023-05-19T00:00:00Z'
-        arriving:
-          type: string
-          format: date-time
-          description: The ISO 8601 zoned date time (in UTC) of flight arrival.
-          example: '2023-05-19T00:00:00Z'
-        seatNumber:
-          type: string
-          description: Seat number assigned to the passenger.
-          example: 21A
-        ticketClass:
-          type: string
-          description: Category of the passenger's ticket.
-          example: coach
-        flightConfirmationNumber:
-          type: string
-          description: The airline's flight confirmation number.
-          example: 123-456-XYZ
-        flightGDSRecordLocator:
-          type: string
-          description: The unique reservation number associated with the Global Distribution System (GDS) where the flight was booked.
-          example: ABC123
-        journeySegment:
-          type: string
-          description: Journey Segment
-          enum:
-          - LeavingEvent
-          - GoingToEvent
-          - NotApplicable
-          example: LeavingEvent
-    HotelRequest:
-      title: HotelRequest
-      description: Representation of a hotel request.
+      - 10x10
+      - 8x10
+      - Buffet
+      - Cabaret
+      - Chevron
+      - Classroom
+      - Conference
+      - Crescent Rounds
+      - Flow
+      - Herringbone
+      - Hollow Square
+      - Island
+      - Other
+      - Peninsula
+      - Plated
+      - Reception
+      - Rounds
+      - Rounds of 10
+      - Rounds of 6
+      - Rounds of 8
+      - School Room
+      - Tabletop
+      - Theater
+      - T-Shaped
+      - U-Shaped
+    meeting-request:
+      title: MeetingRequest
+      description: A meeting request.
+      required:
+      - id
+      - name
+      - meetingRequestForm
       type: object
       allOf:
       - $ref: '#/components/schemas/Audit'
       properties:
-        hotelRequestId:
+        id:
           type: string
-          format: uuid
-          description: ID of the hotel request.
-          example: 3b2359a7-4583-40ed-8afd-67e5f15373d3
-        requesterId:
+          description: The unique ID representing the meeting request.
+          readOnly: true
+          example: 017f1149-0f3a-4531-b1aa-6f66a6cb04f3
+        name:
           type: string
-          format: uuid
-          description: ID of the flight requester. For an event attendee, this field is contact ID. For guest, this field is guest ID.
-          example: 3b2359a7-4583-40ed-8afd-67e5f15373d3
-        requesterType:
-          type: string
-          description: Attendee type of the hotel requester. Contact means the requester is an independent attendee. Guest means the attendee is accompanying another attendee.
-          enum:
-          - Contact
-          - Guest
-          example: Contact
-        requesterFirstName:
-          type: string
-          description: First name of the hotel requester.
-          example: John
-          maxLength: 30
-        requesterLastName:
-          type: string
-          description: Last name of the hotel requester.
-          example: Doe
-          maxLength: 50
-        hotelName:
-          type: string
-          description: Name of the hotel.
-          example: Fairmont Chicago
-          maxLength: 100
-        hotelCode:
-          type: string
-          description: Code of the hotel.
-          example: 6BNMSHJFSRP
-          maxLength: 30
-        roomName:
-          type: string
-          description: Name of the room.
-          example: Deluxe Room
-          maxLength: 50
-        roomCode:
-          type: string
-          description: Code of the room.
-          example: 6BNMSHJFSR
-          maxLength: 10
-        quantity:
-          type: integer
-          description: Number of hotel requests made by requester.
-          example: 1
-        roommateRequested:
-          type: string
-          description: Name of the roommate requested by requester.
-          example: Will Doe
-        specialRequest:
-          type: string
-          description: Any special requests the requester asks of the hotel.
-          maxLength: 300
-          example: Please provide early check-in.
-        rewardsCode:
-          type: string
-          description: Requesters' reward code for the hotel's loyalty program.
-          example: ROYALTY
-          maxLength: 50
-        checkinDate:
-          type: string
-          format: date-time
-          description: The ISO 8601 zoned date time (in UTC) when the guest will check in to the hotel.
-          example: '2023-05-19T00:00:00Z'
-        checkoutDate:
-          type: string
-          format: date-time
-          description: The ISO 8601 zoned date time (in UTC) when the guest will check out of the hotel.
-          example: '2023-05-20T00:00:00Z'
-        smoking:
-          type: boolean
-          description: True indicates smoking should be allowed in the room.
-        cancelled:
-          type: boolean
-          description: True indicates this hotel request is cancelled.
+          description: The name of the specific meeting request.
+          example: Limited MR
         status:
-          $ref: '#/components/schemas/TravelRequestStatus'
-        confirmationNumber:
+          $ref: '#/components/schemas/MeetingRequestStatus'
+        statusNote:
           type: string
-          description: The hotel's confirmation number.
-          example: CONFIRM_123
-        isADAAccessible:
-          type: boolean
-          description: True indicate the room should meet the Americans with Disabilities Act (ADA) accessibility requirements.
-        shareRoom:
-          type: boolean
-          description: True indicates the requester wants a roommate.
-        roommateLeader:
-          type: boolean
-          description: True indicates the requester is the roommate in charge of the room.
-        gender:
-          $ref: '#/components/schemas/Gender1'
-        totalAmount:
-          type: number
-          description: Total cost of the hotel stay.
-          example: 500
-        currencyCode:
-          type: string
-          description: ISO 4217 currency code for the cost of the hotel stay.
-          example: USD
-          maxLength: 3
-        roomCharge:
-          type: boolean
-          description: Specifies if the planner will charge for the hotel.
-        roomTaxBillingInstructions:
-          type: string
-          description: Specifies who the hotel will charge for the room rate's tax.
-          example: tax instructions
-        incidentalBillingInstructions:
-          type: string
-          description: Specifies who the hotel will charge incidental (extra) room expenses, like room service or long-distance calling.
-          example: billing instructions
-        plannerMemo:
-          type: string
-          description: Additional note by, or intended for, event planners.
-          maxLength: 300
-          example: Planner's notes here.
-        earliestShoulderDate:
-          type: string
-          format: date-time
-          description: The ISO 8601 zoned date time (in UTC) when the requester is requesting for an earliest shoulder date.
-          example: '2023-05-19T00:00:00Z'
-        latestShoulderDate:
-          type: string
-          format: date-time
-          description: The ISO 8601 zoned date time (in UTC) when the requester is requesting for an latest shoulder date.
-          example: '2023-05-19T00:00:00Z'
-        roomTaxBillingExceptions:
-          type: string
-          description: Specifies who the hotel will charge for the room rate's tax.
-          example: exceptions noted here.
-        incidentalBillingExceptions:
-          type: string
-          description: Specifies who the hotel will charge incidental (extra) room expenses, like room service or long-distance calling.
-          example: exceptions noted here.
-        hotelAddress:
-          $ref: '#/components/schemas/Address7'
-        hotelRoomRates:
-          type: array
-          description: Collection of hotel room rates the requester has taken.
-          items:
-            $ref: '#/components/schemas/HotelRoomRate'
-        hotelRequestAnswers:
-          type: array
-          description: Answer provided by requester to the hotel request related question.
-          items:
-            $ref: '#/components/schemas/AttendeeAnswer1'
-    HousingReservationResponse:
-      title: HousingReservationResponse
-      description: Representation of the reservation request response.
-      type: object
-      properties:
-        attendee:
-          $ref: '#/components/schemas/Attendee3'
-        reservationRequest:
-          $ref: '#/components/schemas/HousingReservation'
-        lastModified:
-          $ref: '#/components/schemas/lastModified'
-    HousingReservation:
-      title: HousingReservation
-      description: Representation of the housing reservation details.
-      type: object
-      properties:
-        id:
-          type: string
-          format: string
-          description: Reservation request ID, also known as a bridge ID.
-          example: D6A63423-G796
-        bookingSite:
-          title: Link
-          required:
-          - href
+          description: The note about the status.
+          example: The status indicates that the request is submitted to accounting
+        meetingRequestForm:
           type: object
-          description: Represents a link to a related resource.
-          properties:
-            href:
-              type: string
-              description: URL of the booking site for this reservation request.
-              example: https://book.passkey.com/entry?token=eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJwYXlsb2FkIjp7ImVudHJ5IjoiUkVHSVNUUkFUSU9OIiwicGFyYW1zIjpbeyJuYW1lIjoiYnJpZGdlSWQiLCJ2YWx1ZSI6IlQ3VFdNTEhQLUdFNEQifV19fQ.7sH1gO_1Aambk-SRRlO2c7ac2DOpqLmCB-zsxB71q_A
-    AlternateTravelDetail:
-      title: AlternateTravelDetail
-      description: Details of an alternate travel answer submitted by an attendee who opted out of air or hotel bookings.
-      type: object
-      allOf:
-      - $ref: '#/components/schemas/Audit'
-      properties:
-        attendee:
-          $ref: '#/components/schemas/Attendee3'
-        requesterId:
-          type: string
-          format: uuid
-          description: ID of the entity this alternate travel belongs to. For an event attendee, this field is contact ID. For guest, this field is guest ID.
-          example: 3b2359a7-4583-40ed-8afd-67e5f15373d3
-        requesterType:
-          type: string
-          description: Attendee type of the entity this alternate travel belongs to. Contact means the requester is an independent attendee. Guest means the attendee is accompanying another attendee.
-          enum:
-          - Contact
-          - Guest
-          example: Contact
-        travelType:
-          type: string
-          description: Type of travel alternate question
-          enum:
-          - AirRequest
-          - HotelRequest
-          - AirActual
-          - GroupFlight
-          example: AirRequest
-        question:
-          $ref: '#/components/schemas/AlternateQuestion'
-        answer:
-          $ref: '#/components/schemas/AlternateAnswer'
-    LegDetail:
-      title: LegDetail
-      description: Representation of a leg detail in air request.
-      type: object
-      properties:
-        origin:
-          type: string
-          description: Name of the airport where the flight of the passenger's journey originates.
-          example: Delhi - Indira Gandhi Intl - (DEL)
-        destination:
-          type: string
-          description: Name of the airport where the flight of the passenger's journey ends.
-          example: Dubai - International (DXB)
-        date:
-          type: string
-          format: date-time
-          description: The ISO 8601 zoned date time (in UTC) of the flight origin.
-          example: '2023-05-19T00:00:00Z'
-        time:
-          type: string
-          description: General time of day or specific time when the flight of the passenger's journey starts.
-          example: Morning
-    AlternateAnswer:
-      title: AlternateAnswer
-      description: Represents the answer(s) to an alternate travel question submitted by an attendee.
-      type: object
-      properties:
-        value:
-          type: array
-          description: The set of answers to a single alternate travel question.
-          maxItems: 50
-          items:
-            type: string
-            description: A single answer to the alternate travel question.
-            example: '1234'
-          example:
-          - '1234'
-    AirRequesterType:
-      title: AirRequesterType
-      description: Representation of an attendee type of the flight requester. Contact means the requester is an independent attendee. Guest means the attendee is accompanying another attendee. Unknown means attendee has requested a flight for passenger other than its guest.
-      type: string
-      enum:
-      - Contact
-      - Guest
-      - Unknown
-      example: Contact
-    Attendee3:
-      title: Attendee
-      description: Representation of the attendee
-      type: object
-      properties:
-        id:
-          $ref: '#/components/schemas/uuid-property'
-    AlternateQuestion:
-      title: AlternateQuestion
-      description: Represents a reference to an alternate travel question entity, containing only the question ID and text.
-      type: object
-      properties:
-        id:
-          type: string
-          format: uuid
-          description: Unique identifier for the question entity.
-          example: 04ca6ae2-0dc3-487b-953e-86d6abbdf7d3
-        text:
-          type: string
-          description: Text of the alternate travel question.
-          example: Why are you not booking a hotel with us?
-    air-actual-detail:
-      title: AirActualPaginatedResponse
-      description: The response from a request to get the list of air actual for the attendees.  This includes the paging object as well as the collection of air actual details.
-      required:
-      - paging
-      - data
-      type: object
-      properties:
-        paging:
-          $ref: '#/components/schemas/Paging'
-        data:
-          type: array
-          items:
-            $ref: '#/components/schemas/AirActualDetail'
-          description: Collection of air actuals for attendees.
-          minItems: 0
-          maxItems: 200
-    air-reservation-detail:
-      title: AirReservationPaginatedResponse
-      description: The response from a request to get the list of air reservation for the attendees.  This includes the paging object as well as the collection of air actual details.
-      required:
-      - paging
-      - data
-      type: object
-      properties:
-        paging:
-          $ref: '#/components/schemas/Paging'
-        data:
-          type: array
-          items:
-            $ref: '#/components/schemas/AirReservationDetail'
-          description: Collection of air reservations for attendees.
-    AttendeeAnswer1:
-      title: AttendeeAnswer
-      description: Answer for the question answered by attendee.
-      required:
-      - question
-      - value
-      type: object
-      properties:
-        question:
-          type: object
-          description: The reference to the question entity. Contains only the ID of the question entity.
+          description: The meeting request form the request is associated with.
           properties:
             id:
               type: string
-              description: Question ID
               format: uuid
-              example: 04ca6ae2-0dc3-487b-953e-86d6abbdf7d3
-        value:
+              description: Meeting Request form ID.
+            name:
+              type: string
+              description: The name of the meeting request form.
+              example: Annual Sales Meeting Request Form
+        questions:
           type: array
-          description: The set of answers to a question.
           items:
-            type: string
-            description: A question answer
-            example: '1234'
-    alternate-travel-paginated-response:
-      title: AlternateTravelPaginatedResponse
-      description: Paginated response containing alternate travel answers submitted by attendees who opt out of air or hotel bookings.
+            $ref: '#/components/schemas/MeetingRequestQuestion'
+          description: The list of possible answers to a question.
+        event:
+          type: object
+          properties:
+            id:
+              type: string
+              format: uuid
+              description: Event ID. This field may be absent immediately after creation when the meeting request form is configured to auto-create an event on submission, as event creation is processed asynchronously.
+          description: The event the request is associated with.
+        sourceId:
+          type: string
+          description: 'The ID for the meeting request in an external system. NOTE: This value is expected to be unique for each meeting request within an account. Consider adding the external system name as part of the ID.'
+          example: sourceId12
+        code:
+          type: string
+          description: The meeting request code for reference.
+          example: VPNH3JGMTND
+        archiveDate:
+          type: string
+          description: The ISO 8601 zoned date time when this request was archived.
+          example: '2017-01-02T02:00:00Z'
+    BudgetCostDetail1:
+      title: BudgetCostDetail
+      description: The budget entry in detail, which consists of the budget category or sub-category, the number of units, the cost per unit, and the total amount.
+      properties:
+        category:
+          $ref: '#/components/schemas/BudgetCategory'
+        subCategory:
+          $ref: '#/components/schemas/BudgetSubCategory'
+        units:
+          type: number
+          description: The number of units associated with a budget item. This field can be any number if the budget item is a *Variable* cost type. If the budget item uses a *Fixed* cost type, set this field to 1.
+          example: 5.2
+        cost:
+          type: number
+          description: The cost amount of the budget item. If the budget item uses a *Fixed* cost type, the value of this field won't be applied to the creation or update of a Meeting Request.
+          example: 100.5
+        totalCost:
+          type: number
+          description: The total cost of the budget item. If the budget item uses a *Variable* cost type, this field will be set as the result of units times cost. The value of this field will be applied to the creation or update of a Meeting Request only if the cost type is *Fixed*.
+          example: 100.5
+          readOnly: true
+    meeting-request-bulk-update:
+      title: MeetingRequestBulkUpdate
+      description: Meeting requests to update.
+      type: array
+      items:
+        $ref: '#/components/schemas/MeetingRequestUpdate'
+    MeetingRequestUpdate:
+      title: MeetingRequestUpdate
+      description: An updated meeting request.
       type: object
       required:
-      - paging
+      - id
+      properties:
+        id:
+          type: string
+          description: The ID of a meeting request.
+          example: 017f1149-0f3a-4531-b1aa-6f66a6cb04f3
+        name:
+          type: string
+          description: The name of the specific meeting request.
+          example: Limited MR
+        questions:
+          description: Questions for the meeting request.
+          type: array
+          items:
+            $ref: '#/components/schemas/MeetingRequestQuestion'
+        status:
+          $ref: '#/components/schemas/MeetingRequestStatus'
+        sourceId:
+          type: string
+          description: 'The ID for the meeting request in an external system. NOTE: This value is expected to be unique for each meeting request within an account. Consider adding the external system name as part of the ID.'
+          example: sourceId12
+        statusNote:
+          type: string
+          description: The note about the status.
+          example: The status indicates that the request is submitted to accounting
+    meeting-request-form:
+      title: MeetingRequestForm
+      description: A meeting request form.
+      required:
+      - id
+      - name
+      type: object
+      properties:
+        id:
+          type: string
+          description: The ID of the meeting request form.
+          readOnly: true
+          example: 9c97eb50-9f88-4972-a603-f617fc3258dd
+        name:
+          type: string
+          description: User-defined name of the meeting request form.
+          example: Request for Medical Meetups
+        statuses:
+          type: array
+          items:
+            type: string
+            example: Declined
+          description: User-defined list of statuses for the meeting request form.
+        active:
+          type: boolean
+          description: A boolean indicating a meeting request form's active status. When true, the meeting request form is available for new request submissions. When false, only updates can be made to existing requests for this form
+          example: true
+        questions:
+          type: array
+          items:
+            $ref: '#/components/schemas/MeetingRequestCustomField'
+          description: The list of questions that will need to be answered by someone creating a meeting request from this form.
+    SecondaryValue:
+      title: SecondaryValue
+      description: The secondary value of the question. This can be the other answer of choice questions which have `Other` as an answer type.
+      type: string
+      example: The other answer for the question.
+    MeetingRequestBulkResponseItem:
+      title: MeetingRequestBulkResponseItem
+      description: Represents a single meeting request that's returned as part of a bulk request call.
+      type: object
+      required:
+      - status
       - data
       properties:
+        data:
+          $ref: '#/components/schemas/meeting-request'
+        status:
+          type: integer
+          description: HTTP status code representing the processing status of a single item.
+          example: 200
+        message:
+          type: string
+          description: Quick description of what happened during processing.
+          example: Successful
+        request:
+          description: The processed request tied to this response. This field is only sent when processing fails.
+          example: Example request information.
+          anyOf:
+          - type: object
+          - type: string
+          - type: number
+          - type: integer
+          - type: boolean
+      additionalProperties: false
+    CustomFieldBase:
+      title: CustomFieldBase
+      description: Base schema for Custom Field - allows type to be customized by extending schemas
+      required:
+      - id
+      - value
+      type: object
+      properties:
+        id:
+          type: string
+          description: The unique ID representing this custom field.
+          format: uuid
+        name:
+          type: string
+          description: The actual text of the custom field.
+          example: What is your favorite color?
+          readOnly: true
+        value:
+          type: array
+          uniqueItems: true
+          items:
+            type: string
+            description: A question answer value
+            maxLength: 16000
+          description: The set of answers or possible answers to a question.
+          example:
+          - Choice C
+          - Choice A
+        order:
+          type: integer
+          description: The order of this question in the bigger list of questions.
+          example: 1
+          readOnly: true
+    CustomFieldType:
+      title: CustomFieldType
+      enum:
+      - AutoIncrement
+      - ConsentQuestion
+      - Currency
+      - Decimal
+      - Date
+      - DateTime
+      - Email
+      - FileUpload
+      - FreeText
+      - General
+      - MultiChoice
+      - MultiSelect
+      - Number
+      - OpenEndedDateTime
+      - OpenEndedText
+      - SingleChoice
+      - SingleSelect
+      - USPhoneNumber
+      - Unknown
+      type: string
+      description: The type of data collected by a custom field.
+      example: General
+    meeting-request-paginated-response:
+      title: MeetingRequestPaginatedResponse
+      description: Paginated collection of meeting requests.
+      required:
+      - data
+      - paging
+      type: object
+      properties:
         paging:
-          type: object
-          description: Represents pagination information for the list of results.
-          allOf:
-          - $ref: '#/components/schemas/Paging'
+          $ref: '#/components/schemas/Paging'
         data:
           type: array
-          maxItems: 200
-          description: Collection of alternate travel answers for attendees.
           items:
-            $ref: '#/components/schemas/AlternateTravelDetail'
+            $ref: '#/components/schemas/meeting-request'
+          description: Collection of meeting request objects.
+    QuestionType1:
+      title: QuestionType
+      enum:
+      - AutoIncrement
+      - BudgetEstimates
+      - ConsentQuestion
+      - Country
+      - Currency
+      - Decimal
+      - Date
+      - DateTime
+      - Email
+      - FileUpload
+      - FreeText
+      - General
+      - Number
+      - MeetingRoomRequirements
+      - MultiSelect
+      - SingleSelect
+      - SleepingRoomRequirements
+      - USPhoneNumber
+      - Unknown
+      type: string
+      description: Denotes the type of data collected by a question.
+      example: SingleSelect
+      readOnly: true
+    MeetingRequestQuestion:
+      title: MeetingRequestQuestion
+      description: A question and its answer for a meeting request. Some questions have fixed, well-known IDs that are the same across all accounts. Use the `type` field or the question `id` to determine the format of the `value` array.
+      required:
+      - id
+      - value
+      properties:
+        id:
+          type: string
+          description: 'The unique ID of the question. Some questions have fixed, well-known IDs shared across all accounts:
+
+            * Event Country/Region — `da9a6706-7af3-42fc-b2c1-708050a791c1`
+
+            * Requester Country/Region — `d8fa449b-ec97-4e91-8193-b753df11e064`
+
+            * Stakeholder Country/Region — `ddd9035a-44a2-49b0-8d31-66cdca0c13c7`
+
+            * Meeting Room Requirements — `9a224e41-58d9-43a2-ae59-6d1aa16442ce`
+
+            * Sleeping Room Requirements — `cc63aa7c-0800-4fa5-a04b-073793e197f3`
+
+            * Budget Estimates — `1479fb2d-e94c-4bfb-a63f-4af808a22160`'
+          format: uuid
+          example: f1ea56cd-6860-4f1a-baf7-973118384384
+        name:
+          type: string
+          description: The display text of the question.
+          example: What is your favorite color?
+          readOnly: true
+        type:
+          $ref: '#/components/schemas/QuestionType1'
+        value:
+          type: array
+          uniqueItems: true
+          items:
+            type: string
+            example: Green
+          description: 'An array of non-null answers to the question. The format of each item depends on the question `type`.
+
+
+            **Standard questions:** Each item is a plain string (for example, `"Green"`).
+
+
+            **Country/Region questions (`type: Country`):** Each item is either a country name (for example, `"Canada"`) or a country code (for example, `"CA"`). Clients should provide either country names or country codes, but not both formats in the same request. See the Country Codes reference for the list of supported country codes and corresponding country names.
+
+
+            **Complex questions (`type: MeetingRoomRequirements`, `SleepingRoomRequirements`, or `BudgetEstimates`):** Each item is a JSON-serialized string. See `compositeValue` for the same data in parsed form.'
+        answerType:
+          $ref: '#/components/schemas/AnswerType1'
+        secondaryValue:
+          $ref: '#/components/schemas/SecondaryValue'
+        compositeValue:
+          $ref: '#/components/schemas/CompositeValue'
+    AnswerType1:
+      title: AnswerType
+      description: 'Indicates the type of the answer, which determines how the `value` and `secondaryValue` fields are interpreted.
+
+
+        Set to **"Other"** when the question has the **"Other"** choice option enabled, indicating the answer in the **"secondaryValue"** field is a free-text response to that option.
+
+
+        Set to **"NA"** when the question has the **"N/A"** choice option enabled, to indicate an N/A type answer; in this case, `value` is omitted.
+
+
+        In all other cases, `answerType` is not expected to be set.'
+      type: string
+      enum:
+      - Other
+      - NA
+      example: Other
+    MeetingRequestStatus:
+      title: MeetingRequestStatus
+      description: The user-defined status of the meeting request. Possible statuses for requests are defined by the user at meeting request form creation.
+      type: string
+      example: Submitted to Accounting
+    BudgetEstimate:
+      title: BudgetEstimate
+      description: The estimated budget of the Meeting Request.
+      properties:
+        currency:
+          type: string
+          description: 'The ISO 4217 standard format currency code used for this budget. Note: the allowed currencies are configured per account. A **BAD REQUEST (400)** error will be returned if the specified currency is not allowed for the account during the creation or update of the Meeting Request.'
+          example: USD
+        costType:
+          $ref: '#/components/schemas/BudgetCostType'
+        costDetail:
+          type: array
+          title: Cost Detail
+          description: A list of budget entry details. Each entry consists of the budget category or sub-category, the number of units, the cost per unit, and the total amount.
+          items:
+            $ref: '#/components/schemas/BudgetCostDetail1'
     ErrorResponseBase:
       title: ErrorResponseBase
       type: object
@@ -1142,6 +1267,22 @@ components:
           type: string
           description: The target resource of the error.
           example: example target
+    BudgetCategory:
+      title: BudgetCategory
+      description: Denotes the category assigned to the budget item.
+      type: object
+      required:
+      - id
+      properties:
+        id:
+          type: integer
+          description: Unique identifier of the budget category.
+          example: 3
+        name:
+          type: string
+          description: Name of the budget category assigned to the budget item.
+          example: Travel
+          readOnly: true
     Link:
       title: Link
       required:
@@ -1163,6 +1304,15 @@ components:
           example:
             code: 429
             message: Limit Exceeded
+    UnprocessableEntity1:
+      description: Was not able to process the request.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+          example:
+            code: 422
+            message: Unprocessable Entity
     NotFound1:
       description: Resource not found
       content:
@@ -1172,15 +1322,6 @@ components:
           example:
             code: 404
             message: Not found
-    Forbidden1:
-      description: You do not have access to the resource
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/ErrorResponse'
-          example:
-            code: 403
-            message: Access Forbidden
     Unauthorized1:
       description: Bad or expired token
       content:
@@ -1190,6 +1331,15 @@ components:
           example:
             code: 401
             message: Unauthorized
+    Forbidden1:
+      description: You do not have access to the resource
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+          example:
+            code: 403
+            message: Access Forbidden
     BadRequest1:
       description: Bad request
       content:
@@ -1200,40 +1350,17 @@ components:
             code: 400
             message: Bad Request
   parameters:
-    expandHotelRequestQuestionAnswer:
-      name: expand
-      in: query
-      required: false
-      description: "A list of fields to be expanded, returning additional information alongside the specified fields. The expanded entity is retrieved and displayed inline for each specified expansion field. The respective scopes for each expansion are required.\n\nThe following fields are expandable:\n  * hotelRequestDetails.hotelRequestAnswers.question (<a href=\"#operation/getEventQuestions\">List Event Questions</a>)\n"
-      schema:
-        example: hotelRequestDetails.hotelRequestAnswers.question
-        type: array
-        items:
-          type: string
-          enum:
-          - hotelRequestDetails.hotelRequestAnswers.question
-    expandAirRequestQuestionAnswer:
-      name: expand
-      in: query
-      required: false
-      description: "A list of fields to be expanded, returning additional information alongside the specified fields. The expanded entity is retrieved and displayed inline for each specified expansion field. The respective scopes for each expansion are required.\n\nThe following fields are expandable:\n  * airRequestDetails.airRequestAnswers.question (<a href=\"#operation/getEventQuestions\">List Event Questions</a>)\n"
-      schema:
-        example: airRequestDetails.airRequestAnswers.question
-        type: array
-        items:
-          type: string
-          enum:
-          - airRequestDetails.airRequestAnswers.question
-    sortForAirActual:
-      name: sort
-      required: false
+    limit3:
+      name: limit
       in: query
       style: form
-      explode: false
-      description: "The sort order passed as a parameter, used to control the order of the\nsearch results as a priority ordered list of sorts\n\nThere are two orders:\n  * ascending: ASC\n  * descending: DESC\n\nThe following fields are sortable:\n  * airActualDetails.name\n  * airActualDetails.lastModified\nwhere i <= limit\n"
+      explode: true
+      description: The maximum number of requests or forms that can be fetched at once.
       schema:
-        type: string
-        example: airActualDetails.name:DESC,airActualDetails.lastModified:ASC
+        maximum: 20
+        minimum: 1
+        type: integer
+        default: 10
     before:
       name: before
       required: false
@@ -1243,76 +1370,6 @@ components:
         type: string
         format: date-time
         example: '2017-01-02T02:00:00Z'
-    limit:
-      name: limit
-      in: query
-      description: The maximum number of records to return per page.
-      style: form
-      explode: true
-      schema:
-        maximum: 200
-        minimum: 1
-        type: integer
-        default: 100
-        example: 100
-    filter2:
-      name: filter
-      in: query
-      required: false
-      description: 'Use filter query parameters to limit results
-
-        to data that matches your criteria. See
-
-        [Filters](https://developers.cvent.com/docs/rest-api/reference/filters) for details.
-
-
-        Supported fields and operators are listed below:
-
-
-        | Field            | Operators                          | Notes                                          |
-
-        |------------------|-------------------------------------|------------------------------------------------|
-
-        | attendee.id      | `eq`, `ne`                          | Limit: 17 fields can be passed in a filter     |
-
-
-        The following logical operators are supported for combining filters:
-
-        * or
-
-        '
-      schema:
-        type: string
-        example: (attendee.id eq '76f2b9e2-fcce-4d93-be29-a008b76a050c') OR (attendee.id eq '16322408-bae8-4b29-a559-702d2023e13a')
-    expandAirActualQuestionAnswer:
-      name: expand
-      in: query
-      required: false
-      description: "A list of fields to be expanded, returning additional information alongside the specified fields. The expanded entity is retrieved and displayed inline for each specified expansion field. The respective scopes for each expansion are required.\n\nThe following fields are expandable:\n  * airActualDetails.airActualAnswers.question (<a href=\"#operation/getEventQuestions\">List Event Questions</a>)\n"
-      schema:
-        example: airActualDetails.airActualAnswers.question
-        type: array
-        items:
-          type: string
-          enum:
-          - airActualDetails.airActualAnswers.question
-    id2:
-      in: path
-      name: id
-      description: ID of an event.
-      required: true
-      schema:
-        $ref: '#/components/schemas/uuid-property'
-    sortForAirRequest:
-      name: sort
-      required: false
-      in: query
-      style: form
-      explode: false
-      description: "The sort order passed as a parameter, used to control the order of the\nsearch results as a priority ordered list of sorts\n\nThere are two orders:\n  * ascending: ASC\n  * descending: DESC\n\nThe following fields are sortable:\n  * airRequestDetails.requesterFirstName\n  * airRequestDetails.requesterLastName\n  * airRequestDetails.lastModified\n"
-      schema:
-        type: string
-        example: airRequestDetails.requesterFirstName:DESC,airRequestDetails.requesterLastName:ASC
     token:
       name: token
       in: query
@@ -1326,16 +1383,6 @@ components:
       schema:
         type: string
         example: 0e28af57-511f-47ab-ae46-46cd1ca51a1a
-    sortForHotelRequest:
-      name: sort
-      required: false
-      in: query
-      style: form
-      explode: false
-      description: "The sort order passed as a parameter, used to control the order of the\nsearch results as a priority ordered list of sorts\n\nThere are two orders:\n  * ascending: ASC\n  * descending: DESC\n\nThe following fields are sortable:\n  * hotelRequestDetails.requesterFirstName\n  * hotelRequestDetails.requesterLastName\n  * hotelRequestDetails.lastModified\n"
-      schema:
-        type: string
-        example: hotelRequestDetails.requesterFirstName:DESC,hotelRequestDetails.requesterLastName:ASC
     after:
       name: after
       required: false

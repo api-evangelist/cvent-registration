@@ -1,6 +1,6 @@
 openapi: 3.2.0
 info:
-  title: Cvent REST Speakers API
+  title: Cvent REST Appointments API
   description: '# Introduction
 
     The Cvent API Platform is built around REST.'
@@ -12,215 +12,70 @@ servers:
 - url: https://api-platform.cvent.com/ea
 - url: https://api-platform-eur.cvent.com/ea
 tags:
-- name: Speakers
-  description: Speakers are individuals presenting at your event's session(s). Use Speaker APIs to read existing speaker data, create new speakers or update existing speakers in your events.
+- name: Appointments
+  description: An appointment is a meeting scheduled between two or more parties.
 paths:
-  /program-items/speakers:
+  /appointment-attendees:
     get:
+      tags:
+      - Appointments
       security:
       - OAuth2.clientCredentials:
-        - event/program-items:read
+        - appointments/appointment-attendees:read
       - OAuth2.authorizationCode:
-        - event/program-items:read
-      summary: Get Session Program Speakers
-      description: Returns a paginated list of session program item and speaker associations.
-      operationId: getSessionProgramSpeakers
-      tags:
-      - Speakers
-      parameters:
-      - $ref: '#/components/parameters/limit'
-      - $ref: '#/components/parameters/token'
-      - name: filter
-        in: query
-        required: false
-        description: "A filter query string narrows search results and supports the combination of logical and comparison operators.\nThe filter adheres to the pattern filter='field' comparisonType 'value'.\n\nThese are the comparison types that can be used in filter expressions:\n  * equal: eq\n  * includes value(s): in\n\nThe following fields are filterable:\n  * programItem.id (eq|in)\n  * session.id (eq|in)\n\nThe following operators are available:\n  * and\n  * or\n"
-        schema:
-          type: string
-          example: session.id in ('04ca6ae2-0dc3-487b-953e-86d6abbdf7d3', '34ca65e2-1dc3-487b-589e-839d8bbdf7d3')
-      responses:
-        '200':
-          description: Successfully retrieved a list of session program item and speaker associations.
-          headers: {}
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/program-item-speaker-paginated-response'
-        '400':
-          $ref: '#/components/responses/BadRequest1'
-        '401':
-          $ref: '#/components/responses/Unauthorized1'
-        '403':
-          $ref: '#/components/responses/Forbidden1'
-        '429':
-          $ref: '#/components/responses/TooManyRequests1'
-  /program-items/speakers/filter:
-    post:
-      security:
-      - OAuth2.clientCredentials:
-        - event/program-items:read
-      - OAuth2.authorizationCode:
-        - event/program-items:read
-      summary: List Session Program Speakers
-      description: Gets a paginated list of session program speaker by providing filters in the body of the request. This method returns the same data as GET Session Program Speakers but allows for longer filters.
-      operationId: listSessionProgramSpeakersPostFilters
-      tags:
-      - Speakers
-      requestBody:
-        description: See the filter description of <a href="#operation/getSessionProgramSpeakers">GET Session Program Speakers</a> for full filtering information.
-        required: false
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/filter'
+        - appointments/appointment-attendees:read
       parameters:
       - $ref: '#/components/parameters/after'
       - $ref: '#/components/parameters/before'
       - $ref: '#/components/parameters/limit'
       - $ref: '#/components/parameters/token'
-      - $ref: '#/components/parameters/locale1'
-      responses:
-        '200':
-          description: Successfully retrieved a paginated list of session program item and speaker associations.
-          headers: {}
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/program-item-speaker-paginated-response'
-        '400':
-          $ref: '#/components/responses/BadRequest1'
-        '401':
-          $ref: '#/components/responses/Unauthorized1'
-        '403':
-          $ref: '#/components/responses/Forbidden1'
-        '429':
-          $ref: '#/components/responses/TooManyRequests1'
-  /program-items/{programItemId}/speakers/{id}:
-    parameters:
-    - $ref: '#/components/parameters/programItemId'
-    - $ref: '#/components/parameters/speakerId'
-    put:
-      security:
-      - OAuth2.clientCredentials:
-        - event/program-items:write
-      - OAuth2.authorizationCode:
-        - event/program-items:write
-      summary: Add Session Program Speaker
-      description: Creates a relationship between a session program item and a speaker. Limit 10 speakers per session program item.
-      operationId: createSessionProgramSpeaker
-      tags:
-      - Speakers
-      responses:
-        '200':
-          description: Successfully created the relationship between the session program item and the speaker.
-          headers: {}
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/speaker-program-item'
-        '401':
-          $ref: '#/components/responses/Unauthorized1'
-        '403':
-          $ref: '#/components/responses/Forbidden1'
-        '404':
-          $ref: '#/components/responses/NotFound1'
-        '409':
-          description: Session program speaker limit reached.
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/baseErrorResponse'
-              example:
-                code: 409
-                message: Conflict
-        '429':
-          $ref: '#/components/responses/TooManyRequests1'
-    get:
-      security:
-      - OAuth2.clientCredentials:
-        - event/program-items:read
-      - OAuth2.authorizationCode:
-        - event/program-items:read
-      summary: Get Session Program Speaker
-      description: Returns a session program speaker relationship.
-      operationId: getSessionProgramSpeaker
-      tags:
-      - Speakers
-      responses:
-        '200':
-          description: Successfully retrieved a session program item and speaker relationship.
-          headers: {}
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/speaker-program-item'
-        '401':
-          $ref: '#/components/responses/Unauthorized1'
-        '403':
-          $ref: '#/components/responses/Forbidden1'
-        '404':
-          $ref: '#/components/responses/NotFound1'
-        '429':
-          $ref: '#/components/responses/TooManyRequests1'
-    delete:
-      security:
-      - OAuth2.clientCredentials:
-        - event/program-items:delete
-      - OAuth2.authorizationCode:
-        - event/program-items:delete
-      summary: Delete Session Program Speaker
-      description: Deletes session program item to speaker relationship.
-      operationId: deleteSessionProgramSpeaker
-      tags:
-      - Speakers
-      responses:
-        '204':
-          description: Successfully deleted session program item to speaker relationship.
-          headers: {}
-        '401':
-          $ref: '#/components/responses/Unauthorized1'
-        '403':
-          $ref: '#/components/responses/Forbidden1'
-        '404':
-          $ref: '#/components/responses/NotFound1'
-        '429':
-          $ref: '#/components/responses/TooManyRequests1'
-  /speaker-categories:
-    get:
-      security:
-      - OAuth2.clientCredentials:
-        - event/speaker-categories:read
-      - OAuth2.authorizationCode:
-        - event/speaker-categories:read
-      summary: List Speakers Categories
-      description: Gets a paginated list of speakers categories.
-      operationId: listSpeakersCategories
-      parameters:
-      - $ref: '#/components/parameters/limit'
-      - $ref: '#/components/parameters/token'
       - name: filter
         in: query
         required: false
-        description: "A filter query string narrows search results and supports the combination of logical and comparison operators.\nThe filter adheres to the pattern filter='field' comparisonType 'value'.\n\nThe following can be used in filter expressions:\n  * equal: eq\n  * not equal: ne\n  * contains a value: contains\n\nThe following fields are filterable:\n  * active (eq|ne)\n  * id (eq|ne)\n  * name (eq|ne|contains)\n"
+        description: 'A filter query string narrows search results and supports the combination of logical and comparison operators. The filter adheres to the pattern filter=''field'' comparisonType ''value''.
+
+
+          There are six comparison types that can be used in filter expressions:
+
+          * equal: eq
+
+          * not equal: ne
+
+          * greater than: gt
+
+          * greater or equal: ge
+
+          * less than: lt
+
+          * less than or equal: le
+
+
+          The following fields are filterable:
+
+          * appointmentEvent.id (eq)
+
+          * contact.id (eq)
+
+          * deleted (eq)
+
+
+          The following operators are available:
+
+          * and'
         schema:
           type: string
-          example: active eq 'true'
-      - name: sort
-        in: query
-        required: false
-        description: "Sorts the returned speaker categories in ascending or descending order by its name.\n\nThere are two orders:\n  * ascending: ASC\n  * descending: DESC\n\nThe following fields are sortable:\n  * name\n"
-        schema:
-          type: string
-          example: name:DESC
-      tags:
-      - Speakers
+          example: appointmentEvent.id eq 'd165ad63-4bec-449d-aa9e-054fc7fcbb71' and contact.id eq 'da561161-8e80-4c70-9663-750cbc2045f6' and deleted eq 'false'
+      summary: List Appt Attendees
+      description: Gets a paginated list of appointment attendees.
+      operationId: listAppointmentAttendees
       responses:
         '200':
-          description: Successfully retrieved a paginated list of speakers categories.
+          description: Successfully retrieved a paginated response of appointment attendees.
           headers: {}
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/speaker-category-paginated-response'
+                $ref: '#/components/schemas/appointment-attendee-paginated-response'
         '400':
           $ref: '#/components/responses/BadRequest1'
         '401':
@@ -233,201 +88,380 @@ paths:
       externalDocs:
         description: More about OAuth2 authorization code support for administrators
         url: '#oauth2-auth-code-planner-admin'
-    post:
+  /appointment-attendees/{id}:
+    parameters:
+    - $ref: '#/components/parameters/appointmentAttendeeId'
+    get:
+      tags:
+      - Appointments
       security:
       - OAuth2.clientCredentials:
-        - event/speaker-categories:write
+        - appointments/appointment-attendees:read
       - OAuth2.authorizationCode:
-        - event/speaker-categories:write
-      summary: Create Speaker Category
-      description: Create a new speaker category
-      operationId: addSpeakerCategory
+        - appointments/appointment-attendees:read
+      summary: Get Appt Attendee
+      description: Gets a single appointment attendee by their ID.
+      operationId: getAppointmentAttendeeById
+      responses:
+        '200':
+          description: Successfully retrieved an appointment attendee.
+          headers: {}
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/appointment-attendee'
+        '401':
+          $ref: '#/components/responses/Unauthorized1'
+        '403':
+          $ref: '#/components/responses/Forbidden1'
+        '404':
+          $ref: '#/components/responses/NotFound1'
+        '429':
+          $ref: '#/components/responses/TooManyRequests1'
+      deprecated: false
+      externalDocs:
+        description: More about OAuth2 authorization code support for administrators
+        url: '#oauth2-auth-code-planner-admin'
+  /appointment-availability-times:
+    get:
+      tags:
+      - Appointments
+      security:
+      - OAuth2.clientCredentials:
+        - appointments/appointment-attendees:read
+      - OAuth2.authorizationCode:
+        - appointments/appointment-attendees:read
+      parameters:
+      - $ref: '#/components/parameters/after'
+      - $ref: '#/components/parameters/before'
+      - $ref: '#/components/parameters/limit'
+      - $ref: '#/components/parameters/token'
+      - name: filter
+        in: query
+        required: false
+        description: 'A filter query string narrows search results and supports the combination of logical and comparison operators. The filter adheres to the pattern filter=''field'' comparisonType ''value''.
+
+
+          There are six comparison types that can be used in filter expressions:
+
+          * equal: eq
+
+          * not equal: ne
+
+          * greater than: gt
+
+          * greater or equal: ge
+
+          * less than: lt
+
+          * less than or equal: le
+
+
+          The following fields are filterable:
+
+          * appointmentEvent.id (eq)
+
+          * attendee.id (eq)
+
+
+          No operators are available'
+        schema:
+          type: string
+          example: appointmentEvent.id eq 'd165ad63-4bec-449d-aa9e-054fc7fcbb71'
+      summary: List Availability
+      description: Gets a paginated list of appointment availability times.
+      operationId: listAvailability
+      responses:
+        '200':
+          description: Successfully retrieved a paginated list of appointment availability times.
+          headers: {}
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/appointment-availability-paginated-response'
+        '400':
+          $ref: '#/components/responses/BadRequest1'
+        '401':
+          $ref: '#/components/responses/Unauthorized1'
+        '403':
+          $ref: '#/components/responses/Forbidden1'
+        '429':
+          $ref: '#/components/responses/TooManyRequests1'
+      deprecated: false
+      externalDocs:
+        description: More about OAuth2 authorization code support for administrators
+        url: '#oauth2-auth-code-planner-admin'
+  /appointment-availability-times/{id}:
+    parameters:
+    - $ref: '#/components/parameters/appointmentAvailabilityTimeId'
+    get:
+      tags:
+      - Appointments
+      security:
+      - OAuth2.clientCredentials:
+        - appointments/appointment-attendees:read
+      - OAuth2.authorizationCode:
+        - appointments/appointment-attendees:read
+      summary: Get Availability
+      description: Get a single appointment availability time by its ID.
+      operationId: getAvailabilityById
+      responses:
+        '200':
+          description: Successfully retrieved an appointment availability time.
+          headers: {}
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/appointment-availability'
+        '401':
+          $ref: '#/components/responses/Unauthorized1'
+        '403':
+          $ref: '#/components/responses/Forbidden1'
+        '404':
+          $ref: '#/components/responses/NotFound1'
+        '429':
+          description: Response 429 is required for public operations with rate limiting
+      deprecated: false
+      externalDocs:
+        description: More about OAuth2 authorization code support for administrators
+        url: '#oauth2-auth-code-planner-admin'
+  /appointment-events:
+    get:
+      tags:
+      - Appointments
+      security:
+      - OAuth2.clientCredentials:
+        - appointments/appointment-events:read
+      - OAuth2.authorizationCode:
+        - appointments/appointment-events:read
+      parameters:
+      - $ref: '#/components/parameters/after'
+      - $ref: '#/components/parameters/before'
+      - $ref: '#/components/parameters/limit'
+      - $ref: '#/components/parameters/token'
+      - name: filter
+        in: query
+        required: false
+        description: 'A filter query string narrows search results and supports the combination of logical and comparison operators. The filter adheres to the pattern filter=''field'' comparisonType ''value''.
+
+
+          There are six comparison types that can be used in filter expressions:
+
+          * equal: eq
+
+          * not equal: ne
+
+          * greater than: gt
+
+          * greater or equal: ge
+
+          * less than: lt
+
+          * less than or equal: le
+
+
+          The following fields are filterable:
+
+          * event.id (eq)
+
+
+          No operators are available'
+        schema:
+          type: string
+          example: event.id eq 'd165ad63-4bec-449d-aa9e-054fc7fcbb71'
+      summary: List Appt Events
+      description: Gets a paginated list of appointment events.
+      operationId: listAppointmentEvents
+      responses:
+        '200':
+          description: Successfully retrieved a paginated list of appointment events.
+          headers: {}
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/appointment-event-paginated-response'
+        '400':
+          $ref: '#/components/responses/BadRequest1'
+        '401':
+          $ref: '#/components/responses/Unauthorized1'
+        '403':
+          $ref: '#/components/responses/Forbidden1'
+        '429':
+          $ref: '#/components/responses/TooManyRequests1'
+      deprecated: false
+      externalDocs:
+        description: More about OAuth2 authorization code support for administrators
+        url: '#oauth2-auth-code-planner-admin'
+  /appointment-events/{id}:
+    parameters:
+    - $ref: '#/components/parameters/appointmentEventId'
+    get:
+      tags:
+      - Appointments
+      security:
+      - OAuth2.clientCredentials:
+        - appointments/appointment-events:read
+      - OAuth2.authorizationCode:
+        - appointments/appointment-events:read
+      summary: Get Appt Event
+      description: Gets a single appointment event by its ID.
+      operationId: getAppointmentEventById
+      responses:
+        '200':
+          description: Successfully retrieved an appointment event.
+          headers: {}
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/appointment-event'
+        '401':
+          $ref: '#/components/responses/Unauthorized1'
+        '403':
+          $ref: '#/components/responses/Forbidden1'
+        '404':
+          $ref: '#/components/responses/NotFound1'
+        '429':
+          $ref: '#/components/responses/TooManyRequests1'
+      deprecated: false
+      externalDocs:
+        description: More about OAuth2 authorization code support for administrators
+        url: '#oauth2-auth-code-planner-admin'
+  /appointment-events/{id}/appointment-available-times:
+    get:
+      parameters:
+      - $ref: '#/components/parameters/appointmentEventId'
+      - $ref: '#/components/parameters/limit'
+      - $ref: '#/components/parameters/token'
+      - name: filter
+        in: query
+        required: false
+        description: 'A filter query string narrows search results and supports the combination of logical and comparison operators. The filter adheres to the pattern filter=''field'' comparisonType ''value''.
+
+
+          There are six comparison types that can be used in filter expressions:
+
+          * equal: eq
+
+          * not equal: ne
+
+          * greater than: gt
+
+          * greater or equal: ge
+
+          * less than: lt
+
+          * less than or equal: le
+
+
+          The following fields are filterable:
+
+          * appointmentType.id (eq)
+
+          * location.id (eq)
+
+
+          No operators are available'
+        schema:
+          type: string
+          example: appointmentType.id eq '2925dd1c-7b02-4e34-8881-18f2360b50a7'
+      tags:
+      - Appointments
+      security:
+      - OAuth2.clientCredentials:
+        - appointments/available-times:read
+      - OAuth2.authorizationCode:
+        - appointments/available-times:read
+      summary: List Available Times
+      description: Gets a paginated list of times and locations available for scheduling appointments in a particular appointment event.
+      operationId: listAvailableTimes
+      responses:
+        '200':
+          description: Successfully retrieved a paginated list of times and locations available to schedule appointments in a particular appointment event.
+          headers: {}
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/available-times-paginated-response'
+        '400':
+          $ref: '#/components/responses/BadRequest1'
+        '401':
+          $ref: '#/components/responses/Unauthorized1'
+        '403':
+          $ref: '#/components/responses/Forbidden1'
+        '404':
+          $ref: '#/components/responses/NotFound1'
+        '429':
+          $ref: '#/components/responses/TooManyRequests1'
+      deprecated: false
+      externalDocs:
+        description: More about OAuth2 authorization code support for administrators
+        url: '#oauth2-auth-code-planner-admin'
+  /appointment-events/{id}/appointment-types:
+    get:
+      parameters:
+      - $ref: '#/components/parameters/appointmentEventId'
+      - $ref: '#/components/parameters/limit'
+      - $ref: '#/components/parameters/token'
+      tags:
+      - Appointments
+      security:
+      - OAuth2.clientCredentials:
+        - appointments/appointment-types:read
+      - OAuth2.authorizationCode:
+        - appointments/appointment-types:read
+      summary: List Appointment Types
+      description: Gets a paginated list of appointment types for an appointment event.
+      operationId: listAppointmentTypes
+      responses:
+        '200':
+          description: Successfully retrieved a paginated list of appointment types.
+          headers: {}
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/appointment-types-paginated-response'
+        '400':
+          $ref: '#/components/responses/BadRequest1'
+        '401':
+          $ref: '#/components/responses/Unauthorized1'
+        '403':
+          $ref: '#/components/responses/Forbidden1'
+        '404':
+          $ref: '#/components/responses/NotFound1'
+        '429':
+          $ref: '#/components/responses/TooManyRequests1'
+      deprecated: false
+      externalDocs:
+        description: More about OAuth2 authorization code support for administrators
+        url: '#oauth2-auth-code-planner-admin'
+  /appointment-events/{id}/appointments:
+    post:
+      parameters:
+      - $ref: '#/components/parameters/appointmentEventId'
+      - $ref: '#/components/parameters/suppressNotifications'
+      tags:
+      - Appointments
+      security:
+      - OAuth2.clientCredentials:
+        - appointments/appointments:write
+      - OAuth2.authorizationCode:
+        - appointments/appointments:write
+      summary: Create Appointment
+      description: Creates an appointment in a given appointment event.
+      operationId: createAppointment
       requestBody:
-        description: Create a speaker category.
-        required: true
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/speaker-category'
-      tags:
-      - Speakers
+              $ref: '#/components/schemas/create-appointment-request'
       responses:
         '201':
-          description: Successfully created speaker category.
+          description: Successfully created an appointment.
           headers: {}
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/existing-speaker-category'
-        '400':
-          $ref: '#/components/responses/BadRequest1'
-        '401':
-          $ref: '#/components/responses/Unauthorized1'
-        '403':
-          $ref: '#/components/responses/Forbidden1'
-        '429':
-          $ref: '#/components/responses/TooManyRequests1'
-      externalDocs:
-        description: More about OAuth2 authorization code support for administrators
-        url: '#oauth2-auth-code-planner-admin'
-  /speakers:
-    get:
-      security:
-      - OAuth2.clientCredentials:
-        - event/speakers:read
-      - OAuth2.authorizationCode:
-        - event/speakers:read
-      summary: List Speakers
-      description: Gets a paginated list of speakers.
-      operationId: listSpeakers
-      parameters:
-      - $ref: '#/components/parameters/limit'
-      - $ref: '#/components/parameters/token'
-      - $ref: '#/components/parameters/sort4'
-      - $ref: '#/components/parameters/locale1'
-      - name: filter
-        in: query
-        required: false
-        description: "A filter query string narrows search results and supports the combination of logical and comparison operators.\nThe filter adheres to the pattern filter='field' comparisonType 'value'. If the \"match\" filter is passed,\nthe endpoint will return a relevance score for each attendee in the list. Higher scores represent a higher\nrelevance to the filter string.\n\nThese are the comparison types that can be used in filter expressions:\n  * equal: eq\n  * not equal: ne\n  * greater than: gt\n  * greater or equal: ge\n  * less than: lt\n  * less than or equal: le\n  * starts with: sw\n  * contains a value: contains\n  * match a term: match\n  * includes value(s): in\n\nThe following fields are filterable:\n  * category.id (eq|ne)\n  * category.name (eq|ne|sw|contains)\n  * code (eq|ne|sw|contains)\n  * company (eq|ne|sw|contains)\n  * contact.id (eq|ne)\n  * email (eq|ne|sw|contains|match)\n  * event.id (eq|ne)\n  * featured (eq|ne)\n  * firstName (eq|ne|sw|contains|match)\n  * id (eq|ne|in)\n  * lastModified (eq|ne|gt|ge|lt|le)\n  * lastName (eq|ne|sw|contains|match)\n  * title (eq|ne|sw|contains)\n  * visibility (eq|ne)\n\nThe following operators are available:\n  * and\n  * or\n"
-        schema:
-          type: string
-          example: event.id eq '04ca6ae2-0dc3-487b-953e-86d6abbdf7d3'
-      tags:
-      - Speakers
-      responses:
-        '200':
-          description: Successfully retrieved a paginated list of speakers.
-          headers: {}
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/speaker-paginated-response'
-        '400':
-          $ref: '#/components/responses/BadRequest1'
-        '401':
-          $ref: '#/components/responses/Unauthorized1'
-        '403':
-          $ref: '#/components/responses/Forbidden1'
-        '429':
-          $ref: '#/components/responses/TooManyRequests1'
-      deprecated: false
-      externalDocs:
-        description: More about OAuth2 authorization code support for administrators
-        url: '#oauth2-auth-code-planner-admin'
-    post:
-      security:
-      - OAuth2.clientCredentials:
-        - event/speakers:write
-      - OAuth2.authorizationCode:
-        - event/speakers:write
-      summary: Create Speaker
-      description: Create a single speaker based on the values provided.
-      operationId: createSpeaker
-      tags:
-      - Speakers
-      requestBody:
-        description: Speaker to be created
-        required: true
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/speaker'
-      responses:
-        '201':
-          description: Successfully created a speaker.
-          headers: {}
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/existing-speaker'
-        '400':
-          $ref: '#/components/responses/BadRequest1'
-        '401':
-          $ref: '#/components/responses/Unauthorized1'
-        '403':
-          $ref: '#/components/responses/Forbidden1'
-        '429':
-          $ref: '#/components/responses/TooManyRequests1'
-      externalDocs:
-        description: More about OAuth2 authorization code support for administrators
-        url: '#oauth2-auth-code-planner-admin'
-  /speakers/filter:
-    post:
-      security:
-      - OAuth2.clientCredentials:
-        - event/speakers:read
-      - OAuth2.authorizationCode:
-        - event/speakers:read
-      summary: List Speakers
-      description: Get a paginated list of speakers by sending a filter in the body of the request. This method will return the same data as GET List Speakers but allows for longer filters.
-      operationId: listSpeakersPostFilter
-      requestBody:
-        description: 'See the filter parameter of <a href="#operation/listSpeakers">List Speakers</a> for full filtering information
-
-          '
-        required: false
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/filter'
-            example:
-              filter: id eq '1ffa56d9-9f60-4b8c-8b3b-3451de21293c'
-      parameters:
-      - $ref: '#/components/parameters/limit'
-      - $ref: '#/components/parameters/token'
-      - $ref: '#/components/parameters/sort4'
-      - $ref: '#/components/parameters/locale1'
-      tags:
-      - Speakers
-      responses:
-        '200':
-          description: Successfully retrieved a paginated list of speakers.
-          headers: {}
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/speaker-paginated-response'
-        '400':
-          $ref: '#/components/responses/BadRequest1'
-        '401':
-          $ref: '#/components/responses/Unauthorized1'
-        '403':
-          $ref: '#/components/responses/Forbidden1'
-        '429':
-          $ref: '#/components/responses/TooManyRequests1'
-      deprecated: false
-      externalDocs:
-        description: More about OAuth2 authorization code support for administrators
-        url: '#oauth2-auth-code-planner-admin'
-  /speakers/{id}:
-    parameters:
-    - $ref: '#/components/parameters/speakerId'
-    put:
-      security:
-      - OAuth2.clientCredentials:
-        - event/speakers:write
-      - OAuth2.authorizationCode:
-        - event/speakers:write
-      summary: Update Speaker
-      description: Updates a particular speaker based on the given speaker ID.
-      operationId: updateSpeaker
-      tags:
-      - Speakers
-      requestBody:
-        description: Speaker to be updated
-        required: true
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/existing-speaker'
-      responses:
-        '200':
-          description: Successfully updated the speaker.
-          headers: {}
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/existing-speaker'
+                $ref: '#/components/schemas/appointment-with-questions'
         '400':
           $ref: '#/components/responses/BadRequest1'
         '401':
@@ -436,26 +470,79 @@ paths:
           $ref: '#/components/responses/Forbidden1'
         '404':
           $ref: '#/components/responses/NotFound1'
+        '422':
+          $ref: '#/components/responses/UnprocessableEntity1'
         '429':
           $ref: '#/components/responses/TooManyRequests1'
+      deprecated: false
+      externalDocs:
+        description: More about OAuth2 authorization code support for administrators
+        url: '#oauth2-auth-code-planner-admin'
+  /appointment-events/{id}/appointments/{apptId}:
+    put:
+      parameters:
+      - $ref: '#/components/parameters/appointmentEventId'
+      - $ref: '#/components/parameters/apptId'
+      - $ref: '#/components/parameters/suppressNotifications'
+      tags:
+      - Appointments
+      security:
+      - OAuth2.clientCredentials:
+        - appointments/appointments:write
+      - OAuth2.authorizationCode:
+        - appointments/appointments:write
+      summary: Update Appointments
+      description: Updates an appointment based on the given ID.
+      operationId: updateAppointment
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/update-appointment-request'
+      responses:
+        '200':
+          description: Successfully updated an appointment.
+          headers: {}
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/appointment-with-questions'
+        '400':
+          $ref: '#/components/responses/BadRequest1'
+        '401':
+          $ref: '#/components/responses/Unauthorized1'
+        '403':
+          $ref: '#/components/responses/Forbidden1'
+        '404':
+          $ref: '#/components/responses/NotFound1'
+        '422':
+          $ref: '#/components/responses/UnprocessableEntity1'
+        '429':
+          $ref: '#/components/responses/TooManyRequests1'
+      deprecated: false
       externalDocs:
         description: More about OAuth2 authorization code support for administrators
         url: '#oauth2-auth-code-planner-admin'
     delete:
+      parameters:
+      - $ref: '#/components/parameters/appointmentEventId'
+      - $ref: '#/components/parameters/apptId'
+      - $ref: '#/components/parameters/suppressNotifications'
+      tags:
+      - Appointments
       security:
       - OAuth2.clientCredentials:
-        - event/speakers:delete
+        - appointments/appointments:write
       - OAuth2.authorizationCode:
-        - event/speakers:delete
-      summary: Delete Speaker
-      description: Deletes a particular speaker based on the given speaker ID.
-      operationId: deleteSpeaker
-      tags:
-      - Speakers
+        - appointments/appointments:write
+      summary: Cancel Appointment
+      description: Cancels an appointment with the given appointment ID.
+      operationId: cancelAppointment
       responses:
         '204':
-          description: Successfully deleted a speaker.
-          headers: {}
+          description: Successfully cancelled an appointment.
+        '400':
+          $ref: '#/components/responses/BadRequest1'
         '401':
           $ref: '#/components/responses/Unauthorized1'
         '403':
@@ -467,75 +554,135 @@ paths:
       externalDocs:
         description: More about OAuth2 authorization code support for administrators
         url: '#oauth2-auth-code-planner-admin'
-  /speakers/{id}/docs:
-    parameters:
-    - $ref: '#/components/parameters/speakerId'
+  /appointment-events/{id}/locations:
     get:
+      parameters:
+      - $ref: '#/components/parameters/appointmentEventId'
+      - $ref: '#/components/parameters/limit'
+      - $ref: '#/components/parameters/token'
+      tags:
+      - Appointments
       security:
       - OAuth2.clientCredentials:
-        - event/speakers:read
+        - appointments/locations:read
       - OAuth2.authorizationCode:
-        - event/speakers:read
-      summary: List Speaker's Documents
-      description: Gets a paginated list of document URLs for a single speaker.
-      operationId: listSpeakerDocs
+        - appointments/locations:read
+      summary: List Locations
+      description: Gets a paginated list of appointment locations in a particular appointment event.
+      operationId: listLocations
+      responses:
+        '200':
+          description: Successfully retrieved a paginated list of appointment locations for a particular appointment event.
+          headers: {}
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/locations-paginated-response'
+        '400':
+          $ref: '#/components/responses/BadRequest1'
+        '401':
+          $ref: '#/components/responses/Unauthorized1'
+        '403':
+          $ref: '#/components/responses/Forbidden1'
+        '404':
+          $ref: '#/components/responses/NotFound1'
+        '429':
+          $ref: '#/components/responses/TooManyRequests1'
+      deprecated: false
+      externalDocs:
+        description: More about OAuth2 authorization code support for administrators
+        url: '#oauth2-auth-code-planner-admin'
+  /appointment-meeting-interests:
+    get:
+      tags:
+      - Appointments
+      security:
+      - OAuth2.clientCredentials:
+        - appointments/appointment-attendees:read
+      - OAuth2.authorizationCode:
+        - appointments/appointment-attendees:read
       parameters:
+      - $ref: '#/components/parameters/after'
+      - $ref: '#/components/parameters/before'
       - $ref: '#/components/parameters/limit'
       - $ref: '#/components/parameters/token'
       - name: filter
         in: query
         required: false
-        description: "A filter string passed in the query parameter of the request.\n\nThere are two comparison types that can be used in filter expressions:\n  * equal: eq\n  * not equal: ne\n\nThe following field is filterable:\n  * file.id (eq|ne)\n\nThe following operators are available:\n  * and\n  * or\n"
+        description: 'A filter query string narrows search results and supports the combination of logical and comparison operators. The filter adheres to the pattern filter=''field'' comparisonType ''value''.
+
+
+          There are six comparison types that can be used in filter expressions:
+
+          * equal: eq
+
+          * not equal: ne
+
+          * greater than: gt
+
+          * greater or equal: ge
+
+          * less than: lt
+
+          * less than or equal: le
+
+
+          The following fields are filterable:
+
+          * appointmentEvent.id (eq)
+
+          * attendee.id (eq)
+
+
+          No operators are available'
         schema:
           type: string
-          example: file.id eq '04ca6ae2-0dc3-487b-953e-86d6abbdf7d3'
-      tags:
-      - Speakers
+          example: appointmentEvent.id eq 'd165ad63-4bec-449d-aa9e-054fc7fcbb71'
+      summary: List Interests
+      description: Gets a paginated list of appointment meeting interests.
+      operationId: listMeetingInterests
       responses:
         '200':
-          description: Successfully retrieved a list of documents.
+          description: Successfully retrieved a paginated list of appointment meeting interests.
           headers: {}
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/speaker-document-paginated-response'
+                $ref: '#/components/schemas/attendee-appointment-meeting-interests-paginated-response'
         '400':
           $ref: '#/components/responses/BadRequest1'
         '401':
           $ref: '#/components/responses/Unauthorized1'
         '403':
           $ref: '#/components/responses/Forbidden1'
-        '404':
-          $ref: '#/components/responses/NotFound1'
         '429':
-          $ref: '#/components/responses/TooManyRequests1'
+          description: Response 429 is required for public operations with rate limiting
       deprecated: false
       externalDocs:
         description: More about OAuth2 authorization code support for administrators
         url: '#oauth2-auth-code-planner-admin'
-  /speakers/{id}/docs/{fileId}:
+  /appointment-meeting-interests/{id}:
     parameters:
-    - $ref: '#/components/parameters/speakerId'
-    - $ref: '#/components/parameters/fileId'
+    - $ref: '#/components/parameters/appointmentMeetingInterestId'
     get:
+      tags:
+      - Appointments
       security:
       - OAuth2.clientCredentials:
-        - event/speakers:read
+        - appointments/appointment-attendees:read
       - OAuth2.authorizationCode:
-        - event/speakers:read
-      summary: Get a document for a speaker
-      description: Get a specific document that is assigned to a specific speaker.
-      operationId: getSpeakerDoc
-      tags:
-      - Speakers
+        - appointments/appointment-attendees:read
+      summary: Get Interest
+      description: Gets a single attendee's meeting interests in a particular appointment event by their interest ID.
+      operationId: getMeetingInterestById
       responses:
         '200':
-          description: Successfully retrieved document.
+          description: Successfully retrieved an attendees appointment meeting interests in the given event.
           headers: {}
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/speaker-file'
+                $ref: '#/components/schemas/attendee-appointment-meeting-interest'
         '401':
           $ref: '#/components/responses/Unauthorized1'
         '403':
@@ -543,163 +690,104 @@ paths:
         '404':
           $ref: '#/components/responses/NotFound1'
         '429':
-          $ref: '#/components/responses/TooManyRequests1'
+          description: Response 429 is required for public operations with rate limiting
+      deprecated: false
       externalDocs:
         description: More about OAuth2 authorization code support for administrators
         url: '#oauth2-auth-code-planner-admin'
-    put:
-      security:
-      - OAuth2.clientCredentials:
-        - event/speakers:write
-      - OAuth2.authorizationCode:
-        - event/speakers:write
-      summary: Add Document To Speaker
-      description: Add a single document to a speaker with a UUID provided by file upload.
-      operationId: addSpeakerDoc
-      tags:
-      - Speakers
-      responses:
-        '200':
-          description: Successfully added document to speaker.
-          headers: {}
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/speaker-file'
-        '401':
-          $ref: '#/components/responses/Unauthorized1'
-        '403':
-          $ref: '#/components/responses/Forbidden1'
-        '404':
-          $ref: '#/components/responses/NotFound1'
-        '429':
-          $ref: '#/components/responses/TooManyRequests1'
-      externalDocs:
-        description: More about OAuth2 authorization code support for administrators
-        url: '#oauth2-auth-code-planner-admin'
-    delete:
-      security:
-      - OAuth2.clientCredentials:
-        - event/speakers:write
-      - OAuth2.authorizationCode:
-        - event/speakers:write
-      summary: Delete Document From Speaker
-      description: Use to delete a document from a speaker with a UUID provided by file upload.
-      operationId: deleteSpeakerDocument
-      tags:
-      - Speakers
-      responses:
-        '204':
-          description: Successfully deleted speaker's document.
-          headers: {}
-        '401':
-          $ref: '#/components/responses/Unauthorized1'
-        '403':
-          $ref: '#/components/responses/Forbidden1'
-        '404':
-          $ref: '#/components/responses/NotFound1'
-        '429':
-          $ref: '#/components/responses/TooManyRequests1'
-      externalDocs:
-        description: More about OAuth2 authorization code support for administrators
-        url: '#oauth2-auth-code-planner-admin'
-  /speakers/{id}/profile-images:
-    parameters:
-    - $ref: '#/components/parameters/speakerId'
-    delete:
-      security:
-      - OAuth2.clientCredentials:
-        - event/speakers:write
-      - OAuth2.authorizationCode:
-        - event/speakers:write
-      summary: Delete Speaker Profile Picture
-      description: Deletes the profile picture of the given speaker.
-      operationId: deleteSpeakerProfileImage
-      tags:
-      - Speakers
-      responses:
-        '204':
-          description: Successfully deleted the profile picture to the speaker.
-          headers: {}
-        '401':
-          $ref: '#/components/responses/Unauthorized1'
-        '403':
-          $ref: '#/components/responses/Forbidden1'
-        '404':
-          $ref: '#/components/responses/NotFound1'
-        '429':
-          $ref: '#/components/responses/TooManyRequests1'
-      externalDocs:
-        description: More about OAuth2 authorization code support for administrators
-        url: '#oauth2-auth-code-planner-admin'
-    put:
-      security:
-      - OAuth2.clientCredentials:
-        - event/speakers:write
-      - OAuth2.authorizationCode:
-        - event/speakers:write
-      summary: Assign Speaker Profile Picture
-      description: Assign a profile picture to a speaker with a file UUID from file upload endpoint. This will replace the current profile picture if one is assigned.
-      operationId: assignSpeakerProfileImage
-      requestBody:
-        description: 'The file id provided by the <a href="#operation/uploadFile">file upload</a> endpoint.
-
-          '
-        required: true
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/speaker-file'
-      tags:
-      - Speakers
-      responses:
-        '200':
-          description: Successfully added the profile picture to the speaker.
-          headers: {}
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/speaker-file'
-        '400':
-          $ref: '#/components/responses/BadRequest1'
-        '401':
-          $ref: '#/components/responses/Unauthorized1'
-        '403':
-          $ref: '#/components/responses/Forbidden1'
-        '404':
-          $ref: '#/components/responses/NotFound1'
-        '429':
-          $ref: '#/components/responses/TooManyRequests1'
-      externalDocs:
-        description: More about OAuth2 authorization code support for administrators
-        url: '#oauth2-auth-code-planner-admin'
-  /speakers/{id}/sessions:
-    parameters:
-    - $ref: '#/components/parameters/speakerIdById'
+  /appointments:
     get:
+      tags:
+      - Appointments
       security:
       - OAuth2.clientCredentials:
-        - event/sessions:read
+        - appointments/appointments:read
       - OAuth2.authorizationCode:
-        - event/sessions:read
-      summary: List Speaker's Sessions
-      description: Gets a paginated list of sessions assigned to a speaker.
-      operationId: listSpeakerSessions
+        - appointments/appointments:read
       parameters:
+      - $ref: '#/components/parameters/after'
+      - $ref: '#/components/parameters/before'
       - $ref: '#/components/parameters/limit'
       - $ref: '#/components/parameters/token'
-      tags:
-      - Speakers
+      - name: filter
+        in: query
+        required: false
+        description: 'A filter query string narrows search results and supports the combination of logical and comparison operators. The filter adheres to the pattern filter=''field'' comparisonType ''value''.
+
+
+          There are six comparison types that can be used in filter expressions:
+
+          * equal: eq
+
+          * not equal: ne
+
+          * greater than: gt
+
+          * greater or equal: ge
+
+          * less than: lt
+
+          * less than or equal: le
+
+
+          The following fields are filterable:
+
+          * appointmentEvent.id (eq)
+
+          * participants.attendee.contact.id (eq)
+
+          * code (eq)
+
+
+          No operators are available'
+        schema:
+          type: string
+          example: appointmentEvent.id eq 'ad0ea301-1203-4fee-a7d2-54165ba14e2d'
+      summary: List Appointments
+      description: Gets a paginated list of appointments.
+      operationId: listAppointments
       responses:
         '200':
-          description: Successfully retrieved a paginated list of sessions assigned to the speaker.
+          description: Successfully retrieved a paginated list of appointments.
           headers: {}
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/speaker-session-paginated-response'
+                $ref: '#/components/schemas/appointment-paginated-response'
         '400':
           $ref: '#/components/responses/BadRequest1'
+        '401':
+          $ref: '#/components/responses/Unauthorized1'
+        '403':
+          $ref: '#/components/responses/Forbidden1'
+        '429':
+          description: Response 429 is required for public operations with rate limiting
+      deprecated: false
+      externalDocs:
+        description: More about OAuth2 authorization code support for administrators
+        url: '#oauth2-auth-code-planner-admin'
+  /appointments/{id}:
+    parameters:
+    - $ref: '#/components/parameters/appointmentId'
+    get:
+      tags:
+      - Appointments
+      security:
+      - OAuth2.clientCredentials:
+        - appointments/appointments:read
+      - OAuth2.authorizationCode:
+        - appointments/appointments:read
+      summary: Get Appointment
+      description: Gets a single appointment by its ID.
+      operationId: getAppointmentById
+      responses:
+        '200':
+          description: Successfully retrieved an appointment.
+          headers: {}
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/appointment-with-questions'
         '401':
           $ref: '#/components/responses/Unauthorized1'
         '403':
@@ -707,7 +795,7 @@ paths:
         '404':
           $ref: '#/components/responses/NotFound1'
         '429':
-          $ref: '#/components/responses/TooManyRequests1'
+          description: Response 429 is required for public operations with rate limiting
       deprecated: false
       externalDocs:
         description: More about OAuth2 authorization code support for administrators
@@ -720,7 +808,372 @@ components:
       type: string
       format: uuid
       example: 04ca6ae2-0dc3-487b-953e-86d6abbdf7d3
-    Paging:
+    appointment-status.json:
+      title: AppointmentStatus
+      enum:
+      - ACTIVE
+      - CONFIRMED
+      - CANCELLED
+      - PENDING_APPROVAL
+      - DENIED
+      - PENDING
+      - PENDING_ASSIGNMENT
+      - PENDING_HOST_ASSIGNMENT
+      - PENDING_APPROVAL_AND_ASSIGNMENT
+      - TENTATIVE
+      type: string
+      description: Denotes the status of an appointment.
+      example: CONFIRMED
+    uuid.json:
+      title: UUID
+      description: The reference to the related entity. Contains only the ID of the related entity.
+      required:
+      - id
+      type: object
+      properties:
+        id:
+          $ref: '#/components/schemas/uuid-property'
+    appointment-meeting-interest.json:
+      title: AppointmentMeetingInterest
+      type: object
+      description: An individual meeting interest.
+      properties:
+        name:
+          type: string
+          description: The name of the exhibitor in which interest is expressed.
+          example: Cvent
+        exhibitor:
+          $ref: '#/components/schemas/uuid.json'
+        ranking:
+          type: string
+          description: The strength of the interest.
+          example: '5'
+        meetingType:
+          type: string
+          description: The meeting type of interest.
+          example: Group Meeting
+        comment:
+          type: string
+          description: A comment about this interest.
+          example: A 1:1 or group meeting works.
+    locations-paginated-response:
+      title: Locations Paginated Response
+      type: object
+      description: The response for a request of locations for scheduling appointments.
+      properties:
+        paging:
+          $ref: '#/components/schemas/paging.json'
+        data:
+          type: array
+          items:
+            $ref: '#/components/schemas/location.json'
+          description: Collection of appointment locations and their associated details.
+    create-appointment-request:
+      title: Create Appointment Request
+      description: A request to create an appointment
+      type: object
+      required:
+      - subject
+      - startTime
+      - endTime
+      - hosts
+      - appointmentTypeId
+      allOf:
+      - title: Base Appointment Request
+        description: A base request to create/update appointment.
+        type: object
+        properties:
+          subject:
+            type: string
+            description: Name of the appointment.
+            example: Meeting with Cvent
+          description:
+            type: string
+            description: Description for the appointment.
+            example: A private meeting to discuss sales opportunities.
+          startTime:
+            type: string
+            format: date-time
+            description: The ISO 8601 formatted start date/time of the appointment in UTC.
+            example: '2017-01-01T15:20:00Z'
+          endTime:
+            type: string
+            format: date-time
+            description: The ISO 8601 formatted end date/time of the appointment in UTC.
+            example: '2030-01-01T15:30:00Z'
+          location:
+            type: string
+            format: uuid
+            description: Unique identifier of the location to be used for the appointment. Not supported for "SIMPLE" event types.
+            example: fa896667-5998-46dc-ac06-6be8e053ef4e
+          customLocationName:
+            type: string
+            description: Name of the location created by the meeting host. Created ad-hoc for a FLEXIBLE type meeting.
+            example: Coffee Shop
+          hosts:
+            type: array
+            items:
+              $ref: '#/components/schemas/uuid.json'
+            description: Contact ids of the appointment hosts.
+          attendees:
+            type: array
+            items:
+              $ref: '#/components/schemas/uuid.json'
+            description: Contact ids of the appointment attendees.
+          enforceScheduleRule:
+            type: boolean
+            example: true
+            default: true
+            description: Flag to indicate if schedule rule needs to be enforced.
+      properties:
+        code:
+          type: string
+          description: The unique appointment code in Cvent or unique reference id of an appointment in the external systems.
+          minLength: 1
+          maxLength: 36
+          example: APPT-0001
+          pattern: ^[a-zA-Z0-9-.%]+$
+        appointmentTypeId:
+          type: string
+          format: uuid
+          description: Unique identifier of the Appointment type.
+          example: b53dc938-8121-4af1-a5e2-d9f3f4fcd574
+        autoAccept:
+          type: boolean
+          example: true
+          description: Flag to indicate if the attendees should be auto accepted.
+    time-range-type.json:
+      title: Time Range Type
+      enum:
+      - DEFINED
+      - FLEXIBLE
+      type: string
+      description: 'DEFINED: Appointments of this type can be created at time intervals and locations created by the planner. FLEXIBLE: Appointments of this type can be created any time on the schedule in a custom location of the host''s choosing or within time intervals and locations created by the planner.'
+      example: DEFINED
+    audit.json:
+      title: Audit
+      description: Audit information
+      type: object
+      properties:
+        created:
+          type: string
+          format: date-time
+          description: The ISO 8601 zoned date time when this record was created.
+          readOnly: true
+          example: '2017-01-02T02:00:00Z'
+        createdBy:
+          type: string
+          description: The identifier of the user that created this record.
+          readOnly: true
+          example: hporter
+        lastModified:
+          type: string
+          format: date-time
+          description: The ISO 8601 zoned date time when this record was updated.
+          readOnly: true
+          example: '2019-02-12T03:00:00Z'
+        lastModifiedBy:
+          type: string
+          description: The identifier of the user that last updated this record.
+          readOnly: true
+          example: hporter
+    participant-status.json:
+      title: ParticipantStatus
+      enum:
+      - pending
+      - pending_proposed
+      - confirmed
+      - declined
+      - cancelled
+      - tentative
+      type: string
+      description: Denotes the status of a participant in an appointment.
+      example: confirmed
+    attendee-appointment-meeting-interests-paginated-response:
+      title: AttendeeAppointmentMeetingInterestsPaginatedResponse
+      type: object
+      description: The response for a request of appointment meeting interests, including paging information.
+      properties:
+        paging:
+          $ref: '#/components/schemas/paging.json'
+        data:
+          type: array
+          items:
+            $ref: '#/components/schemas/attendee-appointment-meeting-interest'
+          description: Collection of appointment meeting interests.
+    appointment-attendee-paginated-response:
+      title: AppointmentAttendeePaginatedResponse
+      description: The response from a request to get the list of appointment attendees, including paging information.
+      required:
+      - paging
+      - data
+      type: object
+      properties:
+        paging:
+          $ref: '#/components/schemas/paging.json'
+        data:
+          type: array
+          items:
+            $ref: '#/components/schemas/appointment-attendee'
+          description: Collection of appointment attendees and their related details.
+    participant-type.json:
+      title: ParticipantType
+      enum:
+      - Host
+      - Attendee
+      type: string
+      description: Denotes if a participant is a host or attendee of an appointment.
+      example: Attendee
+    appointment-event-status.json:
+      title: AppointmentEventStatus
+      enum:
+      - ACTIVE
+      - CLOSED
+      - COMPLETED
+      - PENDING
+      type: string
+      description: Denotes the status of appointment event.
+      example: ACTIVE
+    appointment-type-category.json:
+      title: Appointment Type Category
+      enum:
+      - CUSTOM_APPOINTMENT
+      - EXHIBITOR_NETWORKING
+      - SELF_SIGN_UP
+      type: string
+      description: The category of the appointment type.
+      example: CUSTOM_APPOINTMENT
+    pagination-links.json:
+      title: PaginationLinks
+      type: object
+      description: Represents pagination links for navigating between pages of data.
+      properties:
+        next:
+          $ref: '#/components/schemas/link.json'
+        self:
+          $ref: '#/components/schemas/link.json'
+        prev:
+          $ref: '#/components/schemas/link.json'
+    attendee-appointment-meeting-interest:
+      title: AttendeeAppointmentMeetingInterest
+      type: object
+      description: An attendee's meeting interests for an event.
+      properties:
+        id:
+          type: string
+          description: The unique ID of this meeting interest.
+          example: 0cdfa3f7-05da-4121-857b-d7732891e01a::52a68001-70ce-4ec4-a6fe-d0888123c715
+        attendee:
+          title: attendee
+          type: object
+          description: The appointment attendee the meeting interest is associated to.
+          properties:
+            id:
+              type: string
+              description: The unique ID representing the appointment attendee.
+              example: 0cdfa3f7-05da-4121-857b-d7732891e01a::52a68001-70ce-4ec4-a6fe-d0888123c715
+        appointmentEvent:
+          $ref: '#/components/schemas/uuid.json'
+        interests:
+          type: array
+          items:
+            $ref: '#/components/schemas/appointment-meeting-interest.json'
+          description: An array describing each of the attendee's meeting interests for the given appointment event.
+        created:
+          type: string
+          format: date-time
+          description: The ISO 8601 formatted date/time when the meeting interest was created.
+          example: '2019-04-01T17:00:00.000Z'
+        lastModified:
+          type: string
+          format: date-time
+          description: The ISO 8601 formatted date/time when the object was last modified.
+          example: '2019-04-01T17:00:00.000Z'
+        deleted:
+          type: boolean
+          description: True indicates the record is deleted.
+          example: true
+    ErrorResponse:
+      title: ErrorResponse
+      description: Represents an error response with additional details of cascading error messages.
+      allOf:
+      - $ref: '#/components/schemas/ErrorResponseBase'
+      type: object
+      required:
+      - code
+      - message
+      properties:
+        details:
+          type: array
+          items:
+            $ref: '#/components/schemas/ErrorResponseBase'
+          description: Additional details of cascading error messages.
+    appointment-participant.json:
+      title: AppointmentParticipant
+      description: An appointment participant.
+      type: object
+      required:
+      - attendee
+      - type
+      x-extends:
+        $ref: '#/components/schemas/audit.json'
+      allOf:
+      - $ref: '#/components/schemas/audit.json'
+      properties:
+        attendee:
+          type: object
+          description: Reference information for the attendee.
+          properties:
+            id:
+              type: string
+              description: The unique ID representing the attendee.
+              readOnly: true
+              example: 0cdfa3f7-05da-4121-857b-d7732891e01a::52a68001-70ce-4ec4-a6fe-d0888123c715
+            contact:
+              $ref: '#/components/schemas/uuid.json'
+          example:
+            id: dd1057b9-a957-4c22-be88-741a29d01471/97f2ca58-0f9e-401f-a6b5-a6f20d3a9568
+            contact:
+              id: 97f2ca58-0f9e-401f-a6b5-a6f20d3a9568
+        type:
+          $ref: '#/components/schemas/participant-type.json'
+        response:
+          $ref: '#/components/schemas/participant-response.json'
+        participation:
+          type: object
+          description: The attendee's participation status.
+          properties:
+            participated:
+              type: boolean
+              description: True indicates the attendee was marked as a participant in the appointment.
+              example: true
+          example:
+            participated: true
+        questionViewer:
+          type: boolean
+          description: True indicates custom questions are visible to appointment participant.
+          example: false
+        privateNoteViewer:
+          type: boolean
+          description: True indicates private notes are visible to the appointment participant.
+          example: false
+        deleted:
+          type: boolean
+          description: True indicates the participant was removed from the appointment.
+          example: false
+        status:
+          $ref: '#/components/schemas/participant-status.json'
+    appointment-event-type.json:
+      title: AppointmentEventType
+      enum:
+      - STANDARD
+      - UNIVERSAL
+      - PLANNER_COORDINATED
+      - SIMPLE
+      type: string
+      description: 'Denotes the type of appointment event.<br/>STANDARD: You or attendees can manage schedules based on the permissions and settings you choose.<br/>UNIVERSAL: Your staff manages their schedules with attendees, at an event your staff is attending.<br/>PLANNER_COORDINATED: You manage attendee schedules for your event based on their preferences.<br/>SIMPLE: Import appointments or let attendees schedule them without any restrictions or prior setup.'
+      example: STANDARD
+    paging.json:
       title: Paging
       required:
       - _links
@@ -748,455 +1201,668 @@ components:
           description: The total number of records available. This field may return blank, even if there are more records. To confirm if there are more records, check the `nextToken` field.
           example: 2
         _links:
-          $ref: '#/components/schemas/PaginationLinks'
-    Audit:
-      title: Audit
-      description: Audit information
+          $ref: '#/components/schemas/pagination-links.json'
+    appointment-availability-time-range.json:
+      title: AppointmentAvailabilityTimeRange
+      description: Time range for an appointment availability.
       type: object
       properties:
-        created:
+        start:
           type: string
-          format: date-time
-          description: The ISO 8601 zoned date time when this record was created.
-          readOnly: true
-          example: '2017-01-02T02:00:00Z'
-        createdBy:
+          description: The ISO 8601 formatted start datetime of the time range, in the event's timezone.
+          example: '2020-04-01T19:00:00.000'
+        end:
           type: string
-          description: The identifier of the user that created this record.
-          readOnly: true
-          example: hporter
-        lastModified:
-          type: string
-          format: date-time
-          description: The ISO 8601 zoned date time when this record was updated.
-          readOnly: true
-          example: '2019-02-12T03:00:00Z'
-        lastModifiedBy:
-          type: string
-          description: The identifier of the user that last updated this record.
-          readOnly: true
-          example: hporter
-    Relevance:
-      title: Relevance
-      description: Returned when the `match` filter is applied. Indicates how relevant the `match` filter term is to the search result. Larger numbers represent higher relevance with respect to other search results in the request. Null if no `match` filter is provided.
-      type: number
-      example: 2.3
-      exclusiveMinimum: 0
-    NamedObject:
-      title: NamedObject
-      description: A Named object
+          description: The ISO 8601 formatted end datetime of the time range, in the event's timezone.
+          example: '2020-04-01T20:00:00.000'
+        type:
+          $ref: '#/components/schemas/appointment-availability-type.json'
+    appointment-with-questions:
+      title: Appointment With Questions
+      description: Details of an event appointment including questions.
       type: object
-      properties:
-        id:
-          $ref: '#/components/schemas/uuid-property'
-        name:
-          type: string
-          description: Name of the object
-          example: Sample Object name
-    SessionId:
-      title: SessionId
-      description: The unique identifier for a session.
-      type: string
-      format: uuid
-      example: 832cb481-74c5-4859-ba21-bbb5be8b86e0
-    SpeakerLite:
       required:
       - id
-      type: object
-      title: SpeakerLite
-      description: The unique identifier of a speaker.
-      properties:
-        id:
-          $ref: '#/components/schemas/SpeakerId'
-    SpeakerLite1:
-      required:
-      - id
-      type: object
-      title: SpeakerLite
-      description: The unique identifier of a speaker.
-      properties:
-        id:
-          $ref: '#/components/schemas/SpeakerId1'
-    baseErrorResponse:
-      title: ErrorResponse
-      description: Represents an error response with additional details of cascading error messages.
+      - name
+      - start
+      - end
+      - type
+      - participant
       allOf:
-      - $ref: '#/components/schemas/ErrorResponseBase'
-      type: object
-      required:
-      - code
-      - message
-      properties:
-        details:
-          type: array
-          items:
-            $ref: '#/components/schemas/ErrorResponseBase'
-          description: Additional details of cascading error messages.
-    speaker-document-paginated-response:
-      title: SpeakerDocumentPaginatedResponse
-      description: The response from a request to get the list of documents for a single speaker.  This includes the paging object as well as the collection of documents.
-      required:
-      - paging
-      - data
-      type: object
-      properties:
-        paging:
-          $ref: '#/components/schemas/Paging'
-        data:
-          type: array
-          items:
-            $ref: '#/components/schemas/speaker-file'
-          description: Collection of a speaker's documents.
-    ErrorResponse:
-      title: ErrorResponse
-      description: Represents an error response with additional details of cascading error messages.
-      allOf:
-      - $ref: '#/components/schemas/ErrorResponseBase'
-      type: object
-      required:
-      - code
-      - message
-      properties:
-        details:
-          type: array
-          items:
-            $ref: '#/components/schemas/ErrorResponseBase'
-          description: Additional details of cascading error messages.
-    EventId:
-      title: EventId
-      description: The unique identifier for an event.
-      type: string
-      format: uuid
-      example: 2ef03846-fced-4ce3-a077-d64ca891a4b1
-    SpeakerCategory:
-      title: SpeakerCategory
-      description: A defined speaker category.
-      type: object
-      required:
-      - id
-      properties:
-        id:
-          $ref: '#/components/schemas/uuid-property'
-        name:
-          type: string
-          description: The name of the speaker category
-          maxLength: 50
-          example: Presenters
-    SessionLite:
-      required:
-      - id
-      type: object
-      title: SessionLite
-      description: The unique identifier of a session.
-      properties:
-        id:
-          $ref: '#/components/schemas/SessionId'
-    filter:
-      title: A filter sent in the body of a request
-      description: A filter which is sent through the body of the request.
-      type: object
-      properties:
-        filter:
-          type: string
-          example: property eq 'value'
-          description: Filter included in the request.
-    ContactLinks:
-      title: ContactLinks
-      type: object
-      description: Collection of social media links for the contact.
-      properties:
-        twitterUrl:
-          $ref: '#/components/schemas/Link'
-        facebookUrl:
-          $ref: '#/components/schemas/Link'
-        linkedInUrl:
-          $ref: '#/components/schemas/Link'
-        profilePicture:
+      - title: Appointment
+        description: Details of an event appointment.
+        type: object
+        required:
+        - id
+        - name
+        - start
+        - end
+        - type
+        - participant
+        allOf:
+        - title: Appointment Base
+          description: Base entity for an appointment
           type: object
-          description: Reference to a profile picture.
-          title: Link
           required:
-          - href
-          readOnly: true
-          properties:
-            href:
-              type: string
-              description: The url of the contact's profile picture
-              example: https://cvent.com/picture123
-    PaginationLinks:
-      title: PaginationLinks
-      type: object
-      description: Represents pagination links for navigating between pages of data.
-      properties:
-        next:
-          $ref: '#/components/schemas/Link'
-        self:
-          $ref: '#/components/schemas/Link'
-        prev:
-          $ref: '#/components/schemas/Link'
-    ProgramItemId:
-      title: ProgramItemId
-      description: The unique identifier for a program item.
-      type: string
-      format: uuid
-      example: 221984b2-9e3e-4c1c-8ef4-306b1b75fa3e
-    speaker-category-paginated-response:
-      title: SpeakerCategoryPaginatedResponse
-      description: The response from a request to get the list of speaker categories.  This includes the paging object as well as the collection of speaker categories.
-      required:
-      - paging
-      - data
-      type: object
-      properties:
-        paging:
-          $ref: '#/components/schemas/Paging'
-        data:
-          type: array
-          items:
-            $ref: '#/components/schemas/existing-speaker-category'
-          description: Collection of speaker categories.
-    speaker:
-      title: Speaker
-      description: An event speaker.
-      type: object
-      required:
-      - firstName
-      - lastName
-      - event
-      allOf:
-      - $ref: '#/components/schemas/Audit'
-      properties:
-        event:
-          type: object
+          - id
+          - name
+          - start
+          - end
+          - type
+          - participant
           properties:
             id:
               type: string
               format: uuid
-              description: Event ID.
-          description: The event the speaker is linked to.
+              description: The unique ID representing the appointment.
+              readOnly: true
+              example: 0046e875-79a5-4851-8332-da105d58088a
+            code:
+              type: string
+              description: The unique appointment code in Cvent or unique reference id of an appointment in the external systems.
+              minLength: 1
+              maxLength: 36
+              example: APPT-0001
+              pattern: ^[a-zA-Z0-9-.%]+$
+            name:
+              type: string
+              description: The name of the appointment.
+              example: Meeting with Cvent
+            description:
+              type: string
+              description: The description of the appointment.
+              example: Discuss about marketing.
+            start:
+              type: string
+              format: date-time
+              description: The ISO 8601 formatted start date/time of the appointment.
+              example: '2019-04-12T15:20:00.000Z'
+            end:
+              type: string
+              format: date-time
+              description: The ISO 8601 formatted end date/time of the appointment.
+              example: '2019-04-12T15:30:00.000Z'
+            status:
+              $ref: '#/components/schemas/appointment-status.json'
+            location:
+              type: object
+              description: The location of the appointment.
+              properties:
+                name:
+                  type: string
+                  description: The name of the location.
+                  example: Hynes Convention Center
+            type:
+              type: object
+              description: The type of the appointment.
+              properties:
+                name:
+                  type: string
+                  description: The name of the appointment type.
+                  example: Customer Meeting
+        - $ref: '#/components/schemas/audit.json'
+        properties:
+          appointmentEvent:
+            $ref: '#/components/schemas/uuid.json'
+          participants:
+            type: array
+            items:
+              $ref: '#/components/schemas/appointment-participant.json'
+            description: Collection of attendees participating in this appointment, and their related details.
+          autoAcceptAttendees:
+            type: boolean
+            description: True indicates participants will be automatically marked as accepted for the appointment.
+            example: false
+          enforceScheduleRules:
+            type: boolean
+            description: True indicates that existing schedule rules were enforced when the appointment was created.
+            example: false
+          modified:
+            type: string
+            format: date-time
+            description: This field is deprecated please use - lastModified
+            deprecated: true
+            example: '2019-04-12T15:30:00.000Z'
+          deleted:
+            type: boolean
+            description: True indicates the appointment has been logically deleted.
+            example: false
+      properties:
+        questions:
+          type: array
+          items:
+            $ref: '#/components/schemas/custom-field.json'
+          description: Collection of custom questions asked to participants of the appointment.
+    planner.json:
+      title: Planner
+      description: Represents a planner for an appointment event and the planner's related details.
+      type: object
+      properties:
         firstName:
           type: string
-          description: The speaker's first name.
+          description: The first name of the planner.
           maxLength: 30
-          example: Barbra
+          example: Henry
         lastName:
           type: string
-          description: The speaker's last name.
+          description: The last name of the planner.
           maxLength: 50
-          example: Smith
-        code:
-          type: string
-          description: The unique code associated with the speaker in an event
-          maxLength: 30
-          example: sbarbra
+          example: Potterfield
         email:
           type: string
           format: email
-          description: The speaker's email address
-          maxLength: 80
+          description: The email address of the planner.
           minLength: 6
-          example: barbrasmith@cvent.com
-        prefix:
-          type: string
-          description: Used to denote what is traditionally a title of an individual. For example, Mr., Mrs., Dr., etc.
-          maxLength: 30
-          example: Dr.
-        designation:
-          type: string
-          description: The speaker's Designation
-          maxLength: 30
-          example: PhD
+          maxLength: 80
+          example: h.potterfield@test.com
         company:
           type: string
-          description: The company to which the speaker is associated
-          maxLength: 100
-          example: Cvent
+          description: The company/organization the planner belongs to.
+          minLength: 1
+          example: Cvent Inc.
         title:
           type: string
-          description: The speaker's title
+          description: The job title of the planner.
           maxLength: 100
-          example: Lead Engineer
-        category:
-          $ref: '#/components/schemas/SpeakerCategory'
-        links:
-          $ref: '#/components/schemas/ContactLinks'
-        visibility:
-          type: boolean
-          description: Indicates if a given speaker should be displayed on Event Website
-          default: true
-          example: false
-        biography:
+          example: Event Planner
+        prefix:
           type: string
-          description: The speaker's biography
-          maxLength: 2500
-          example: Presentation and Speaking voice expert, Barbara is a highly regarded coach and facilitator
-        internalNote:
-          type: string
-          description: The Internal Note of the speaker
-          maxLength: 300
-          example: Barbara is multilingual
-        featured:
-          type: boolean
-          description: Indicates if a given speaker is a featured speaker
-          default: false
-          example: false
-        relevance:
-          $ref: '#/components/schemas/Relevance'
-    existing-speaker-category:
-      title: SpeakerCategory
-      description: An existing speaker category.
+          description: Denotes what is traditionally a title of an individual.
+          maxLength: 30
+          example: Mr.
+    participant-response.json:
+      title: ParticipantResponse
+      enum:
+      - CONFIRMED
+      - TENTATIVE
+      - PENDING
+      - DECLINED
+      type: string
+      description: Denotes a participant response to an appointment.
+      example: CONFIRMED
+    available-times-paginated-response:
+      title: Available Times Paginated Response
       type: object
-      allOf:
-      - $ref: '#/components/schemas/speaker-category'
-      required:
-      - id
+      description: The response for a request of available time ranges for scheduling appointments.
       properties:
-        id:
-          $ref: '#/components/schemas/uuid-property'
-        active:
-          type: boolean
-          description: The speaker category is active or not active
-          readOnly: true
-    speaker-session-paginated-response:
-      title: SpeakerSessionPaginatedResponse
-      description: The response from a request to get the list of speaker sessions.  This includes the paging object as well as the collection of speaker sessions.
+        paging:
+          $ref: '#/components/schemas/paging.json'
+        data:
+          type: array
+          items:
+            $ref: '#/components/schemas/available-time.json'
+          description: Collection of available time ranges and their associated details.
+    link.json:
+      title: Link
+      required:
+      - href
+      type: object
+      description: Represents a link to a related resource.
+      properties:
+        href:
+          type: string
+          description: A url provided that can be followed for linking
+          example: ?token=90c5f062-76ad-4ea4-aa53-00eb698d9262
+    appointment-availability-paginated-response:
+      title: AppointmentAvailabilityPaginatedResponse
+      type: object
+      description: The response for a request for appointment availability times, including paging information.
+      properties:
+        paging:
+          $ref: '#/components/schemas/paging.json'
+        data:
+          type: array
+          items:
+            $ref: '#/components/schemas/appointment-availability'
+          description: The collection of appointment availability times and their related details.
+    appointment-event-paginated-response:
+      title: AppointmentEventPaginatedResponse
+      description: The response from a request to get the list of appointment events, includes the paging object.
       required:
       - paging
       - data
       type: object
       properties:
         paging:
-          $ref: '#/components/schemas/Paging'
+          $ref: '#/components/schemas/paging.json'
         data:
           type: array
           items:
-            $ref: '#/components/schemas/SpeakerSession'
-          description: Collection of speaker sessions.
-    speaker-category:
-      title: SpeakerCategory
-      description: A speaker category.
+            $ref: '#/components/schemas/appointment-event'
+          description: Collection of appointment events and their related details.
+    custom-field.json:
+      title: CustomField
+      description: A Custom Field
+      required:
+      - id
+      - value
+      type: object
+      properties:
+        id:
+          type: string
+          description: The unique ID representing this custom field.
+          format: uuid
+        name:
+          type: string
+          description: The actual text of the custom field.
+          example: What is a your favorite color?
+          readOnly: true
+        type:
+          description: The type of data collected by a custom field.
+          type: string
+          allOf:
+          - title: CustomFieldType
+            enum:
+            - AutoIncrement
+            - ConsentQuestion
+            - Currency
+            - Decimal
+            - Date
+            - DateTime
+            - Email
+            - FileUpload
+            - FreeText
+            - General
+            - MultiChoice
+            - MultiSelect
+            - Number
+            - OpenEndedDateTime
+            - OpenEndedText
+            - SingleChoice
+            - SingleSelect
+            - USPhoneNumber
+            - Unknown
+            type: string
+            description: The type of data collected by a custom field.
+            example: General
+          - readOnly: true
+            example: MultiSelect
+        value:
+          type: array
+          uniqueItems: true
+          items:
+            type: string
+            description: A question answer value
+          description: The set of answers or possible answers to a question.
+          example:
+          - Choice C
+          - Choice A
+        order:
+          type: integer
+          description: The order of this question in the bigger list of questions.
+          example: 1
+          readOnly: true
+    appointment-paginated-response:
+      title: AppointmentPaginatedResponse
+      description: The response for a request of appointments, including the paging object.
+      required:
+      - paging
+      - data
+      type: object
+      properties:
+        paging:
+          $ref: '#/components/schemas/paging.json'
+        data:
+          type: array
+          items:
+            $ref: '#/components/schemas/appointment-with-questions/allOf/0'
+          description: Collection of appointments and their related details.
+    appointment-types-paginated-response:
+      title: Appointment Types Paginated Response
+      type: object
+      description: The response for a request of appointment types configured for scheduling appointments.
+      properties:
+        paging:
+          $ref: '#/components/schemas/paging.json'
+        data:
+          type: array
+          items:
+            $ref: '#/components/schemas/appointment-type.json'
+          description: The collection of appointment types object.
+    available-time.json:
+      title: Available Times
+      description: Time availability for an event appointment,
+      type: object
+      required:
+      - id
+      - startTime
+      - endTime
+      - type
+      - appointmentType
+      properties:
+        id:
+          type: string
+          format: uuid
+          description: The unique ID representing the time range.
+          example: 0046e875-79a5-4851-8332-da105d58088a
+        startTime:
+          type: string
+          format: date-time
+          description: The ISO 8601 formatted start date/time of the time slot in UTC.
+          example: '2019-04-12T15:15:00.000Z'
+        endTime:
+          type: string
+          format: date-time
+          description: The ISO 8601 formatted end date/time of the time slot in UTC.
+          example: '2019-04-12T15:30:00.000Z'
+        type:
+          $ref: '#/components/schemas/time-range-type.json'
+        appointmentType:
+          $ref: '#/components/schemas/uuid.json'
+        location:
+          $ref: '#/components/schemas/uuid.json'
+        availableAppointments:
+          type: integer
+          description: The number of appointments that can be created in this time range. -1 indicates unlimited appointments.
+          example: 2
+    appointment-event:
+      title: AppointmentEvent
+      description: An event appointment.
+      type: object
+      required:
+      - id
+      - code
+      - apptEventType
+      - status
+      - title
+      - start
+      - end
+      x-extends:
+        $ref: '#/components/schemas/audit.json'
+      allOf:
+      - $ref: '#/components/schemas/audit.json'
+      properties:
+        id:
+          type: string
+          format: uuid
+          description: The unique ID representing the appointment event.
+          readOnly: true
+          example: 2d8234f1-55df-483c-abe3-7e2cb98f8275
+        code:
+          type: string
+          description: The system generated code for this appointment event.
+          maxLength: 11
+          readOnly: true
+          example: GKNNHYW9GFV
+        event:
+          $ref: '#/components/schemas/uuid.json'
+        apptEventType:
+          $ref: '#/components/schemas/appointment-event-type.json'
+        status:
+          $ref: '#/components/schemas/appointment-event-status.json'
+        deleted:
+          type: boolean
+          description: True indicates the appointment event has been logically deleted.
+          example: false
+        archived:
+          type: boolean
+          description: True indicates the appointment event has been archived.
+          example: true
+        defaultLocale:
+          type: string
+          description: The appointment event default local using the IETF Language Tag format.
+          maxLength: 35
+          example: en-US
+        title:
+          type: string
+          description: The title of the appointment event.
+          maxLength: 300
+          example: Cvent Connect 2020
+        description:
+          type: string
+          description: The description of the appointment event.
+          maxLength: 300
+          example: The Cvent yearly user conference.
+        start:
+          type: string
+          format: date-time
+          description: The ISO 8601 formatted start date/time of the appointment.
+          example: '2019-06-29T17:00:00.000Z'
+        end:
+          type: string
+          format: date-time
+          description: The ISO 8601 formatted end date/time of the appointment.
+          example: '2019-06-29T21:00:00.000Z'
+        timezone:
+          type: string
+          description: The event timezone from the IANA specification.
+          maxLength: 29
+          example: America/New_York
+        venues:
+          type: array
+          items:
+            $ref: '#/components/schemas/venue.json'
+          description: Collection of venues and their associated details.
+        phone:
+          type: string
+          description: The phone number for the event.
+          maxLength: 13
+          example: 555-555-5555
+        planners:
+          type: array
+          items:
+            $ref: '#/components/schemas/planner.json'
+          description: Collection of information about planners.
+    appointment-attendee:
+      title: AppointmentAttendee
+      description: Attendee for an event appointment.
+      type: object
+      required:
+      - id
+      - contact
+      - appointmentEvent
+      properties:
+        id:
+          type: string
+          description: The unique ID representing the attendee.
+          readOnly: true
+          example: 0cdfa3f7-05da-4121-857b-d7732891e01a::52a68001-70ce-4ec4-a6fe-d0888123c715
+        code:
+          type: string
+          description: System generated code for this attendee appointment.
+          maxLength: 11
+          readOnly: true
+          example: GKNNHYW9GFV
+        appointmentEvent:
+          $ref: '#/components/schemas/uuid.json'
+        contact:
+          $ref: '#/components/schemas/uuid.json'
+        registration:
+          $ref: '#/components/schemas/uuid.json'
+        created:
+          type: string
+          format: date-time
+          description: The ISO 8601 formatted date/time when the appointment attendee was created.
+          example: '2019-04-01T17:00:00.000Z'
+        modified:
+          type: string
+          format: date-time
+          description: The ISO 8601 formatted date/time when the appointment attendee was last modified.
+          example: '2019-04-01T17:00:00.000Z'
+        deleted:
+          type: boolean
+          description: True indicates the appointment attendee has been logically deleted.
+          example: false
+    appointment-event-id.json:
+      type: object
+      description: Represents an appointment event ID.
+      required:
+      - id
+      properties:
+        id:
+          type: string
+          format: uuid
+          description: The unique ID of an appointment event.
+          readOnly: true
+          example: 2d8234f1-55df-483c-abe3-7e2cb98f8275
+    location.json:
+      title: Location
+      type: object
+      description: Details of a location.
+      allOf:
+      - title: Location
+        type: object
+        required:
+        - id
+        - name
+        description: Details of a location.
+        properties:
+          id:
+            type: string
+            format: uuid
+            description: The unique ID representing the location.
+            example: 0046e875-79a5-4851-8332-da105d58088a
+          name:
+            type: string
+            description: The name of the location.
+            example: Conference Room B
+      properties:
+        parentLocation:
+          $ref: '#/components/schemas/location.json/allOf/0'
+        capacity:
+          type: integer
+          description: The number of attendees that can be accommodated in this location. -1 indicates unlimited capacity.
+          example: 5
+    venue-address.json:
+      title: Venue Address
+      description: Venue Address details
+      type: object
+      allOf:
+      - title: Base Address
+        description: Base Address Model
+        type: object
+        properties:
+          address1:
+            type: string
+            maxLength: 40
+            description: The first line of an address.
+            example: Cvent Inc.
+          address2:
+            type: string
+            maxLength: 40
+            description: The second line of an address.
+            example: 4001 West Parmer Lane
+          address3:
+            type: string
+            maxLength: 40
+            description: The third line of an address.
+            example: PO Box 123
+          city:
+            type: string
+            maxLength: 40
+            description: The name of the city.
+            example: Austin
+          countryCode:
+            type: string
+            maxLength: 3
+            minLength: 2
+            description: ISO 3166 two-letter (alpha-2) country code.
+            example: US
+          postalCode:
+            type: string
+            maxLength: 25
+            description: Postal code (also known as zipcode) of the address.
+            example: '78727'
+      properties:
+        region:
+          type: string
+          description: The name of the state/province/region of the address.
+          readOnly: true
+          example: Texas
+        regionCode:
+          type: string
+          description: The abbreviation of the state/province/region of the address.
+          minLength: 2
+          maxLength: 10
+          example: TX
+        country:
+          type: string
+          description: Name of the country for example, 'United States'
+          readOnly: true
+          example: United States of America
+        latitude:
+          type: number
+          description: The geo latitude of the address.
+          minimum: -90
+          maximum: 90
+          example: 30.42501
+          readOnly: true
+        longitude:
+          type: number
+          description: The geo longitude of the address.
+          minimum: -180
+          maximum: 180
+          example: -97.71518
+          readOnly: true
+    update-appointment-request:
+      title: Update Appointment Request
+      description: A request to update an appointment.
+      type: object
+      required:
+      - id
+      - subject
+      - startTime
+      - endTime
+      - hosts
+      allOf:
+      - $ref: '#/components/schemas/create-appointment-request/allOf/0'
+      properties:
+        id:
+          type: string
+          format: uuid
+          description: Unique identifier of the appointment to be updated.
+          example: a3d77c44-bb4b-41dd-9c37-18230cc66ce4
+    venue.json:
+      title: Venue
+      description: An Event Venue
       type: object
       properties:
         name:
           type: string
-          description: The name of the speaker category
-          maxLength: 50
-          example: Presenters
-    speaker-paginated-response:
-      title: SpeakerPaginatedResponse
-      description: The response from a request to get the list of speakers.  This includes the paging object as well as the collection of speakers.
-      required:
-      - paging
-      - data
+          description: The name of the venue.
+          maxLength: 300
+          example: Capital Convention Center
+        address:
+          $ref: '#/components/schemas/venue-address.json'
+    appointment-availability:
+      title: AppointmentAvailability
+      description: Appointment availability details.
       type: object
-      properties:
-        paging:
-          $ref: '#/components/schemas/Paging'
-        data:
-          type: array
-          items:
-            $ref: '#/components/schemas/existing-speaker'
-          description: Collection of speakers.
-    Locale:
-      title: Locale
-      description: Locale code
-      type: string
-      example: en-US
-      minLength: 1
-      maxLength: 200
-    ProgramItemLite:
-      required:
-      - id
-      type: object
-      title: ProgramItemLite
-      description: The unique identifier of a program item.
       properties:
         id:
-          $ref: '#/components/schemas/ProgramItemId'
-    SpeakerSession:
-      title: SpeakerSession
-      type: object
-      description: A speaker to session relationship.
-      properties:
-        id:
-          $ref: '#/components/schemas/uuid-property'
-        speaker:
-          $ref: '#/components/schemas/SpeakerLite1'
-        category:
-          $ref: '#/components/schemas/NamedObject'
-    speaker-file:
-      title: SpeakerFile
-      description: A file reference related to a speaker.
-      required:
-      - file
-      - href
-      properties:
-        file:
+          type: string
+          description: The unique ID representing the attendee's availability in an appointment event.
+          example: da8b035b-428b-4069-b25b-92afbcf514b3::2d8234f1-55df-483c-abe3-7e2cb98f8275
+        attendee:
+          title: attendee
+          type: object
+          description: The appointment attendee the availability is associated with.
           properties:
             id:
-              $ref: '#/components/schemas/uuid-property'
-        href:
-          format: uri
-          type: string
-          description: URL of the speaker's image.
-          readOnly: true
-          example: https://custom.cvent.com/a5154f85f71a4cf2464e037feb75b308/00000000000000000000000000000000/files/universal-file/tmp/e209d73d845746b7a6deda4da9d91b2c.png
-        friendlyName:
-          type: string
-          description: Friendly name of the file
-          example: Important Document
-          readOnly: true
-        type:
-          type: string
-          description: Mime type of the file
-          example: image/png
-          readOnly: true
-        size:
-          type: integer
-          description: Size of the file in bytes
-          example: 150
-          readOnly: true
-        displayEnabled:
-          type: boolean
-          description: Display this file to the public
-          example: true
-          readOnly: true
-    SpeakerId:
-      title: SpeakerId
-      description: The unique identifier for a speaker.
-      type: string
-      format: uuid
-      example: 6077a9f1-a230-40cd-9e32-b493a84aaa80
-    SpeakerId1:
-      title: SpeakerId
-      description: The unique identifier for a speaker.
-      type: string
-      format: uuid
-    EventLite:
-      required:
-      - id
-      type: object
-      title: EventLite
-      description: The unique identifier of an event.
-      properties:
-        id:
-          $ref: '#/components/schemas/EventId'
-    program-item-speaker-paginated-response:
-      title: ProgramItemSpeakerPaginatedResponse
-      description: The response from a request to get the list of program item speakers.
-      required:
-      - paging
-      - data
-      type: object
-      properties:
-        paging:
-          $ref: '#/components/schemas/Paging'
-        data:
+              type: string
+              description: The unique ID representing the appointment attendee.
+              example: 0cdfa3f7-05da-4121-857b-d7732891e01a::52a68001-70ce-4ec4-a6fe-d0888123c715
+        appointmentEvent:
+          $ref: '#/components/schemas/appointment-event-id.json'
+        timeRanges:
           type: array
           items:
-            $ref: '#/components/schemas/speaker-program-item'
-          description: Collection of program item speakers.
-          maxItems: 200
+            $ref: '#/components/schemas/appointment-availability-time-range.json'
+          description: A list of time ranges when the attendee is available for appointments. Times are in the appointment event's time zone.
+        created:
+          type: string
+          format: date-time
+          description: The ISO 8601 formatted datetime when the attendee availability was created.
+          example: '2019-04-01T17:00:00.000Z'
+        lastModified:
+          type: string
+          format: date-time
+          description: The ISO 8601 formatted date/time when the attendee availability was last modified.
+          example: '2019-04-01T17:00:00.000Z'
+        deleted:
+          type: boolean
+          description: True indicates the record is deleted.
+          example: false
     ErrorResponseBase:
       title: ErrorResponseBase
       type: object
@@ -1217,73 +1883,37 @@ components:
           type: string
           description: The target resource of the error.
           example: example target
-    Link:
-      title: Link
+    appointment-availability-type.json:
+      title: AppointmentAvailabilityType
+      type: string
+      enum:
+      - AVAILABLE
+      - UNAVAILABLE
+      description: Denotes whether an availability time range represents when an attendee is available or unavailable.
+      example: AVAILABLE
+    appointment-type.json:
+      title: Appointment Type
+      type: object
       required:
-      - href
-      type: object
-      description: Represents a link to a related resource.
-      properties:
-        href:
-          type: string
-          description: A url provided that can be followed for linking
-          example: ?token=90c5f062-76ad-4ea4-aa53-00eb698d9262
-    speaker-program-item:
-      title: SpeakerProgramItem
-      type: object
-      description: Represents a program item object that will be added to a speaker.
-      required:
-      - event
-      - session
-      - speaker
-      - programItem
-      allOf:
-      - $ref: '#/components/schemas/Audit'
-      properties:
-        id:
-          description: ID of the speaker to program item relationship.
-          type: string
-          format: uuid
-          example: 38db6ae2-0dc3-487b-953e-86d6abbdf7d3
-          readOnly: true
-        event:
-          $ref: '#/components/schemas/EventLite'
-        session:
-          $ref: '#/components/schemas/SessionLite'
-        speaker:
-          $ref: '#/components/schemas/SpeakerLite'
-        programItem:
-          $ref: '#/components/schemas/ProgramItemLite'
-    existing-speaker:
-      title: Speaker
-      description: An existing, event speaker.
-      type: object
-      allOf:
-      - $ref: '#/components/schemas/speaker'
+      - id
+      - name
+      - category
+      - timeRangeType
+      description: This is used for storing details of an appointment type.
       properties:
         id:
           type: string
           format: uuid
-          description: The ID of the speaker
-        order:
-          type: integer
-          description: The order of speaker
-          example: 1
-          minimum: 0
-          maximum: 32767
-          readOnly: true
-        contact:
-          type: object
-          title: Speaker Contact
-          description: The reference to speaker contact. Contains only the Id of contact.
-          readOnly: true
-          properties:
-            id:
-              type: string
-              format: uuid
-              title: Contact Id
-              example: 04ca6ae2-0dc3-487b-953e-86d6abbdf7d3
-              description: A string that has to be a format matching the industry standard uuid
+          description: The unique ID representing the appointment type.
+          example: 0046e875-79a5-4851-8332-da105d58088a
+        name:
+          type: string
+          description: The name of the appointment type.
+          example: Event Appointment
+        category:
+          $ref: '#/components/schemas/appointment-type-category.json'
+        timeRangeType:
+          $ref: '#/components/schemas/time-range-type.json'
   responses:
     TooManyRequests1:
       description: Too many requests
@@ -1294,6 +1924,15 @@ components:
           example:
             code: 429
             message: Limit Exceeded
+    UnprocessableEntity1:
+      description: Was not able to process the request.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+          example:
+            code: 422
+            message: Unprocessable Entity
     NotFound1:
       description: Resource not found
       content:
@@ -1331,10 +1970,10 @@ components:
             code: 400
             message: Bad Request
   parameters:
-    speakerId:
+    appointmentEventId:
       in: path
       name: id
-      description: The unique identifier of a speaker.
+      description: The unique identifier of an appointment event.
       required: true
       schema:
         $ref: '#/components/schemas/uuid-property'
@@ -1347,6 +1986,14 @@ components:
         type: string
         format: date-time
         example: '2017-01-02T02:00:00Z'
+    appointmentAttendeeId:
+      in: path
+      name: id
+      description: The unique identifier of an appointment attendee. The appointment attendee's ID is a combination of the associated appointment event ID and the attendee's contact ID, concatenated with "::" symbols.
+      required: true
+      schema:
+        type: string
+        example: 0cdfa3f7-05da-4121-857b-d7732891e01a::52a68001-70ce-4ec4-a6fe-d0888123c715
     limit:
       name: limit
       in: query
@@ -1359,44 +2006,44 @@ components:
         type: integer
         default: 100
         example: 100
-    fileId:
+    apptId:
       in: path
-      name: fileId
-      description: The unique identifier of a file from <a href="#operation/uploadFile">file upload</a> service.
+      name: apptId
+      description: The unique identifier of an appointment.
       required: true
       schema:
         $ref: '#/components/schemas/uuid-property'
-    programItemId:
-      in: path
-      name: programItemId
-      description: The unique identifier of a program item.
-      required: true
-      schema:
-        $ref: '#/components/schemas/uuid-property'
-    speakerIdById:
+    appointmentAvailabilityTimeId:
       in: path
       name: id
-      description: Unique Id of a speaker
+      description: The unique identifier of an attendee's availability times in a particular event. The attendee's availability times ID is a combination of the associated appointment event ID and the attendee's contact ID, concatenated with "::" symbols.
+      required: true
+      schema:
+        type: string
+        example: da8b035b-428b-4069-b25b-92afbcf514b3::2d8234f1-55df-483c-abe3-7e2cb98f8275
+    appointmentMeetingInterestId:
+      in: path
+      name: id
+      description: The unique identifier of an attendee's meeting interests in a particular event. The attendee's meeting interests ID is a combination of the associated appointment event ID and the attendee's contact ID, concatenated with "::" symbols.
+      required: true
+      schema:
+        type: string
+        example: 0cdfa3f7-05da-4121-857b-d7732891e01a::52a68001-70ce-4ec4-a6fe-d0888123c715
+    suppressNotifications:
+      name: suppressNotifications
+      required: false
+      in: query
+      description: "Flag to choose whether to suppress notifications on successful completion of operation.\n* If flag = false (default), send all notifications as configured.\n * If flag = true, do not send any notification."
+      schema:
+        type: boolean
+        default: false
+    appointmentId:
+      in: path
+      name: id
+      description: The unique identifier of an appointment.
       required: true
       schema:
         $ref: '#/components/schemas/uuid-property'
-    locale1:
-      name: locale
-      required: false
-      description: Locale code in IETF Language tag format. Indicates desired locale of return values.
-      in: query
-      schema:
-        $ref: '#/components/schemas/Locale'
-    sort4:
-      name: sort
-      required: false
-      in: query
-      style: form
-      explode: false
-      description: "The sort order passed as a parameter, used to control the order of the\nsearch results as a priority ordered list of sorts\n\nThere are two orders:\n  * ascending: ASC\n  * descending: DESC\n\nThe following fields are sortable:\n  * lastModified\n  * lastName\n  * firstName\n  * company\n  * title\n  * order\n"
-      schema:
-        type: string
-        example: lastName:DESC,company:ASC
     token:
       name: token
       in: query

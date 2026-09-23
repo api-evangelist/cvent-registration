@@ -1,6 +1,6 @@
 openapi: 3.2.0
 info:
-  title: Cvent REST Usage API
+  title: Cvent REST Hooks API
   description: '# Introduction
 
     The Cvent API Platform is built around REST.'
@@ -12,69 +12,45 @@ servers:
 - url: https://api-platform.cvent.com/ea
 - url: https://api-platform-eur.cvent.com/ea
 tags:
-- name: Usage
-  description: Use these APIs view your REST API usage and limits metrics. For more details on limits - Rate Limits
+- name: Hooks
+  description: 'These APIs allow you to create hooks. When triggered, a hook sends a request to your service to
+
+    get updated data related to the related Cvent object.
+
+
+    For more information on using hooks, see the
+
+    getting started guide.'
 paths:
-  /usage:
+  /contacts/hooks:
     get:
+      summary: List Contact Hooks
+      description: Gets a list of contact hooks configured in your account.
+      operationId: ListContactHooks
       tags:
-      - Usage
-      operationId: getUsage
-      summary: Get Current Usage
-      description: 'Returns API call usage for the last seven days, or between some date range (up to the past seven days) for
-
-        the current caller''s account.'
+      - Hooks
       security:
-      - OAuth2.clientCredentials: []
+      - OAuth2.clientCredentials:
+        - account/hooks:read
+      - OAuth2.authorizationCode:
+        - account/hooks:read
       parameters:
-      - name: before
+      - $ref: '#/components/parameters/after'
+      - $ref: '#/components/parameters/before'
+      - $ref: '#/components/parameters/limit'
+      - $ref: '#/components/parameters/token'
+      - name: filter
         in: query
-        description: 'Returns usage for the seven days before (inclusive) the date provided. If after is also provided, then
-
-          only the dates between (inclusive) those dates are returned. before must be a valid ISO8601 date stamp.
-
-          before and after must not be more then seven days apart.
-
-          '
         required: false
+        description: "A filter query string narrows search results and supports the combination of logical and comparison operators.\nThe filter adheres to the pattern filter='field' comparisonType 'value'.\n\nThere are two comparison types that can be used in filter expressions:\n  * equal: eq\n  * not equal: ne\n  * greater than: gt\n  * greater or equal: ge\n  * less than: lt\n  * less than or equal: le\n\nThe following fields are filterable:\n  * id (eq|ne)\n  * name (eq|ne)\n  * created (eq|ne|lt|le|gt|ge)\n  * lastModified (eq|ne|lt|le|gt|ge)\n\nThe following operators are available:\n  * and\n  * or\n"
         schema:
           type: string
-      - name: after
-        in: query
-        description: 'Returns usage for the seven days after (inclusive) the date provided. If before is also provided, then
-
-          only the dates between (inclusive) those dates are returned. after must be a valid ISO8601 date stamp.
-
-          after and before must not be more then seven days apart.
-
-          '
-        required: false
-        schema:
-          type: string
+          example: id eq '04ca6ae2-0dc3-487b-953e-86d6abbdf7d3' and name ne 'sampleIntegration'
       responses:
         '200':
-          $ref: '#/components/responses/usage-paginated-response'
+          $ref: '#/components/responses/HooksPaginatedResponse'
         '400':
           $ref: '#/components/responses/BadRequest1'
-        '401':
-          $ref: '#/components/responses/Unauthorized1'
-        '403':
-          $ref: '#/components/responses/Forbidden1'
-        '429':
-          $ref: '#/components/responses/TooManyRequests1'
-  /usage/tier:
-    get:
-      tags:
-      - Usage
-      operationId: getUsageTier
-      summary: Get Current Usage Tier
-      description: Returns the current usage tier of the caller's account.
-      security:
-      - OAuth2.clientCredentials: []
-      - OAuth2.authorizationCode: []
-      responses:
-        '200':
-          $ref: '#/components/responses/PublicUsagePlanResponse'
         '401':
           $ref: '#/components/responses/Unauthorized1'
         '403':
@@ -84,9 +60,205 @@ paths:
       externalDocs:
         description: More about OAuth2 authorization code support for administrators
         url: '#oauth2-auth-code-planner-admin'
+    post:
+      summary: Create Contact Hook
+      description: Creates a contact hook. Contact hooks have a callback URI pointing to your system where Cvent will request contact information.
+      operationId: createContactHook
+      tags:
+      - Hooks
+      security:
+      - OAuth2.clientCredentials:
+        - account/hooks:write
+      - OAuth2.authorizationCode:
+        - account/hooks:write
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/hook'
+      responses:
+        '201':
+          $ref: '#/components/responses/HookCreated'
+        '400':
+          $ref: '#/components/responses/BadRequest1'
+        '401':
+          $ref: '#/components/responses/Unauthorized1'
+        '403':
+          $ref: '#/components/responses/Forbidden1'
+        '429':
+          $ref: '#/components/responses/TooManyRequests1'
+      callbacks:
+        contactTransaction:
+          '{$request.body#/callback}':
+            post:
+              summary: Contact Transaction Callback
+              description: 'This callback will be invoked on the URI you registered via <a href="#operation/contactHook">Create Contact Hook</a>.
+
+                Cvent will send a message requesting details on the contact that triggered the callback. All the non-blank
+
+                fields in your response will overwrite the related fields in Cvent.
+
+                '
+              operationId: contactTransactionCallback
+              security:
+              - CallbackApiKeyAuth: []
+              - CallbackBasicAuth: []
+              requestBody:
+                content:
+                  application/json:
+                    schema:
+                      $ref: '#/components/schemas/contact-transaction'
+              responses:
+                '200':
+                  $ref: '#/components/responses/ContactFieldsResponse'
+                '400':
+                  description: Your server rejected the callback because of some issue with the data. We will not retry on this response.
+                '404':
+                  description: Your server rejects the callback because the contact doesn't exist in your system. Our system will not retry on this response.
+                '429':
+                  $ref: '#/components/responses/TooManyRequests1'
+      externalDocs:
+        description: More about OAuth2 authorization code support for administrators
+        url: '#oauth2-auth-code-planner-admin'
+  /contacts/hooks/{id}:
+    put:
+      summary: Update Contact Hook
+      description: Update a contact hook's details, including its associated callback URI.
+      operationId: updateContactHook
+      tags:
+      - Hooks
+      security:
+      - OAuth2.clientCredentials:
+        - account/hooks:write
+      - OAuth2.authorizationCode:
+        - account/hooks:write
+      parameters:
+      - $ref: '#/components/parameters/id5'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/hook'
+      responses:
+        '200':
+          $ref: '#/components/responses/HookUpdated'
+        '400':
+          $ref: '#/components/responses/BadRequest1'
+        '401':
+          $ref: '#/components/responses/Unauthorized1'
+        '403':
+          $ref: '#/components/responses/Forbidden1'
+        '404':
+          $ref: '#/components/responses/NotFound1'
+        '429':
+          $ref: '#/components/responses/TooManyRequests1'
+      externalDocs:
+        description: More about OAuth2 authorization code support for administrators
+        url: '#oauth2-auth-code-planner-admin'
+    delete:
+      summary: Delete Contact Hook
+      description: Delete a contact hook's details.
+      operationId: deleteContactHook
+      tags:
+      - Hooks
+      security:
+      - OAuth2.clientCredentials:
+        - account/hooks:delete
+      - OAuth2.authorizationCode:
+        - account/hooks:delete
+      parameters:
+      - $ref: '#/components/parameters/id5'
+      responses:
+        '204':
+          description: Successfully deleted contact hook details.
+        '401':
+          $ref: '#/components/responses/Unauthorized1'
+        '403':
+          $ref: '#/components/responses/Forbidden1'
+        '404':
+          $ref: '#/components/responses/NotFound1'
+        '429':
+          $ref: '#/components/responses/TooManyRequests1'
+      externalDocs:
+        description: More about OAuth2 authorization code support for administrators
+        url: '#oauth2-auth-code-planner-admin'
 components:
   schemas:
-    Paging:
+    uuid-property:
+      title: UUID Property
+      description: A string that has to be a format matching the industry standard uuid
+      type: string
+      format: uuid
+      example: 04ca6ae2-0dc3-487b-953e-86d6abbdf7d3
+    pagination-links.json:
+      title: PaginationLinks
+      type: object
+      description: Represents pagination links for navigating between pages of data.
+      properties:
+        next:
+          $ref: '#/components/schemas/link.json'
+        self:
+          $ref: '#/components/schemas/link.json'
+        prev:
+          $ref: '#/components/schemas/link.json'
+    ErrorResponse:
+      title: ErrorResponse
+      description: Represents an error response with additional details of cascading error messages.
+      allOf:
+      - $ref: '#/components/schemas/ErrorResponseBase'
+      type: object
+      required:
+      - code
+      - message
+      properties:
+        details:
+          type: array
+          items:
+            $ref: '#/components/schemas/ErrorResponseBase'
+          description: Additional details of cascading error messages.
+    contact-field.json:
+      title: Contact Field
+      description: Contains contact data. For example, a User's email address.
+      type: object
+      required:
+      - id
+      - name
+      - maximumLength
+      - type
+      properties:
+        id:
+          title: Readonly UUID Property
+          description: The unique ID of the field supported by Cvent.
+          type: string
+          format: uuid
+          readOnly: true
+        name:
+          type: string
+          description: The name of the field.
+          example: Email Address
+        maximumLength:
+          type: integer
+          description: The maximum length allowed for a value.
+          example: 80
+        type:
+          type: string
+          description: The type of the field.
+          enum:
+          - String
+          - Integer
+          - Decimal
+          - Double
+          - DateTime
+          - SingleChoice
+          - MultiChoice
+          example: String
+        value:
+          type: array
+          items:
+            type: string
+            example: johndoe@cvent.com
+          description: The value(s) of the field.
+    paging.json:
       title: Paging
       required:
       - _links
@@ -114,119 +286,189 @@ components:
           description: The total number of records available. This field may return blank, even if there are more records. To confirm if there are more records, check the `nextToken` field.
           example: 2
         _links:
-          $ref: '#/components/schemas/PaginationLinks'
-    ErrorResponse:
-      title: ErrorResponse
-      description: Represents an error response with additional details of cascading error messages.
-      allOf:
-      - $ref: '#/components/schemas/ErrorResponseBase'
+          $ref: '#/components/schemas/pagination-links.json'
+    hook:
+      title: Hook
+      description: A hook with a callback URI.
       type: object
       required:
-      - code
-      - message
-      properties:
-        details:
-          type: array
-          items:
-            $ref: '#/components/schemas/ErrorResponseBase'
-          description: Additional details of cascading error messages.
-    Usage:
-      title: Usage
-      description: A usage object represents the usage of a resource on a given day
-      required:
-      - date
-      - used
-      - remaining
-      - total
-      type: object
+      - name
+      - callback
+      - security
       allOf:
-      - $ref: '#/components/schemas/UsageQuotaFields'
+      - title: Audit
+        description: Audit information
+        type: object
+        properties:
+          created:
+            type: string
+            format: date-time
+            description: The ISO 8601 zoned date time when this record was created.
+            readOnly: true
+            example: '2017-01-02T02:00:00Z'
+          createdBy:
+            type: string
+            description: The identifier of the user that created this record.
+            readOnly: true
+            example: hporter
+          lastModified:
+            type: string
+            format: date-time
+            description: The ISO 8601 zoned date time when this record was updated.
+            readOnly: true
+            example: '2019-02-12T03:00:00Z'
+          lastModifiedBy:
+            type: string
+            description: The identifier of the user that last updated this record.
+            readOnly: true
+            example: hporter
       properties:
-        date:
+        id:
           type: string
-          description: The date the usage occurred, as an ISO8601 date
-          example: '2020-01-01'
-    UsageQuotaFields:
-      title: Usage Quota Fields
-      description: Fields representing usage quota information. Usage quota represents the number of API requests that can be made in a given usage period. Usage periods reset daily at midnight UTC.
+          description: The unique ID representing the hook
+          format: uuid
+          readOnly: true
+          example: 3b2359a7-4583-40ed-8afd-67e5f15373d3
+        name:
+          type: string
+          description: Name of the contact hook.
+          example: Attendee Identification
+          minLength: 1
+          maxLength: 100
+        callback:
+          type: string
+          format: uri
+          description: A client hosted callback URI to which callback would be invoked. TLS is mandatory. Callback URL should not contain any confidential information such as API keys or login credentials.
+          example: https://myserver.com/send/callback/here
+          minLength: 1
+          maxLength: 300
+        security:
+          $ref: '#/components/schemas/hook-security.json'
+    hook-security.json:
+      title: Hook Security
+      description: Describe security for a web hook callback. Each option corresponds to an Authorization header variant.
       type: object
-      required:
-      - used
-      - remaining
-      - total
-      properties:
-        used:
-          type: integer
-          description: The number of API requests that have been made in the current usage period. Usage periods reset daily at midnight UTC.
-          example: 40000
-        remaining:
-          type: integer
-          description: The number of API requests remaining in the current usage period. Usage periods reset daily at midnight UTC.
-          example: 260000
-        total:
-          type: integer
-          description: The total number of API requests allowed in the current usage period. Usage periods reset daily at midnight UTC.
-          example: 300000
-    usage-paginated-response:
-      title: Usage Paginated Response
-      description: The list of usage for the caller's account in the date range specified.
+      oneOf:
+      - title: API Key Authentication
+        description: API Key Authentication.
+        type: object
+        required:
+        - secret
+        allOf:
+        - title: Authorization Header
+          description: Authorization header support characterizing the authentication type to be used for callbacks to the client system.
+          type: object
+          required:
+          - type
+          properties:
+            type:
+              type: string
+              enum:
+              - apiKey
+              - basic
+              title: Authorization Header Type
+              description: Authorization header support characterizing the authentication type to be used for callbacks to the client system. API Key, or HTTP Basic Authentication, each configured with a corresponding option.
+              example: apiKey
+        properties:
+          secret:
+            type: string
+            title: API Key Value
+            description: An API key to be included in callback requests.
+            writeOnly: true
+            example: 2b3cc2bf083ff11206ce6b2f3ee09591
+            maxLength: 300
+          authHeaderKey:
+            type: string
+            title: Authorization Header Key
+            description: The header key for which API Key will be sent in callback requests. If this field is not set, the API key is sent in the 'Authorization' header.
+            example: x-api-key
+            minLength: 1
+            default: Authorization
+          apiKeyPrefix:
+            type: boolean
+            title: API Key Prefix
+            description: Whether API Key Value is prefixed by 'api_key'. When set to true, the authorization header's value in callback requests will be 'api_key 2b3cc2bf083ff11206ce6b2f3ee09591'
+            example: true
+            default: true
+      - title: Basic Authentication
+        description: HTTP Basic Authentication via Authorization header.
+        type: object
+        required:
+        - secret
+        allOf:
+        - $ref: '#/components/schemas/hook-security.json/oneOf/0/allOf/0'
+        properties:
+          secret:
+            type: string
+            title: Basic Auth Credentials
+            description: Base64 encoded Basic Authentication credentials.
+            writeOnly: true
+            example: ZGVtbzpwQDU1dzByZA==
+            maxLength: 300
+    contact-fields:
+      title: Contact Fields
+      description: An array of standard contact fields supported by Cvent.
       required:
       - data
       type: object
       properties:
-        paging:
-          $ref: '#/components/schemas/Paging'
         data:
           type: array
           items:
-            $ref: '#/components/schemas/Usage'
-          description: Collection of usage objects.
-    public-usage-plan:
-      title: Public Usage Plan
-      description: Object representing an API Platform Usage Tier, including information when the usage plan is scheduled to revert to a previous plan, if any.
+            $ref: '#/components/schemas/contact-field.json'
+          description: Collection of standard contact fields.
+    link.json:
+      title: Link
+      required:
+      - href
+      type: object
+      description: Represents a link to a related resource.
+      properties:
+        href:
+          type: string
+          description: A url provided that can be followed for linking
+          example: ?token=90c5f062-76ad-4ea4-aa53-00eb698d9262
+    contact-transaction:
+      title: Contact Transaction
+      description: A changeset of contact fields.
+      required:
+      - transactionId
       type: object
       allOf:
-      - $ref: '#/components/schemas/UsagePlan'
+      - title: Contact Fields
+        description: An array of standard contact fields supported by Cvent.
+        required:
+        - data
+        type: object
+        properties:
+          data:
+            type: array
+            items:
+              $ref: '#/components/schemas/contact-field.json'
+            description: Collection of standard contact fields.
       properties:
-        switchBackPlan:
-          $ref: '#/components/schemas/SwitchBackTargetUsagePlan'
-    UsagePlan:
-      title: Usage Plan
-      description: Object representing an API Platform Usage Tier
-      required:
-      - name
-      - quota
-      - burstLimit
-      - rateLimit
-      type: object
-      properties:
-        name:
+        transactionId:
+          title: Readonly UUID Property
+          description: A unique id corresponding to the contact transaction callback made to fetch contact information.
           type: string
-          description: The name of the usage tier
-          example: API_Platform_Free_Tier
-        quota:
-          type: number
-          description: The daily quota of the usage tier. If this value is null, this means the usage tier is unlimited.
-          example: 1000
-        burstLimit:
-          type: number
-          description: The burst limit capacity of the usage tier
-          example: 1
-        rateLimit:
-          type: number
-          description: The per-second steady rate-limit of the usage tier
-          example: 2
-    PaginationLinks:
-      title: PaginationLinks
+          format: uuid
+          readOnly: true
+          example: 04ca6ae2-0dc3-487b-953e-86d6abbdf7d3
+    hooks-paginated-response:
+      title: HooksPaginatedResponse
+      description: The response from a request to get the list of hooks with a callback URI. This includes the paging object as well as the collection of hooks.
       type: object
-      description: Represents pagination links for navigating between pages of data.
+      required:
+      - paging
+      - data
       properties:
-        next:
-          $ref: '#/components/schemas/Link'
-        self:
-          $ref: '#/components/schemas/Link'
-        prev:
-          $ref: '#/components/schemas/Link'
+        paging:
+          $ref: '#/components/schemas/paging.json'
+        data:
+          type: array
+          items:
+            $ref: '#/components/schemas/hook'
+          description: Collection of contact hooks.
     ErrorResponseBase:
       title: ErrorResponseBase
       type: object
@@ -247,41 +489,7 @@ components:
           type: string
           description: The target resource of the error.
           example: example target
-    Link:
-      title: Link
-      required:
-      - href
-      type: object
-      description: Represents a link to a related resource.
-      properties:
-        href:
-          type: string
-          description: A url provided that can be followed for linking
-          example: ?token=90c5f062-76ad-4ea4-aa53-00eb698d9262
-    SwitchBackTargetUsagePlan:
-      title: Switch Back Target Usage Plan
-      description: Object representing the target usage plan and the date when the current plan is scheduled to revert to it. This object is only present when a switch-back is scheduled.
-      type: object
-      required:
-      - name
-      - time
-      properties:
-        name:
-          type: string
-          description: Name of the target usage plan to switch back to. This field is only present when the usage plan is scheduled to revert to a previous plan.
-          example: API_Platform_Standard_Tier
-        time:
-          type: string
-          format: date-time
-          description: The date and time when the usage plan is scheduled to revert to a previous plan. This field is only present when the usage plan is scheduled to revert to a previous plan. The date and time cannot be more than 14 days from the current date.
-          example: '2023-10-01T12:00:00Z'
   responses:
-    PublicUsagePlanResponse:
-      description: The Usage Tier assigned to the account
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/public-usage-plan'
     TooManyRequests1:
       description: Too many requests
       content:
@@ -291,6 +499,15 @@ components:
           example:
             code: 429
             message: Limit Exceeded
+    NotFound1:
+      description: Resource not found
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+          example:
+            code: 404
+            message: Not found
     Forbidden1:
       description: You do not have access to the resource
       content:
@@ -300,12 +517,6 @@ components:
           example:
             code: 403
             message: Access Forbidden
-    usage-paginated-response:
-      description: Usage metrics for the dates requested
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/usage-paginated-response'
     Unauthorized1:
       description: Bad or expired token
       content:
@@ -315,6 +526,12 @@ components:
           example:
             code: 401
             message: Unauthorized
+    ContactFieldsResponse:
+      description: Your server returns this structure on a successful callback with the updated values for contact fields present in your system.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/contact-fields'
     BadRequest1:
       description: Bad request
       content:
@@ -324,6 +541,75 @@ components:
           example:
             code: 400
             message: Bad Request
+    HookUpdated:
+      description: Successfully updated a contact hook.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/hook'
+    HooksPaginatedResponse:
+      description: Successfully retrieved a list of contact hooks and their details.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/hooks-paginated-response'
+    HookCreated:
+      description: Successfully created a contact hook.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/hook'
+  parameters:
+    limit:
+      name: limit
+      in: query
+      description: The maximum number of records to return per page.
+      style: form
+      explode: true
+      schema:
+        maximum: 200
+        minimum: 1
+        type: integer
+        default: 100
+        example: 100
+    before:
+      name: before
+      required: false
+      in: query
+      description: Used to query records that have been added or updated before this time point.
+      schema:
+        type: string
+        format: date-time
+        example: '2017-01-02T02:00:00Z'
+    id5:
+      in: path
+      name: id
+      required: true
+      description: Unique ID of the contact hook.
+      schema:
+        $ref: '#/components/schemas/uuid-property'
+    token:
+      name: token
+      in: query
+      description: 'The continuation token returned from a previous class. This must be a valid UUID v4 if provided.
+
+        This will override any other pageable parameters provided.
+
+        '
+      style: form
+      explode: true
+      schema:
+        type: string
+        example: 0e28af57-511f-47ab-ae46-46cd1ca51a1a
+    after:
+      name: after
+      required: false
+      description: Used to query records that have been added or updated after this time point. Default to the beginning of time of the data store.
+      in: query
+      schema:
+        type: string
+        format: date-time
+        example: '2017-01-02T02:00:00Z'
   securitySchemes:
     OAuth2.authorizationCode:
       type: oauth2
