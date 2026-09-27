@@ -54,6 +54,61 @@ paths:
           $ref: '#/components/responses/TooManyRequests1'
 components:
   schemas:
+    currency.json:
+      description: ISO 4217 currency code.
+      title: Currency
+      type: string
+      example: USD
+      default: USD
+    ErrorResponseBase:
+      title: ErrorResponseBase
+      type: object
+      description: Represents an error response with no additional details.
+      required:
+      - code
+      - message
+      properties:
+        code:
+          type: integer
+          description: The HTTP status code representing the error.
+          example: 400
+        message:
+          type: string
+          description: A brief description of the error.
+          example: Bad Request
+        target:
+          type: string
+          description: The target resource of the error.
+          example: example target
+    HotelRoomRatesRequest:
+      description: Represents hotel room rates request.
+      title: HotelRoomRatesRequest
+      type: object
+      required:
+      - startDate
+      - endDate
+      - roomRate
+      properties:
+        rateCode:
+          type: string
+          description: The rate code.
+          example: VIPRATE
+        startDate:
+          description: The start of the date range the rate applies. Date is in ISO 8601 format.
+          type: string
+          example: '2025-03-25'
+          format: date
+        endDate:
+          description: The end of the date range the rate applies. Date is in ISO 8601 format.
+          type: string
+          example: '2025-03-25'
+          format: date
+        roomRate:
+          description: Cost of room per night.
+          type: number
+          example: 150
+        currencyCode:
+          $ref: '#/components/schemas/currency.json'
     HotelRoomRatesResponse:
       description: Represents hotel room rates response.
       title: HotelRoomRatesResponse
@@ -118,71 +173,7 @@ components:
           items:
             $ref: '#/components/schemas/ErrorResponseBase'
           description: Additional details of cascading error messages.
-    currency.json:
-      description: ISO 4217 currency code.
-      title: Currency
-      type: string
-      example: USD
-      default: USD
-    ErrorResponseBase:
-      title: ErrorResponseBase
-      type: object
-      description: Represents an error response with no additional details.
-      required:
-      - code
-      - message
-      properties:
-        code:
-          type: integer
-          description: The HTTP status code representing the error.
-          example: 400
-        message:
-          type: string
-          description: A brief description of the error.
-          example: Bad Request
-        target:
-          type: string
-          description: The target resource of the error.
-          example: example target
-    HotelRoomRatesRequest:
-      description: Represents hotel room rates request.
-      title: HotelRoomRatesRequest
-      type: object
-      required:
-      - startDate
-      - endDate
-      - roomRate
-      properties:
-        rateCode:
-          type: string
-          description: The rate code.
-          example: VIPRATE
-        startDate:
-          description: The start of the date range the rate applies. Date is in ISO 8601 format.
-          type: string
-          example: '2025-03-25'
-          format: date
-        endDate:
-          description: The end of the date range the rate applies. Date is in ISO 8601 format.
-          type: string
-          example: '2025-03-25'
-          format: date
-        roomRate:
-          description: Cost of room per night.
-          type: number
-          example: 150
-        currencyCode:
-          $ref: '#/components/schemas/currency.json'
   responses:
-    TooManyRequests1:
-      description: Too many requests
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/ErrorResponse'
-          example:
-            code: 429
-            message: Limit Exceeded
     NotFound1:
       description: Resource not found
       content:
@@ -192,15 +183,15 @@ components:
           example:
             code: 404
             message: Not found
-    Forbidden1:
-      description: You do not have access to the resource
+    TooManyRequests1:
+      description: Too many requests
       content:
         application/json:
           schema:
             $ref: '#/components/schemas/ErrorResponse'
           example:
-            code: 403
-            message: Access Forbidden
+            code: 429
+            message: Limit Exceeded
     Unauthorized1:
       description: Bad or expired token
       content:
@@ -219,6 +210,15 @@ components:
           example:
             code: 400
             message: Bad Request
+    Forbidden1:
+      description: You do not have access to the resource
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+          example:
+            code: 403
+            message: Access Forbidden
   parameters:
     hotelCode:
       in: path

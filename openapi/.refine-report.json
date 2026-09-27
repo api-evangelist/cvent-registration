@@ -65,9 +65,7 @@
     "cvent-registration-video-api-openapi.yml",
     "cvent-registration-webcasts-api-openapi.yml"
   ],
-  "archived": [
-    "deleted 1 superseded output(s) from the previous generation"
-  ],
+  "archived": [],
   "errors": [],
   "warnings": [],
   "notes": [
@@ -78,8 +76,7 @@
     "tag 'Contacts' spans 2 source specs (cvent-registration-openapi.yml, cvent-rest-apis-openapi.yaml): per-path servers applied",
     "tag 'Events' spans 2 source specs (cvent-registration-openapi.yml, cvent-rest-apis-openapi.yaml): per-path servers applied",
     "tag 'Sessions' spans 2 source specs (cvent-registration-openapi.yml, cvent-rest-apis-openapi.yaml): per-path servers applied",
-    "superseded outputs removed: cvent-registration-o-auth-api-openapi.yml",
-    "apis.yml register: written (+1 apis, 62 total)"
+    "apis.yml register: already-registered"
   ],
   "skipped": [
     "cvent-registration-appointments-api-openapi.yml: previously refined output, superseded by openapi/_original/",
@@ -116,7 +113,7 @@
     "cvent-registration-housing-hotels-api-openapi.yml: previously refined output, superseded by openapi/_original/",
     "cvent-registration-leads-api-openapi.yml: previously refined output, superseded by openapi/_original/",
     "cvent-registration-meeting-request-api-openapi.yml: previously refined output, superseded by openapi/_original/",
-    "cvent-registration-o-auth-api-openapi.yml: previously refined output, superseded by openapi/_original/",
+    "cvent-registration-oauth-api-openapi.yml: previously refined output, superseded by openapi/_original/",
     "cvent-registration-orders-api-openapi.yml: previously refined output, superseded by openapi/_original/",
     "cvent-registration-process-form-api-openapi.yml: previously refined output, superseded by openapi/_original/",
     "cvent-registration-proposal-draft-api-openapi.yml: previously refined output, superseded by openapi/_original/",

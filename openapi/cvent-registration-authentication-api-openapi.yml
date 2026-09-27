@@ -316,66 +316,20 @@ paths:
         description: More about OAuth2 authorization code support for administrators
         url: '#oauth2-auth-code-planner-admin'
 components:
-  responses:
-    TooManyRequests1:
-      description: Too many requests
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/ErrorResponse'
-          example:
-            code: 429
-            message: Limit Exceeded
-    Forbidden1:
-      description: You do not have access to the resource
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/ErrorResponse'
-          example:
-            code: 403
-            message: Access Forbidden
-    ValidToken:
-      description: A confirmation message that the token is valid
-      headers: {}
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/ValidToken'
-    Unauthorized1:
-      description: Bad or expired token
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/ErrorResponse'
-          example:
-            code: 401
-            message: Unauthorized
-    BadRequest1:
-      description: Bad request
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/ErrorResponse'
-          example:
-            code: 400
-            message: Bad Request
   schemas:
-    ErrorResponse:
-      title: ErrorResponse
-      description: Represents an error response with additional details of cascading error messages.
-      allOf:
-      - $ref: '#/components/schemas/ErrorResponseBase'
+    ValidToken:
+      title: Valid Token
+      description: Validity status of an authentication token.
       type: object
-      required:
-      - code
-      - message
       properties:
-        details:
-          type: array
-          items:
-            $ref: '#/components/schemas/ErrorResponseBase'
-          description: Additional details of cascading error messages.
+        tokenValid:
+          type: boolean
+          description: True indicates the presented authentication token is valid.
+          example: true
+        statusCode:
+          type: integer
+          description: Supplementary status code. Typically will be 200 for a success case.
+          example: 200
     ErrorResponseBase:
       title: ErrorResponseBase
       type: object
@@ -396,19 +350,65 @@ components:
           type: string
           description: The target resource of the error.
           example: example target
-    ValidToken:
-      title: Valid Token
-      description: Validity status of an authentication token.
+    ErrorResponse:
+      title: ErrorResponse
+      description: Represents an error response with additional details of cascading error messages.
+      allOf:
+      - $ref: '#/components/schemas/ErrorResponseBase'
       type: object
+      required:
+      - code
+      - message
       properties:
-        tokenValid:
-          type: boolean
-          description: True indicates the presented authentication token is valid.
-          example: true
-        statusCode:
-          type: integer
-          description: Supplementary status code. Typically will be 200 for a success case.
-          example: 200
+        details:
+          type: array
+          items:
+            $ref: '#/components/schemas/ErrorResponseBase'
+          description: Additional details of cascading error messages.
+  responses:
+    ValidToken:
+      description: A confirmation message that the token is valid
+      headers: {}
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ValidToken'
+    TooManyRequests1:
+      description: Too many requests
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+          example:
+            code: 429
+            message: Limit Exceeded
+    Unauthorized1:
+      description: Bad or expired token
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+          example:
+            code: 401
+            message: Unauthorized
+    BadRequest1:
+      description: Bad request
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+          example:
+            code: 400
+            message: Bad Request
+    Forbidden1:
+      description: You do not have access to the resource
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+          example:
+            code: 403
+            message: Access Forbidden
   securitySchemes:
     OAuth2.authorizationCode:
       type: oauth2

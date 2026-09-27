@@ -1,6 +1,6 @@
 openapi: 3.2.0
 info:
-  title: Cvent Registration REST O Auth API
+  title: Cvent Registration REST OAuth API
   version: v2
   description: 'Registration surface of the Cvent Platform REST API — manage
 
@@ -63,6 +63,17 @@ paths:
       x-operation-id-source: derived
 components:
   schemas:
+    Error:
+      type: object
+      properties:
+        type:
+          type: string
+        title:
+          type: string
+        status:
+          type: integer
+        detail:
+          type: string
     AccessToken:
       type: object
       properties:
@@ -75,17 +86,6 @@ components:
           type: integer
           example: 3599
         scope:
-          type: string
-    Error:
-      type: object
-      properties:
-        type:
-          type: string
-        title:
-          type: string
-        status:
-          type: integer
-        detail:
           type: string
   responses:
     Unauthorized:

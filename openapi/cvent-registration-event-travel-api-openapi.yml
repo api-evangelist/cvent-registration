@@ -217,6 +217,123 @@ paths:
       - $ref: '#/components/parameters/filter2'
 components:
   schemas:
+    reservation-request-paginated-response:
+      title: HousingReservationPaginatedResponse
+      description: The response from a request to get the list of housing reservation request details for the attendees. This includes the paging object as well as the collection of housing reservation request details.
+      required:
+      - paging
+      - data
+      type: object
+      properties:
+        paging:
+          $ref: '#/components/schemas/Paging'
+        data:
+          type: array
+          items:
+            $ref: '#/components/schemas/HousingReservationResponse'
+          description: Collection of reservation request details for attendees.
+    AlternateAnswer:
+      title: AlternateAnswer
+      description: Represents the answer(s) to an alternate travel question submitted by an attendee.
+      type: object
+      properties:
+        value:
+          type: array
+          description: The set of answers to a single alternate travel question.
+          maxItems: 50
+          items:
+            type: string
+            description: A single answer to the alternate travel question.
+            example: '1234'
+          example:
+          - '1234'
+    AirReservationDetail:
+      title: AirReservationDetail
+      description: Representation of an air reservation detail response.
+      type: object
+      properties:
+        attendee:
+          $ref: '#/components/schemas/Attendee3'
+        airRequestDetails:
+          description: List of all air request by attendee and its guest.
+          type: array
+          items:
+            $ref: '#/components/schemas/AirRequest'
+    ErrorResponseBase:
+      title: ErrorResponseBase
+      type: object
+      description: Represents an error response with no additional details.
+      required:
+      - code
+      - message
+      properties:
+        code:
+          type: integer
+          description: The HTTP status code representing the error.
+          example: 400
+        message:
+          type: string
+          description: A brief description of the error.
+          example: Bad Request
+        target:
+          type: string
+          description: The target resource of the error.
+          example: example target
+    Attendee3:
+      title: Attendee
+      description: Representation of the attendee
+      type: object
+      properties:
+        id:
+          $ref: '#/components/schemas/uuid-property'
+    AlternateTravelDetail:
+      title: AlternateTravelDetail
+      description: Details of an alternate travel answer submitted by an attendee who opted out of air or hotel bookings.
+      type: object
+      allOf:
+      - $ref: '#/components/schemas/Audit'
+      properties:
+        attendee:
+          $ref: '#/components/schemas/Attendee3'
+        requesterId:
+          type: string
+          format: uuid
+          description: ID of the entity this alternate travel belongs to. For an event attendee, this field is contact ID. For guest, this field is guest ID.
+          example: 3b2359a7-4583-40ed-8afd-67e5f15373d3
+        requesterType:
+          type: string
+          description: Attendee type of the entity this alternate travel belongs to. Contact means the requester is an independent attendee. Guest means the attendee is accompanying another attendee.
+          enum:
+          - Contact
+          - Guest
+          example: Contact
+        travelType:
+          type: string
+          description: Type of travel alternate question
+          enum:
+          - AirRequest
+          - HotelRequest
+          - AirActual
+          - GroupFlight
+          example: AirRequest
+        question:
+          $ref: '#/components/schemas/AlternateQuestion'
+        answer:
+          $ref: '#/components/schemas/AlternateAnswer'
+    AirActualDetail:
+      title: AirActualDetail
+      description: Representation of an air actual detail response.
+      type: object
+      properties:
+        attendee:
+          $ref: '#/components/schemas/Attendee3'
+        airActualDetails:
+          description: List of air actual details for the attendee and its guest.
+          type: array
+          items:
+            $ref: '#/components/schemas/AirActual'
+          minItems: 0
+          maxItems: 200
     Paging:
       title: Paging
       required:
@@ -246,39 +363,61 @@ components:
           example: 2
         _links:
           $ref: '#/components/schemas/PaginationLinks'
-    uuid-property:
-      title: UUID Property
-      description: A string that has to be a format matching the industry standard uuid
-      type: string
-      format: uuid
-      example: 04ca6ae2-0dc3-487b-953e-86d6abbdf7d3
-    Audit:
-      title: Audit
-      description: Audit information
+    Link:
+      title: Link
+      required:
+      - href
+      type: object
+      description: Represents a link to a related resource.
+      properties:
+        href:
+          type: string
+          description: A url provided that can be followed for linking
+          example: ?token=90c5f062-76ad-4ea4-aa53-00eb698d9262
+    LegDetail:
+      title: LegDetail
+      description: Representation of a leg detail in air request.
       type: object
       properties:
-        created:
+        origin:
+          type: string
+          description: Name of the airport where the flight of the passenger's journey originates.
+          example: Delhi - Indira Gandhi Intl - (DEL)
+        destination:
+          type: string
+          description: Name of the airport where the flight of the passenger's journey ends.
+          example: Dubai - International (DXB)
+        date:
           type: string
           format: date-time
-          description: The ISO 8601 zoned date time when this record was created.
-          readOnly: true
-          example: '2017-01-02T02:00:00Z'
-        createdBy:
+          description: The ISO 8601 zoned date time (in UTC) of the flight origin.
+          example: '2023-05-19T00:00:00Z'
+        time:
           type: string
-          description: The identifier of the user that created this record.
-          readOnly: true
-          example: hporter
-        lastModified:
+          description: General time of day or specific time when the flight of the passenger's journey starts.
+          example: Morning
+    AirRequesterType:
+      title: AirRequesterType
+      description: Representation of an attendee type of the flight requester. Contact means the requester is an independent attendee. Guest means the attendee is accompanying another attendee. Unknown means attendee has requested a flight for passenger other than its guest.
+      type: string
+      enum:
+      - Contact
+      - Guest
+      - Unknown
+      example: Contact
+    AirlinePreference:
+      title: Airline Preference
+      description: Representation of airlines based on preference
+      type: object
+      properties:
+        airlineName:
           type: string
-          format: date-time
-          description: The ISO 8601 zoned date time when this record was updated.
-          readOnly: true
-          example: '2019-02-12T03:00:00Z'
-        lastModifiedBy:
+          description: Name of preferred airline.
+          example: Emirates
+        rewardsCode:
           type: string
-          description: The identifier of the user that last updated this record.
-          readOnly: true
-          example: hporter
+          description: Loyalty program number for the preferred airline.
+          example: SKYWARD12345
     HotelRoomRate:
       title: HotelRoomRate
       description: Representation of a hotel room rate
@@ -293,31 +432,17 @@ components:
           type: number
           description: The nightly rate at which the room has been booked.
           example: 100
-    reservation-request-paginated-response:
-      title: HousingReservationPaginatedResponse
-      description: The response from a request to get the list of housing reservation request details for the attendees. This includes the paging object as well as the collection of housing reservation request details.
-      required:
-      - paging
-      - data
+    HousingReservationResponse:
+      title: HousingReservationResponse
+      description: Representation of the reservation request response.
       type: object
       properties:
-        paging:
-          $ref: '#/components/schemas/Paging'
-        data:
-          type: array
-          items:
-            $ref: '#/components/schemas/HousingReservationResponse'
-          description: Collection of reservation request details for attendees.
-    Gender1:
-      title: Gender
-      description: Gender of the requester.
-      enum:
-      - Male
-      - Female
-      - Non-binary
-      - Rather not say
-      type: string
-      example: Male
+        attendee:
+          $ref: '#/components/schemas/Attendee3'
+        reservationRequest:
+          $ref: '#/components/schemas/HousingReservation'
+        lastModified:
+          $ref: '#/components/schemas/lastModified'
     hotel-reservation-detail:
       title: HotelReservationPaginatedResponse
       description: The response from a request to get the list of hotel reservation for the attendees.  This includes the paging object as well as the collection of air actual details.
@@ -333,27 +458,69 @@ components:
           items:
             $ref: '#/components/schemas/HotelReservationDetail'
           description: Collection of hotel reservation for attendees.
-    HotelReservationDetail:
-      title: HotelReservationDetail
-      description: Representation of a hotel reservation detail response.
+    AirActual:
+      title: AirActual
+      description: Representation of an air actual.
       type: object
+      allOf:
+      - $ref: '#/components/schemas/Audit'
       properties:
-        attendee:
-          $ref: '#/components/schemas/Attendee3'
-        hotelRequestDetails:
-          description: List of all the hotel requests by attendee and its guest.
+        airActualId:
+          type: string
+          format: uuid
+          description: ID of the air actual.
+          example: 04ca6ae2-0dc3-487b-953e-86d6abbdf7d3
+        requesterId:
+          type: string
+          format: uuid
+          description: ID of the flight requester. For an event attendee, this field is contact ID. For guest, this field is guest ID. For any other passenger, this fields contains null.
+          example: 04ca6ae2-0dc3-487b-953e-86d6abbdf7d3
+        status:
+          $ref: '#/components/schemas/TravelRequestStatus'
+        requesterType:
+          $ref: '#/components/schemas/AirRequesterType'
+        name:
+          type: string
+          description: Name of the attendee booked for the flight.
+          example: John Doe
+        confirmationNumber:
+          type: string
+          description: Confirmation Number of the flight.
+          example: 123-456-XYZ
+        totalAmount:
+          type: number
+          description: Total cost of the flight.
+          example: 500
+        currencyCode:
+          type: string
+          description: ISO 4217 currency code for the cost of the flight.
+          example: USD
+          maxLength: 3
+        note:
+          type: string
+          description: Additional note associated to the air actual.
+          maxLength: 300
+          example: Additional note here.
+        recordLocatorGDS:
+          type: string
+          description: The unique reservation number associated with the Global Distribution System (GDS) where the flight was booked.
+          example: ABC123
+        noteGDS:
+          type: string
+          description: Additional note from the GDS associated to the air actual.
+          example: GDS note.
+        journeyType:
+          $ref: '#/components/schemas/JourneyType'
+        flightDetail:
+          description: List of all the flight details taken by attendee and its guest
           type: array
           items:
-            $ref: '#/components/schemas/HotelRequest'
-    TicketType:
-      title: TicketType
-      description: Category of the passenger's ticket class for an air booking.
-      type: string
-      enum:
-      - Economy/Coach
-      - Business
-      - FirstClass
-      example: Economy/Coach
+            $ref: '#/components/schemas/FlightDetail'
+        airActualAnswers:
+          type: array
+          description: Answer provided by requester to the air actual related question.
+          items:
+            $ref: '#/components/schemas/AttendeeAnswer1'
     AirRequest:
       title: AirRequest
       description: Representation of an air request.
@@ -498,105 +665,6 @@ components:
           maxLength: 25
           description: Postal code (also known as zipcode) of the address.
           example: '78727'
-    ErrorResponse:
-      title: ErrorResponse
-      description: Represents an error response with additional details of cascading error messages.
-      allOf:
-      - $ref: '#/components/schemas/ErrorResponseBase'
-      type: object
-      required:
-      - code
-      - message
-      properties:
-        details:
-          type: array
-          items:
-            $ref: '#/components/schemas/ErrorResponseBase'
-          description: Additional details of cascading error messages.
-    AirlinePreference:
-      title: Airline Preference
-      description: Representation of airlines based on preference
-      type: object
-      properties:
-        airlineName:
-          type: string
-          description: Name of preferred airline.
-          example: Emirates
-        rewardsCode:
-          type: string
-          description: Loyalty program number for the preferred airline.
-          example: SKYWARD12345
-    AirActual:
-      title: AirActual
-      description: Representation of an air actual.
-      type: object
-      allOf:
-      - $ref: '#/components/schemas/Audit'
-      properties:
-        airActualId:
-          type: string
-          format: uuid
-          description: ID of the air actual.
-          example: 04ca6ae2-0dc3-487b-953e-86d6abbdf7d3
-        requesterId:
-          type: string
-          format: uuid
-          description: ID of the flight requester. For an event attendee, this field is contact ID. For guest, this field is guest ID. For any other passenger, this fields contains null.
-          example: 04ca6ae2-0dc3-487b-953e-86d6abbdf7d3
-        status:
-          $ref: '#/components/schemas/TravelRequestStatus'
-        requesterType:
-          $ref: '#/components/schemas/AirRequesterType'
-        name:
-          type: string
-          description: Name of the attendee booked for the flight.
-          example: John Doe
-        confirmationNumber:
-          type: string
-          description: Confirmation Number of the flight.
-          example: 123-456-XYZ
-        totalAmount:
-          type: number
-          description: Total cost of the flight.
-          example: 500
-        currencyCode:
-          type: string
-          description: ISO 4217 currency code for the cost of the flight.
-          example: USD
-          maxLength: 3
-        note:
-          type: string
-          description: Additional note associated to the air actual.
-          maxLength: 300
-          example: Additional note here.
-        recordLocatorGDS:
-          type: string
-          description: The unique reservation number associated with the Global Distribution System (GDS) where the flight was booked.
-          example: ABC123
-        noteGDS:
-          type: string
-          description: Additional note from the GDS associated to the air actual.
-          example: GDS note.
-        journeyType:
-          $ref: '#/components/schemas/JourneyType'
-        flightDetail:
-          description: List of all the flight details taken by attendee and its guest
-          type: array
-          items:
-            $ref: '#/components/schemas/FlightDetail'
-        airActualAnswers:
-          type: array
-          description: Answer provided by requester to the air actual related question.
-          items:
-            $ref: '#/components/schemas/AttendeeAnswer1'
-    JourneyType:
-      title: JourneyType
-      description: Type of journey for an air booking.
-      type: string
-      enum:
-      - Oneway
-      - RoundTrip
-      example: RoundTrip
     Address7:
       title: Address
       description: Address of the hotel.
@@ -620,35 +688,84 @@ components:
           description: Name of the country.
           readOnly: true
           example: United States of America
-    AirReservationDetail:
-      title: AirReservationDetail
-      description: Representation of an air reservation detail response.
+    JourneyType:
+      title: JourneyType
+      description: Type of journey for an air booking.
+      type: string
+      enum:
+      - Oneway
+      - RoundTrip
+      example: RoundTrip
+    HousingReservation:
+      title: HousingReservation
+      description: Representation of the housing reservation details.
       type: object
       properties:
-        attendee:
-          $ref: '#/components/schemas/Attendee3'
-        airRequestDetails:
-          description: List of all air request by attendee and its guest.
-          type: array
-          items:
-            $ref: '#/components/schemas/AirRequest'
+        id:
+          type: string
+          format: string
+          description: Reservation request ID, also known as a bridge ID.
+          example: D6A63423-G796
+        bookingSite:
+          title: Link
+          required:
+          - href
+          type: object
+          description: Represents a link to a related resource.
+          properties:
+            href:
+              type: string
+              description: URL of the booking site for this reservation request.
+              example: https://book.passkey.com/entry?token=eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJwYXlsb2FkIjp7ImVudHJ5IjoiUkVHSVNUUkFUSU9OIiwicGFyYW1zIjpbeyJuYW1lIjoiYnJpZGdlSWQiLCJ2YWx1ZSI6IlQ3VFdNTEhQLUdFNEQifV19fQ.7sH1gO_1Aambk-SRRlO2c7ac2DOpqLmCB-zsxB71q_A
     lastModified:
       type: string
       format: date-time
       description: The ISO 8601 zoned date time when this record was updated.
       readOnly: true
       example: '2019-02-12T03:00:00Z'
-    PaginationLinks:
-      title: PaginationLinks
+    alternate-travel-paginated-response:
+      title: AlternateTravelPaginatedResponse
+      description: Paginated response containing alternate travel answers submitted by attendees who opt out of air or hotel bookings.
       type: object
-      description: Represents pagination links for navigating between pages of data.
+      required:
+      - paging
+      - data
       properties:
-        next:
-          $ref: '#/components/schemas/Link'
-        self:
-          $ref: '#/components/schemas/Link'
-        prev:
-          $ref: '#/components/schemas/Link'
+        paging:
+          type: object
+          description: Represents pagination information for the list of results.
+          allOf:
+          - $ref: '#/components/schemas/Paging'
+        data:
+          type: array
+          maxItems: 200
+          description: Collection of alternate travel answers for attendees.
+          items:
+            $ref: '#/components/schemas/AlternateTravelDetail'
+    AttendeeAnswer1:
+      title: AttendeeAnswer
+      description: Answer for the question answered by attendee.
+      required:
+      - question
+      - value
+      type: object
+      properties:
+        question:
+          type: object
+          description: The reference to the question entity. Contains only the ID of the question entity.
+          properties:
+            id:
+              type: string
+              description: Question ID
+              format: uuid
+              example: 04ca6ae2-0dc3-487b-953e-86d6abbdf7d3
+        value:
+          type: array
+          description: The set of answers to a question.
+          items:
+            type: string
+            description: A question answer
+            example: '1234'
     SeatType:
       title: SeatType
       description: Preferred or assigned seat type for an air booking.
@@ -657,36 +774,47 @@ components:
       - Aisle
       - Window
       example: Window
-    AirActualDetail:
-      title: AirActualDetail
-      description: Representation of an air actual detail response.
+    Audit:
+      title: Audit
+      description: Audit information
       type: object
       properties:
-        attendee:
-          $ref: '#/components/schemas/Attendee3'
-        airActualDetails:
-          description: List of air actual details for the attendee and its guest.
-          type: array
-          items:
-            $ref: '#/components/schemas/AirActual'
-          minItems: 0
-          maxItems: 200
-    TravelRequestStatus:
-      title: TravelRequestStatus
-      enum:
-      - SUBMITTED
-      - PROCESSING
-      - APPROVED
-      - RESERVED
-      - DENIED
-      - NOT_AVAILABLE
-      - CANCELLED
-      - PENDING
-      - TICKETED
-      - WAITLISTED
-      type: string
-      description: Status of the travel request done by attendee.
-      example: SUBMITTED
+        created:
+          type: string
+          format: date-time
+          description: The ISO 8601 zoned date time when this record was created.
+          readOnly: true
+          example: '2017-01-02T02:00:00Z'
+        createdBy:
+          type: string
+          description: The identifier of the user that created this record.
+          readOnly: true
+          example: hporter
+        lastModified:
+          type: string
+          format: date-time
+          description: The ISO 8601 zoned date time when this record was updated.
+          readOnly: true
+          example: '2019-02-12T03:00:00Z'
+        lastModifiedBy:
+          type: string
+          description: The identifier of the user that last updated this record.
+          readOnly: true
+          example: hporter
+    AlternateQuestion:
+      title: AlternateQuestion
+      description: Represents a reference to an alternate travel question entity, containing only the question ID and text.
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+          description: Unique identifier for the question entity.
+          example: 04ca6ae2-0dc3-487b-953e-86d6abbdf7d3
+        text:
+          type: string
+          description: Text of the alternate travel question.
+          example: Why are you not booking a hotel with us?
     FlightDetail:
       title: FlightDetail
       description: Representation of a flight's details.
@@ -754,6 +882,75 @@ components:
           - GoingToEvent
           - NotApplicable
           example: LeavingEvent
+    TravelRequestStatus:
+      title: TravelRequestStatus
+      enum:
+      - SUBMITTED
+      - PROCESSING
+      - APPROVED
+      - RESERVED
+      - DENIED
+      - NOT_AVAILABLE
+      - CANCELLED
+      - PENDING
+      - TICKETED
+      - WAITLISTED
+      type: string
+      description: Status of the travel request done by attendee.
+      example: SUBMITTED
+    air-reservation-detail:
+      title: AirReservationPaginatedResponse
+      description: The response from a request to get the list of air reservation for the attendees.  This includes the paging object as well as the collection of air actual details.
+      required:
+      - paging
+      - data
+      type: object
+      properties:
+        paging:
+          $ref: '#/components/schemas/Paging'
+        data:
+          type: array
+          items:
+            $ref: '#/components/schemas/AirReservationDetail'
+          description: Collection of air reservations for attendees.
+    TicketType:
+      title: TicketType
+      description: Category of the passenger's ticket class for an air booking.
+      type: string
+      enum:
+      - Economy/Coach
+      - Business
+      - FirstClass
+      example: Economy/Coach
+    PaginationLinks:
+      title: PaginationLinks
+      type: object
+      description: Represents pagination links for navigating between pages of data.
+      properties:
+        next:
+          $ref: '#/components/schemas/Link'
+        self:
+          $ref: '#/components/schemas/Link'
+        prev:
+          $ref: '#/components/schemas/Link'
+    uuid-property:
+      title: UUID Property
+      description: A string that has to be a format matching the industry standard uuid
+      type: string
+      format: uuid
+      example: 04ca6ae2-0dc3-487b-953e-86d6abbdf7d3
+    HotelReservationDetail:
+      title: HotelReservationDetail
+      description: Representation of a hotel reservation detail response.
+      type: object
+      properties:
+        attendee:
+          $ref: '#/components/schemas/Attendee3'
+        hotelRequestDetails:
+          description: List of all the hotel requests by attendee and its guest.
+          type: array
+          items:
+            $ref: '#/components/schemas/HotelRequest'
     HotelRequest:
       title: HotelRequest
       description: Representation of a hotel request.
@@ -914,139 +1111,31 @@ components:
           description: Answer provided by requester to the hotel request related question.
           items:
             $ref: '#/components/schemas/AttendeeAnswer1'
-    HousingReservationResponse:
-      title: HousingReservationResponse
-      description: Representation of the reservation request response.
-      type: object
-      properties:
-        attendee:
-          $ref: '#/components/schemas/Attendee3'
-        reservationRequest:
-          $ref: '#/components/schemas/HousingReservation'
-        lastModified:
-          $ref: '#/components/schemas/lastModified'
-    HousingReservation:
-      title: HousingReservation
-      description: Representation of the housing reservation details.
-      type: object
-      properties:
-        id:
-          type: string
-          format: string
-          description: Reservation request ID, also known as a bridge ID.
-          example: D6A63423-G796
-        bookingSite:
-          title: Link
-          required:
-          - href
-          type: object
-          description: Represents a link to a related resource.
-          properties:
-            href:
-              type: string
-              description: URL of the booking site for this reservation request.
-              example: https://book.passkey.com/entry?token=eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJwYXlsb2FkIjp7ImVudHJ5IjoiUkVHSVNUUkFUSU9OIiwicGFyYW1zIjpbeyJuYW1lIjoiYnJpZGdlSWQiLCJ2YWx1ZSI6IlQ3VFdNTEhQLUdFNEQifV19fQ.7sH1gO_1Aambk-SRRlO2c7ac2DOpqLmCB-zsxB71q_A
-    AlternateTravelDetail:
-      title: AlternateTravelDetail
-      description: Details of an alternate travel answer submitted by an attendee who opted out of air or hotel bookings.
-      type: object
-      allOf:
-      - $ref: '#/components/schemas/Audit'
-      properties:
-        attendee:
-          $ref: '#/components/schemas/Attendee3'
-        requesterId:
-          type: string
-          format: uuid
-          description: ID of the entity this alternate travel belongs to. For an event attendee, this field is contact ID. For guest, this field is guest ID.
-          example: 3b2359a7-4583-40ed-8afd-67e5f15373d3
-        requesterType:
-          type: string
-          description: Attendee type of the entity this alternate travel belongs to. Contact means the requester is an independent attendee. Guest means the attendee is accompanying another attendee.
-          enum:
-          - Contact
-          - Guest
-          example: Contact
-        travelType:
-          type: string
-          description: Type of travel alternate question
-          enum:
-          - AirRequest
-          - HotelRequest
-          - AirActual
-          - GroupFlight
-          example: AirRequest
-        question:
-          $ref: '#/components/schemas/AlternateQuestion'
-        answer:
-          $ref: '#/components/schemas/AlternateAnswer'
-    LegDetail:
-      title: LegDetail
-      description: Representation of a leg detail in air request.
-      type: object
-      properties:
-        origin:
-          type: string
-          description: Name of the airport where the flight of the passenger's journey originates.
-          example: Delhi - Indira Gandhi Intl - (DEL)
-        destination:
-          type: string
-          description: Name of the airport where the flight of the passenger's journey ends.
-          example: Dubai - International (DXB)
-        date:
-          type: string
-          format: date-time
-          description: The ISO 8601 zoned date time (in UTC) of the flight origin.
-          example: '2023-05-19T00:00:00Z'
-        time:
-          type: string
-          description: General time of day or specific time when the flight of the passenger's journey starts.
-          example: Morning
-    AlternateAnswer:
-      title: AlternateAnswer
-      description: Represents the answer(s) to an alternate travel question submitted by an attendee.
-      type: object
-      properties:
-        value:
-          type: array
-          description: The set of answers to a single alternate travel question.
-          maxItems: 50
-          items:
-            type: string
-            description: A single answer to the alternate travel question.
-            example: '1234'
-          example:
-          - '1234'
-    AirRequesterType:
-      title: AirRequesterType
-      description: Representation of an attendee type of the flight requester. Contact means the requester is an independent attendee. Guest means the attendee is accompanying another attendee. Unknown means attendee has requested a flight for passenger other than its guest.
-      type: string
+    Gender1:
+      title: Gender
+      description: Gender of the requester.
       enum:
-      - Contact
-      - Guest
-      - Unknown
-      example: Contact
-    Attendee3:
-      title: Attendee
-      description: Representation of the attendee
+      - Male
+      - Female
+      - Non-binary
+      - Rather not say
+      type: string
+      example: Male
+    ErrorResponse:
+      title: ErrorResponse
+      description: Represents an error response with additional details of cascading error messages.
+      allOf:
+      - $ref: '#/components/schemas/ErrorResponseBase'
       type: object
+      required:
+      - code
+      - message
       properties:
-        id:
-          $ref: '#/components/schemas/uuid-property'
-    AlternateQuestion:
-      title: AlternateQuestion
-      description: Represents a reference to an alternate travel question entity, containing only the question ID and text.
-      type: object
-      properties:
-        id:
-          type: string
-          format: uuid
-          description: Unique identifier for the question entity.
-          example: 04ca6ae2-0dc3-487b-953e-86d6abbdf7d3
-        text:
-          type: string
-          description: Text of the alternate travel question.
-          example: Why are you not booking a hotel with us?
+        details:
+          type: array
+          items:
+            $ref: '#/components/schemas/ErrorResponseBase'
+          description: Additional details of cascading error messages.
     air-actual-detail:
       title: AirActualPaginatedResponse
       description: The response from a request to get the list of air actual for the attendees.  This includes the paging object as well as the collection of air actual details.
@@ -1064,95 +1153,6 @@ components:
           description: Collection of air actuals for attendees.
           minItems: 0
           maxItems: 200
-    air-reservation-detail:
-      title: AirReservationPaginatedResponse
-      description: The response from a request to get the list of air reservation for the attendees.  This includes the paging object as well as the collection of air actual details.
-      required:
-      - paging
-      - data
-      type: object
-      properties:
-        paging:
-          $ref: '#/components/schemas/Paging'
-        data:
-          type: array
-          items:
-            $ref: '#/components/schemas/AirReservationDetail'
-          description: Collection of air reservations for attendees.
-    AttendeeAnswer1:
-      title: AttendeeAnswer
-      description: Answer for the question answered by attendee.
-      required:
-      - question
-      - value
-      type: object
-      properties:
-        question:
-          type: object
-          description: The reference to the question entity. Contains only the ID of the question entity.
-          properties:
-            id:
-              type: string
-              description: Question ID
-              format: uuid
-              example: 04ca6ae2-0dc3-487b-953e-86d6abbdf7d3
-        value:
-          type: array
-          description: The set of answers to a question.
-          items:
-            type: string
-            description: A question answer
-            example: '1234'
-    alternate-travel-paginated-response:
-      title: AlternateTravelPaginatedResponse
-      description: Paginated response containing alternate travel answers submitted by attendees who opt out of air or hotel bookings.
-      type: object
-      required:
-      - paging
-      - data
-      properties:
-        paging:
-          type: object
-          description: Represents pagination information for the list of results.
-          allOf:
-          - $ref: '#/components/schemas/Paging'
-        data:
-          type: array
-          maxItems: 200
-          description: Collection of alternate travel answers for attendees.
-          items:
-            $ref: '#/components/schemas/AlternateTravelDetail'
-    ErrorResponseBase:
-      title: ErrorResponseBase
-      type: object
-      description: Represents an error response with no additional details.
-      required:
-      - code
-      - message
-      properties:
-        code:
-          type: integer
-          description: The HTTP status code representing the error.
-          example: 400
-        message:
-          type: string
-          description: A brief description of the error.
-          example: Bad Request
-        target:
-          type: string
-          description: The target resource of the error.
-          example: example target
-    Link:
-      title: Link
-      required:
-      - href
-      type: object
-      description: Represents a link to a related resource.
-      properties:
-        href:
-          type: string
-          description: A url provided that can be followed for linking
-          example: ?token=90c5f062-76ad-4ea4-aa53-00eb698d9262
   responses:
     TooManyRequests1:
       description: Too many requests
@@ -1163,24 +1163,6 @@ components:
           example:
             code: 429
             message: Limit Exceeded
-    NotFound1:
-      description: Resource not found
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/ErrorResponse'
-          example:
-            code: 404
-            message: Not found
-    Forbidden1:
-      description: You do not have access to the resource
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/ErrorResponse'
-          example:
-            code: 403
-            message: Access Forbidden
     Unauthorized1:
       description: Bad or expired token
       content:
@@ -1199,62 +1181,25 @@ components:
           example:
             code: 400
             message: Bad Request
+    NotFound1:
+      description: Resource not found
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+          example:
+            code: 404
+            message: Not found
+    Forbidden1:
+      description: You do not have access to the resource
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+          example:
+            code: 403
+            message: Access Forbidden
   parameters:
-    expandHotelRequestQuestionAnswer:
-      name: expand
-      in: query
-      required: false
-      description: "A list of fields to be expanded, returning additional information alongside the specified fields. The expanded entity is retrieved and displayed inline for each specified expansion field. The respective scopes for each expansion are required.\n\nThe following fields are expandable:\n  * hotelRequestDetails.hotelRequestAnswers.question (<a href=\"#operation/getEventQuestions\">List Event Questions</a>)\n"
-      schema:
-        example: hotelRequestDetails.hotelRequestAnswers.question
-        type: array
-        items:
-          type: string
-          enum:
-          - hotelRequestDetails.hotelRequestAnswers.question
-    expandAirRequestQuestionAnswer:
-      name: expand
-      in: query
-      required: false
-      description: "A list of fields to be expanded, returning additional information alongside the specified fields. The expanded entity is retrieved and displayed inline for each specified expansion field. The respective scopes for each expansion are required.\n\nThe following fields are expandable:\n  * airRequestDetails.airRequestAnswers.question (<a href=\"#operation/getEventQuestions\">List Event Questions</a>)\n"
-      schema:
-        example: airRequestDetails.airRequestAnswers.question
-        type: array
-        items:
-          type: string
-          enum:
-          - airRequestDetails.airRequestAnswers.question
-    sortForAirActual:
-      name: sort
-      required: false
-      in: query
-      style: form
-      explode: false
-      description: "The sort order passed as a parameter, used to control the order of the\nsearch results as a priority ordered list of sorts\n\nThere are two orders:\n  * ascending: ASC\n  * descending: DESC\n\nThe following fields are sortable:\n  * airActualDetails.name\n  * airActualDetails.lastModified\nwhere i <= limit\n"
-      schema:
-        type: string
-        example: airActualDetails.name:DESC,airActualDetails.lastModified:ASC
-    before:
-      name: before
-      required: false
-      in: query
-      description: Used to query records that have been added or updated before this time point.
-      schema:
-        type: string
-        format: date-time
-        example: '2017-01-02T02:00:00Z'
-    limit:
-      name: limit
-      in: query
-      description: The maximum number of records to return per page.
-      style: form
-      explode: true
-      schema:
-        maximum: 200
-        minimum: 1
-        type: integer
-        default: 100
-        example: 100
     filter2:
       name: filter
       in: query
@@ -1284,18 +1229,6 @@ components:
       schema:
         type: string
         example: (attendee.id eq '76f2b9e2-fcce-4d93-be29-a008b76a050c') OR (attendee.id eq '16322408-bae8-4b29-a559-702d2023e13a')
-    expandAirActualQuestionAnswer:
-      name: expand
-      in: query
-      required: false
-      description: "A list of fields to be expanded, returning additional information alongside the specified fields. The expanded entity is retrieved and displayed inline for each specified expansion field. The respective scopes for each expansion are required.\n\nThe following fields are expandable:\n  * airActualDetails.airActualAnswers.question (<a href=\"#operation/getEventQuestions\">List Event Questions</a>)\n"
-      schema:
-        example: airActualDetails.airActualAnswers.question
-        type: array
-        items:
-          type: string
-          enum:
-          - airActualDetails.airActualAnswers.question
     id2:
       in: path
       name: id
@@ -1303,16 +1236,58 @@ components:
       required: true
       schema:
         $ref: '#/components/schemas/uuid-property'
-    sortForAirRequest:
+    expandHotelRequestQuestionAnswer:
+      name: expand
+      in: query
+      required: false
+      description: "A list of fields to be expanded, returning additional information alongside the specified fields. The expanded entity is retrieved and displayed inline for each specified expansion field. The respective scopes for each expansion are required.\n\nThe following fields are expandable:\n  * hotelRequestDetails.hotelRequestAnswers.question (<a href=\"#operation/getEventQuestions\">List Event Questions</a>)\n"
+      schema:
+        example: hotelRequestDetails.hotelRequestAnswers.question
+        type: array
+        items:
+          type: string
+          enum:
+          - hotelRequestDetails.hotelRequestAnswers.question
+    before:
+      name: before
+      required: false
+      in: query
+      description: Used to query records that have been added or updated before this time point.
+      schema:
+        type: string
+        format: date-time
+        example: '2017-01-02T02:00:00Z'
+    expandAirRequestQuestionAnswer:
+      name: expand
+      in: query
+      required: false
+      description: "A list of fields to be expanded, returning additional information alongside the specified fields. The expanded entity is retrieved and displayed inline for each specified expansion field. The respective scopes for each expansion are required.\n\nThe following fields are expandable:\n  * airRequestDetails.airRequestAnswers.question (<a href=\"#operation/getEventQuestions\">List Event Questions</a>)\n"
+      schema:
+        example: airRequestDetails.airRequestAnswers.question
+        type: array
+        items:
+          type: string
+          enum:
+          - airRequestDetails.airRequestAnswers.question
+    after:
+      name: after
+      required: false
+      description: Used to query records that have been added or updated after this time point. Default to the beginning of time of the data store.
+      in: query
+      schema:
+        type: string
+        format: date-time
+        example: '2017-01-02T02:00:00Z'
+    sortForAirActual:
       name: sort
       required: false
       in: query
       style: form
       explode: false
-      description: "The sort order passed as a parameter, used to control the order of the\nsearch results as a priority ordered list of sorts\n\nThere are two orders:\n  * ascending: ASC\n  * descending: DESC\n\nThe following fields are sortable:\n  * airRequestDetails.requesterFirstName\n  * airRequestDetails.requesterLastName\n  * airRequestDetails.lastModified\n"
+      description: "The sort order passed as a parameter, used to control the order of the\nsearch results as a priority ordered list of sorts\n\nThere are two orders:\n  * ascending: ASC\n  * descending: DESC\n\nThe following fields are sortable:\n  * airActualDetails.name\n  * airActualDetails.lastModified\nwhere i <= limit\n"
       schema:
         type: string
-        example: airRequestDetails.requesterFirstName:DESC,airRequestDetails.requesterLastName:ASC
+        example: airActualDetails.name:DESC,airActualDetails.lastModified:ASC
     token:
       name: token
       in: query
@@ -1326,6 +1301,30 @@ components:
       schema:
         type: string
         example: 0e28af57-511f-47ab-ae46-46cd1ca51a1a
+    expandAirActualQuestionAnswer:
+      name: expand
+      in: query
+      required: false
+      description: "A list of fields to be expanded, returning additional information alongside the specified fields. The expanded entity is retrieved and displayed inline for each specified expansion field. The respective scopes for each expansion are required.\n\nThe following fields are expandable:\n  * airActualDetails.airActualAnswers.question (<a href=\"#operation/getEventQuestions\">List Event Questions</a>)\n"
+      schema:
+        example: airActualDetails.airActualAnswers.question
+        type: array
+        items:
+          type: string
+          enum:
+          - airActualDetails.airActualAnswers.question
+    limit:
+      name: limit
+      in: query
+      description: The maximum number of records to return per page.
+      style: form
+      explode: true
+      schema:
+        maximum: 200
+        minimum: 1
+        type: integer
+        default: 100
+        example: 100
     sortForHotelRequest:
       name: sort
       required: false
@@ -1336,15 +1335,16 @@ components:
       schema:
         type: string
         example: hotelRequestDetails.requesterFirstName:DESC,hotelRequestDetails.requesterLastName:ASC
-    after:
-      name: after
+    sortForAirRequest:
+      name: sort
       required: false
-      description: Used to query records that have been added or updated after this time point. Default to the beginning of time of the data store.
       in: query
+      style: form
+      explode: false
+      description: "The sort order passed as a parameter, used to control the order of the\nsearch results as a priority ordered list of sorts\n\nThere are two orders:\n  * ascending: ASC\n  * descending: DESC\n\nThe following fields are sortable:\n  * airRequestDetails.requesterFirstName\n  * airRequestDetails.requesterLastName\n  * airRequestDetails.lastModified\n"
       schema:
         type: string
-        format: date-time
-        example: '2017-01-02T02:00:00Z'
+        example: airRequestDetails.requesterFirstName:DESC,airRequestDetails.requesterLastName:ASC
   securitySchemes:
     OAuth2.authorizationCode:
       type: oauth2
