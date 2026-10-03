@@ -46,52 +46,6 @@ paths:
           $ref: '#/components/responses/TooManyRequests1'
 components:
   schemas:
-    RfpPastEvent:
-      type: object
-      title: RfpPastEvent
-      description: This object includes information about past events hosted by the planner.
-      required:
-      - id
-      allOf:
-      - $ref: '#/components/schemas/RfpPastEventRequest'
-      properties:
-        id:
-          type: string
-          format: uuid
-          readOnly: true
-          description: Unique ID for the event detail.
-          example: f56a51a4-84b0-46c9-a612-716dc95a1c96
-    RfpPastEvents:
-      title: RFP Past Events
-      description: List of past RFP events.
-      type: object
-      properties:
-        data:
-          type: array
-          items:
-            $ref: '#/components/schemas/RfpPastEvent'
-          maxItems: 3
-          description: List of past events saved on RFP by planner.
-    ErrorResponseBase:
-      title: ErrorResponseBase
-      type: object
-      description: Represents an error response with no additional details.
-      required:
-      - code
-      - message
-      properties:
-        code:
-          type: integer
-          description: The HTTP status code representing the error.
-          example: 400
-        message:
-          type: string
-          description: A brief description of the error.
-          example: Bad Request
-        target:
-          type: string
-          description: The target resource of the error.
-          example: example target
     RfpPastEventRequest:
       type: object
       title: RfpPastEventRequest
@@ -159,6 +113,52 @@ components:
           items:
             $ref: '#/components/schemas/ErrorResponseBase'
           description: Additional details of cascading error messages.
+    RfpPastEvent:
+      type: object
+      title: RfpPastEvent
+      description: This object includes information about past events hosted by the planner.
+      required:
+      - id
+      allOf:
+      - $ref: '#/components/schemas/RfpPastEventRequest'
+      properties:
+        id:
+          type: string
+          format: uuid
+          readOnly: true
+          description: Unique ID for the event detail.
+          example: f56a51a4-84b0-46c9-a612-716dc95a1c96
+    RfpPastEvents:
+      title: RFP Past Events
+      description: List of past RFP events.
+      type: object
+      properties:
+        data:
+          type: array
+          items:
+            $ref: '#/components/schemas/RfpPastEvent'
+          maxItems: 3
+          description: List of past events saved on RFP by planner.
+    ErrorResponseBase:
+      title: ErrorResponseBase
+      type: object
+      description: Represents an error response with no additional details.
+      required:
+      - code
+      - message
+      properties:
+        code:
+          type: integer
+          description: The HTTP status code representing the error.
+          example: 400
+        message:
+          type: string
+          description: A brief description of the error.
+          example: Bad Request
+        target:
+          type: string
+          description: The target resource of the error.
+          example: example target
   responses:
     NotFound1:
       description: Resource not found
@@ -169,6 +169,15 @@ components:
           example:
             code: 404
             message: Not found
+    Forbidden1:
+      description: You do not have access to the resource
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+          example:
+            code: 403
+            message: Access Forbidden
     TooManyRequests1:
       description: Too many requests
       content:
@@ -187,15 +196,6 @@ components:
           example:
             code: 401
             message: Unauthorized
-    Forbidden1:
-      description: You do not have access to the resource
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/ErrorResponse'
-          example:
-            code: 403
-            message: Access Forbidden
   parameters:
     rfpId:
       name: rfpId

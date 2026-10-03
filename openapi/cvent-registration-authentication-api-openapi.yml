@@ -330,6 +330,21 @@ components:
           type: integer
           description: Supplementary status code. Typically will be 200 for a success case.
           example: 200
+    ErrorResponse:
+      title: ErrorResponse
+      description: Represents an error response with additional details of cascading error messages.
+      allOf:
+      - $ref: '#/components/schemas/ErrorResponseBase'
+      type: object
+      required:
+      - code
+      - message
+      properties:
+        details:
+          type: array
+          items:
+            $ref: '#/components/schemas/ErrorResponseBase'
+          description: Additional details of cascading error messages.
     ErrorResponseBase:
       title: ErrorResponseBase
       type: object
@@ -350,21 +365,6 @@ components:
           type: string
           description: The target resource of the error.
           example: example target
-    ErrorResponse:
-      title: ErrorResponse
-      description: Represents an error response with additional details of cascading error messages.
-      allOf:
-      - $ref: '#/components/schemas/ErrorResponseBase'
-      type: object
-      required:
-      - code
-      - message
-      properties:
-        details:
-          type: array
-          items:
-            $ref: '#/components/schemas/ErrorResponseBase'
-          description: Additional details of cascading error messages.
   responses:
     ValidToken:
       description: A confirmation message that the token is valid
@@ -373,24 +373,6 @@ components:
         application/json:
           schema:
             $ref: '#/components/schemas/ValidToken'
-    TooManyRequests1:
-      description: Too many requests
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/ErrorResponse'
-          example:
-            code: 429
-            message: Limit Exceeded
-    Unauthorized1:
-      description: Bad or expired token
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/ErrorResponse'
-          example:
-            code: 401
-            message: Unauthorized
     BadRequest1:
       description: Bad request
       content:
@@ -409,6 +391,24 @@ components:
           example:
             code: 403
             message: Access Forbidden
+    TooManyRequests1:
+      description: Too many requests
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+          example:
+            code: 429
+            message: Limit Exceeded
+    Unauthorized1:
+      description: Bad or expired token
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+          example:
+            code: 401
+            message: Unauthorized
   securitySchemes:
     OAuth2.authorizationCode:
       type: oauth2

@@ -100,41 +100,6 @@ paths:
         url: '#oauth2-auth-code-planner-admin'
 components:
   schemas:
-    message-recipients-paginated-response:
-      title: Paginated Channel Members Response
-      description: The response matching the filter criteria for the list of channel members.
-      required:
-      - paging
-      - data
-      type: object
-      properties:
-        paging:
-          $ref: '#/components/schemas/Paging'
-        data:
-          type: array
-          items:
-            $ref: '#/components/schemas/MessageRecipientResponse'
-          description: Collection of channel members.
-    ErrorResponseBase:
-      title: ErrorResponseBase
-      type: object
-      description: Represents an error response with no additional details.
-      required:
-      - code
-      - message
-      properties:
-        code:
-          type: integer
-          description: The HTTP status code representing the error.
-          example: 400
-        message:
-          type: string
-          description: A brief description of the error.
-          example: Bad Request
-        target:
-          type: string
-          description: The target resource of the error.
-          example: example target
     PaginationLinks:
       title: PaginationLinks
       type: object
@@ -186,6 +151,17 @@ components:
               type: string
               description: Identifier for the channel.
               example: production_group_0cb93bab-32d2-4f82-b430-e1911f2348ac
+    Link:
+      title: Link
+      required:
+      - href
+      type: object
+      description: Represents a link to a related resource.
+      properties:
+        href:
+          type: string
+          description: A url provided that can be followed for linking
+          example: ?token=90c5f062-76ad-4ea4-aa53-00eb698d9262
     Paging:
       title: Paging
       required:
@@ -215,17 +191,6 @@ components:
           example: 2
         _links:
           $ref: '#/components/schemas/PaginationLinks'
-    Link:
-      title: Link
-      required:
-      - href
-      type: object
-      description: Represents a link to a related resource.
-      properties:
-        href:
-          type: string
-          description: A url provided that can be followed for linking
-          example: ?token=90c5f062-76ad-4ea4-aa53-00eb698d9262
     event-id1:
       title: Event ID
       description: The UUID identifier for an Event.
@@ -247,6 +212,74 @@ components:
           items:
             $ref: '#/components/schemas/ErrorResponseBase'
           description: Additional details of cascading error messages.
+    message-recipients-paginated-response:
+      title: Paginated Channel Members Response
+      description: The response matching the filter criteria for the list of channel members.
+      required:
+      - paging
+      - data
+      type: object
+      properties:
+        paging:
+          $ref: '#/components/schemas/Paging'
+        data:
+          type: array
+          items:
+            $ref: '#/components/schemas/MessageRecipientResponse'
+          description: Collection of channel members.
+    ErrorResponseBase:
+      title: ErrorResponseBase
+      type: object
+      description: Represents an error response with no additional details.
+      required:
+      - code
+      - message
+      properties:
+        code:
+          type: integer
+          description: The HTTP status code representing the error.
+          example: 400
+        message:
+          type: string
+          description: A brief description of the error.
+          example: Bad Request
+        target:
+          type: string
+          description: The target resource of the error.
+          example: example target
+  parameters:
+    token:
+      name: token
+      in: query
+      description: 'The continuation token returned from a previous class. This must be a valid UUID v4 if provided.
+
+        This will override any other pageable parameters provided.
+
+        '
+      style: form
+      explode: true
+      schema:
+        type: string
+        example: 0e28af57-511f-47ab-ae46-46cd1ca51a1a
+    limit:
+      name: limit
+      in: query
+      description: The maximum number of records to return per page.
+      style: form
+      explode: true
+      schema:
+        maximum: 200
+        minimum: 1
+        type: integer
+        default: 100
+        example: 100
+    eventId5:
+      in: path
+      name: eventId
+      description: Unique ID of an event
+      required: true
+      schema:
+        $ref: '#/components/schemas/event-id1'
   responses:
     NotFound1:
       description: Resource not found
@@ -257,24 +290,6 @@ components:
           example:
             code: 404
             message: Not found
-    TooManyRequests1:
-      description: Too many requests
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/ErrorResponse'
-          example:
-            code: 429
-            message: Limit Exceeded
-    Unauthorized1:
-      description: Bad or expired token
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/ErrorResponse'
-          example:
-            code: 401
-            message: Unauthorized
     BadRequest1:
       description: Bad request
       content:
@@ -293,39 +308,24 @@ components:
           example:
             code: 403
             message: Access Forbidden
-  parameters:
-    token:
-      name: token
-      in: query
-      description: 'The continuation token returned from a previous class. This must be a valid UUID v4 if provided.
-
-        This will override any other pageable parameters provided.
-
-        '
-      style: form
-      explode: true
-      schema:
-        type: string
-        example: 0e28af57-511f-47ab-ae46-46cd1ca51a1a
-    eventId5:
-      in: path
-      name: eventId
-      description: Unique ID of an event
-      required: true
-      schema:
-        $ref: '#/components/schemas/event-id1'
-    limit:
-      name: limit
-      in: query
-      description: The maximum number of records to return per page.
-      style: form
-      explode: true
-      schema:
-        maximum: 200
-        minimum: 1
-        type: integer
-        default: 100
-        example: 100
+    TooManyRequests1:
+      description: Too many requests
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+          example:
+            code: 429
+            message: Limit Exceeded
+    Unauthorized1:
+      description: Bad or expired token
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+          example:
+            code: 401
+            message: Unauthorized
   securitySchemes:
     OAuth2.authorizationCode:
       type: oauth2

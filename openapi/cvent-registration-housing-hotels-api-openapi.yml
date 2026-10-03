@@ -54,32 +54,6 @@ paths:
           $ref: '#/components/responses/TooManyRequests1'
 components:
   schemas:
-    currency.json:
-      description: ISO 4217 currency code.
-      title: Currency
-      type: string
-      example: USD
-      default: USD
-    ErrorResponseBase:
-      title: ErrorResponseBase
-      type: object
-      description: Represents an error response with no additional details.
-      required:
-      - code
-      - message
-      properties:
-        code:
-          type: integer
-          description: The HTTP status code representing the error.
-          example: 400
-        message:
-          type: string
-          description: A brief description of the error.
-          example: Bad Request
-        target:
-          type: string
-          description: The target resource of the error.
-          example: example target
     HotelRoomRatesRequest:
       description: Represents hotel room rates request.
       title: HotelRoomRatesRequest
@@ -109,6 +83,27 @@ components:
           example: 150
         currencyCode:
           $ref: '#/components/schemas/currency.json'
+    ErrorResponse:
+      title: ErrorResponse
+      description: Represents an error response with additional details of cascading error messages.
+      allOf:
+      - $ref: '#/components/schemas/ErrorResponseBase'
+      type: object
+      required:
+      - code
+      - message
+      properties:
+        details:
+          type: array
+          items:
+            $ref: '#/components/schemas/ErrorResponseBase'
+          description: Additional details of cascading error messages.
+    currency.json:
+      description: ISO 4217 currency code.
+      title: Currency
+      type: string
+      example: USD
+      default: USD
     HotelRoomRatesResponse:
       description: Represents hotel room rates response.
       title: HotelRoomRatesResponse
@@ -158,21 +153,43 @@ components:
           type: string
           description: The room code.
           example: VLR
-    ErrorResponse:
-      title: ErrorResponse
-      description: Represents an error response with additional details of cascading error messages.
-      allOf:
-      - $ref: '#/components/schemas/ErrorResponseBase'
+    ErrorResponseBase:
+      title: ErrorResponseBase
       type: object
+      description: Represents an error response with no additional details.
       required:
       - code
       - message
       properties:
-        details:
-          type: array
-          items:
-            $ref: '#/components/schemas/ErrorResponseBase'
-          description: Additional details of cascading error messages.
+        code:
+          type: integer
+          description: The HTTP status code representing the error.
+          example: 400
+        message:
+          type: string
+          description: A brief description of the error.
+          example: Bad Request
+        target:
+          type: string
+          description: The target resource of the error.
+          example: example target
+  parameters:
+    hotelCode:
+      in: path
+      name: hotelCode
+      description: The hotel code.
+      required: true
+      schema:
+        type: string
+        example: HOTELCODE
+    roomCode:
+      in: path
+      name: roomCode
+      description: The room code.
+      required: true
+      schema:
+        type: string
+        example: VLR
   responses:
     NotFound1:
       description: Resource not found
@@ -183,24 +200,6 @@ components:
           example:
             code: 404
             message: Not found
-    TooManyRequests1:
-      description: Too many requests
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/ErrorResponse'
-          example:
-            code: 429
-            message: Limit Exceeded
-    Unauthorized1:
-      description: Bad or expired token
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/ErrorResponse'
-          example:
-            code: 401
-            message: Unauthorized
     BadRequest1:
       description: Bad request
       content:
@@ -219,23 +218,24 @@ components:
           example:
             code: 403
             message: Access Forbidden
-  parameters:
-    hotelCode:
-      in: path
-      name: hotelCode
-      description: The hotel code.
-      required: true
-      schema:
-        type: string
-        example: HOTELCODE
-    roomCode:
-      in: path
-      name: roomCode
-      description: The room code.
-      required: true
-      schema:
-        type: string
-        example: VLR
+    TooManyRequests1:
+      description: Too many requests
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+          example:
+            code: 429
+            message: Limit Exceeded
+    Unauthorized1:
+      description: Bad or expired token
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+          example:
+            code: 401
+            message: Unauthorized
   securitySchemes:
     OAuth2.authorizationCode:
       type: oauth2
