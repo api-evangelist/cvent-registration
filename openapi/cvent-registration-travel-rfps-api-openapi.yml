@@ -344,14 +344,256 @@ components:
           type: string
           description: A url provided that can be followed for linking
           example: ?token=90c5f062-76ad-4ea4-aa53-00eb698d9262
-    FairSeasonType:
-      title: Fair Season Type
+    BidStatusType:
+      title: Bid Status Type
       enum:
-      - negotiated
-      - blackout
+      - in_progress
+      - attached
+      - deleted
       type: string
-      description: Fair season type. Blackout means that no special rate is negotiated for that date and Best Available Rates will apply
-      default: negotiated
+      description: Bid stay type.
+      default: in_progress
+    TravelProposalGroupAndMeetingAmenity:
+      title: Travel Proposal Group And Meeting Amenity
+      description: Group and meeting amenity info.
+      type: object
+      properties:
+        lcdIncluded:
+          type: boolean
+          description: True indicates a liquid crystal display (LCD) is included in the amenity.
+        lcdPrice:
+          type: number
+          minimum: 0.01
+          maximum: 9999999999.99
+          description: Price of the liquid crystal display (LCD).
+          example: 100
+        screenIncluded:
+          type: boolean
+          description: True indicates a screen is included in the amenity.
+        screenPrice:
+          type: number
+          minimum: 0.01
+          maximum: 9999999999.99
+          description: Price of the screen.
+          example: 100
+        hsiaIncluded:
+          type: boolean
+          description: True indicates high speed internet access is included in the amenity.
+        hsiaPrice:
+          type: number
+          minimum: 0.01
+          maximum: 9999999999.99
+          description: Price of high speed internet access (HSIA).
+          example: 100
+        complementaryParkingIncluded:
+          type: boolean
+          description: True indicates parking is included in the amenity.
+        whatCompanyProvidesAVEquipment:
+          type: string
+          maxLength: 100
+          description: Name of company providing AV equipment.
+          example: Some company
+    TravelProposalBid:
+      title: Travel Proposal Bid
+      type: object
+      description: A travel proposal bid.
+      properties:
+        id:
+          title: Bid ID
+          description: The ID of the bid.
+          type: string
+          format: uuid
+          example: 1c208c0d-cf96-42ec-a2c3-7ab7a5c04825
+    TravelProgramStayType:
+      title: Travel Program Stay Type
+      enum:
+      - daily
+      - daily_and_extended_stay
+      type: string
+      description: Code representing the stay types requested by the program.  Programs can accept daily only, or daily and extended stay proposals.
+      example: daily
+    PaginationLinks:
+      title: PaginationLinks
+      type: object
+      description: Represents pagination links for navigating between pages of data.
+      properties:
+        next:
+          $ref: '#/components/schemas/Link'
+        self:
+          $ref: '#/components/schemas/Link'
+        prev:
+          $ref: '#/components/schemas/Link'
+    RateLevelType:
+      title: Rate Level Type
+      enum:
+      - corporate
+      - leisure
+      - government
+      type: string
+      description: Rate level
+      example: corporate
+    format-type:
+      title: Format Type
+      enum:
+      - gbta2013
+      - universal
+      type: string
+      description: Proposal format.
+      example: gbta2013
+    TravelProposalDisposition:
+      title: Travel Proposal Disposition
+      type: object
+      description: Represent proposal disposition details.
+      properties:
+        bidDispositions:
+          type: array
+          description: List of bid dispositions.
+          items:
+            $ref: '#/components/schemas/TravelBidDisposition'
+        groupAndMeetingAccepted:
+          type: boolean
+          description: Indicates if the group and meeting is accepted.
+          example: true
+    TravelBidFairSeasonRate:
+      title: Travel Bid Fair Season Rate
+      type: object
+      description: The negotiated rates for a property room during the fair season.
+      properties:
+        propertyRoom:
+          title: Property Room
+          description: ID of the property's room.
+          type: object
+          properties:
+            id:
+              title: Property Room ID
+              description: The unique ID of the property room.
+              type: string
+              format: uuid
+              example: 9ea95519-2fc5-49d8-991b-e954f49044fe
+        singleRate:
+          type: number
+          minimum: 0.01
+          maximum: 9999999999.99
+          example: 100
+          description: The single room rate.
+        doubleRate:
+          type: number
+          minimum: 0.01
+          maximum: 9999999999.99
+          example: 101
+          description: The double room rate.
+        tripleRate:
+          type: number
+          minimum: 0.01
+          maximum: 9999999999.99
+          example: 102
+          description: The triple room rate.
+        quadRate:
+          type: number
+          minimum: 0.01
+          maximum: 9999999999.99
+          example: 103
+          description: The quadruple room rate.
+        allotment:
+          type: integer
+          minimum: 1
+          maximum: 999
+          description: The number of rooms allotted at the negotiated rate.
+          example: 100
+        status:
+          $ref: '#/components/schemas/BidItemStatusType'
+    TravelBidDispositionAcceptedRoom:
+      title: Travel Bid Disposition Accepted Room
+      type: object
+      description: Represents bid disposition's accepted room.
+      properties:
+        propertyRoom:
+          title: Property Room
+          description: ID of the property's room.
+          type: object
+          properties:
+            id:
+              title: Property Room ID
+              description: The unique ID of the property room.
+              type: string
+              format: uuid
+              example: 04ca6ae2-0dc3-487b-953e-86d6abbdf7d3
+        lraRateAccepted:
+          title: LRA Rate Accepted
+          description: Indicates whether the LRA rates are accepted.
+          type: boolean
+          example: true
+        nlraRateAccepted:
+          title: NLRA Rate Accepted
+          description: Indicates whether the NLRA rates are accepted.
+          type: boolean
+          example: true
+    TravelBidDisposition:
+      title: Travel Bid Disposition
+      type: object
+      description: Represents bid disposition details.
+      properties:
+        bid:
+          $ref: '#/components/schemas/TravelProposalBid'
+        acceptedBidRooms:
+          type: array
+          description: List of accepted bid rooms.
+          items:
+            $ref: '#/components/schemas/TravelBidDispositionAcceptedRoom'
+        rateType:
+          $ref: '#/components/schemas/RateType'
+    TravelProgramType:
+      title: Travel Program Type
+      enum:
+      - corporate
+      - leisure
+      - consortia
+      type: string
+      description: Code representing the travel program type.
+      example: corporate
+    CommentType:
+      title: Comment Type
+      enum:
+      - promotions
+      - special_offers
+      - child_policies
+      - other_information
+      - internal_comments
+      type: string
+      description: Bid comment type
+      example: promotions
+    travel-proposal-bid-paginated-response:
+      title: Travel Proposal Paginated Response
+      description: A paginated list of travel proposals.
+      type: object
+      properties:
+        paging:
+          $ref: '#/components/schemas/Paging'
+        data:
+          type: array
+          items:
+            $ref: '#/components/schemas/travel-proposal-bid'
+          description: Paginated list of business transient proposal bids.
+    ErrorResponseBase:
+      title: ErrorResponseBase
+      type: object
+      description: Represents an error response with no additional details.
+      required:
+      - code
+      - message
+      properties:
+        code:
+          type: integer
+          description: The HTTP status code representing the error.
+          example: 400
+        message:
+          type: string
+          description: A brief description of the error.
+          example: Bad Request
+        target:
+          type: string
+          description: The target resource of the error.
+          example: example target
     travel-program:
       title: Travel Program
       description: Travel program details.
@@ -425,202 +667,6 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/TravelProgramQuestion-1'
-    TravelBidDiscount:
-      title: Travel Bid Discount
-      type: object
-      description: Discount for a travel bid.
-      properties:
-        propertyRoom:
-          title: Property Room
-          description: ID of the property's room.
-          type: object
-          properties:
-            id:
-              title: Property Room ID
-              description: The unique ID of the property room.
-              type: string
-              format: uuid
-              example: 9ea95519-2fc5-49d8-991b-e954f49044fe
-        discount:
-          type: integer
-          minimum: 0
-          maximum: 99
-          description: Discount percentage for the dynamic rate.
-          example: 10
-        status:
-          $ref: '#/components/schemas/BidItemStatusType'
-    Paging:
-      title: Paging
-      required:
-      - _links
-      type: object
-      description: Represents pagination information for a collection of resources.
-      properties:
-        previousToken:
-          type: string
-          description: The pagination token for the previous page, if one exists. You can use this token to navigate to the previous page of data.
-          example: 1a2b3c4d5e6f7g8h9i10j11k
-        nextToken:
-          type: string
-          description: The pagination token for the next page. If this value is present in the response, there is another page of data you can fetch.
-          example: 1a2b3c4d5e6f7g8h9i10j11k
-        currentToken:
-          type: string
-          description: The pagination token for the current page.
-          example: 1a2b3c4d5e6f7g8h9i10j11k
-        limit:
-          type: integer
-          description: The number of records to return on the page. Not to exceed 200.
-          example: 100
-        totalCount:
-          type: integer
-          description: The total number of records available. This field may return blank, even if there are more records. To confirm if there are more records, check the `nextToken` field.
-          example: 2
-        _links:
-          $ref: '#/components/schemas/PaginationLinks'
-    TravelBidDisposition:
-      title: Travel Bid Disposition
-      type: object
-      description: Represents bid disposition details.
-      properties:
-        bid:
-          $ref: '#/components/schemas/TravelProposalBid'
-        acceptedBidRooms:
-          type: array
-          description: List of accepted bid rooms.
-          items:
-            $ref: '#/components/schemas/TravelBidDispositionAcceptedRoom'
-        rateType:
-          $ref: '#/components/schemas/RateType'
-    RateReviewStatusType:
-      title: Rate Review Status Type
-      enum:
-      - requested
-      - not_required
-      - approved
-      - rejected
-      type: string
-      description: The rate review status of the proposal
-    TravelBidAmenity:
-      title: Travel Bid Amenity
-      type: object
-      description: Amenity details for a travel bid.
-      properties:
-        type:
-          $ref: '#/components/schemas/AmenityType'
-        code:
-          type: string
-          minLength: 1
-          maxLength: 60
-          description: The code representing the amenity.
-          example: parking_valet
-        category:
-          type: string
-          minLength: 1
-          maxLength: 60
-          description: The category of the amenity.
-          example: Parking
-        included:
-          type: boolean
-          default: false
-          description: True indicates the amenity price is included in the rate.
-        price:
-          type: number
-          minimum: 0.01
-          maximum: 9999999999.99
-          description: The price of the amenity.
-          example: 100
-        discountAmount:
-          type: number
-          minimum: 0.01
-          maximum: 9999999999.99
-          description: The price of the amenity after discounts.
-          example: 90
-        internalCost:
-          type: number
-          minimum: 0.01
-          maximum: 9999999999.99
-          description: Internal cost of the amenity.
-          example: 80
-        description:
-          type: string
-          maxLength: 1000
-          description: Additional notes on the amenity.
-          example: Valet parking is available for all guests.
-        status:
-          $ref: '#/components/schemas/BidItemStatusType'
-    BidStatusType:
-      title: Bid Status Type
-      enum:
-      - in_progress
-      - attached
-      - deleted
-      type: string
-      description: Bid stay type.
-      default: in_progress
-    RateLevelType:
-      title: Rate Level Type
-      enum:
-      - corporate
-      - leisure
-      - government
-      type: string
-      description: Rate level
-      example: corporate
-    TravelProposalGroupAndMeetingAmenity:
-      title: Travel Proposal Group And Meeting Amenity
-      description: Group and meeting amenity info.
-      type: object
-      properties:
-        lcdIncluded:
-          type: boolean
-          description: True indicates a liquid crystal display (LCD) is included in the amenity.
-        lcdPrice:
-          type: number
-          minimum: 0.01
-          maximum: 9999999999.99
-          description: Price of the liquid crystal display (LCD).
-          example: 100
-        screenIncluded:
-          type: boolean
-          description: True indicates a screen is included in the amenity.
-        screenPrice:
-          type: number
-          minimum: 0.01
-          maximum: 9999999999.99
-          description: Price of the screen.
-          example: 100
-        hsiaIncluded:
-          type: boolean
-          description: True indicates high speed internet access is included in the amenity.
-        hsiaPrice:
-          type: number
-          minimum: 0.01
-          maximum: 9999999999.99
-          description: Price of high speed internet access (HSIA).
-          example: 100
-        complementaryParkingIncluded:
-          type: boolean
-          description: True indicates parking is included in the amenity.
-        whatCompanyProvidesAVEquipment:
-          type: string
-          maxLength: 100
-          description: Name of company providing AV equipment.
-          example: Some company
-    QuestionResponseType:
-      title: Question Response Type
-      enum:
-      - single
-      - choice
-      type: string
-      description: Code representing the type of response supported.  Single represents a simple single value response, and choice means the user will be given a set of options for selection.
-      example: choice
-    UUIDProperty:
-      title: UUID Property
-      description: A string that has to be a format matching the industry standard uuid
-      type: string
-      format: uuid
-      example: 04ca6ae2-0dc3-487b-953e-86d6abbdf7d3
     travel-proposal-bid:
       title: Travel Proposal Bid
       type: object
@@ -738,19 +784,240 @@ components:
           description: Taxes & fees associated with the bid
           items:
             $ref: '#/components/schemas/TravelBidTaxAndFee'
-    TravelProgramType:
-      title: Travel Program Type
+    TravelProposalCustomQuestion:
+      title: Travel Proposal Custom Question
+      description: Represents custom question associated with a travel proposal.
+      type: object
+      properties:
+        question:
+          title: Question
+          description: Travel account that the proposal is responding to.
+          type: object
+          properties:
+            id:
+              title: Question ID
+              description: The unique ID of the question.
+              type: string
+              format: uuid
+              example: 565ceabb-786a-4a6d-8c85-e2fccc867e88
+        answer:
+          title: Answer
+          description: Hotel's answer to the program's custom question.
+          type: string
+          maxLength: 4000
+          example: No.
+    TravelProposalGroupAndMeetingTaxAndServiceCharge:
+      title: Travel Proposal Group And Meeting Tax and Service Charge
+      description: Tax and service charge information.
+      type: object
+      properties:
+        taxAmount:
+          type: number
+          minimum: 0
+          maximum: 9999999999.99
+          description: Tax amount.
+          example: 0
+        taxPercent:
+          type: boolean
+          description: True indicates the tax amount represents a percentage, instead of a monetary value.
+        taxIncluded:
+          type: boolean
+          description: True indicates the tax included.
+        serviceChargeAmount:
+          type: number
+          minimum: 0
+          maximum: 9999999999.99
+          description: Service charge amount.
+          example: 1
+        serviceChargePercent:
+          type: boolean
+          description: True indicates the service charge amount represents a percentage, instead of a monetary value
+        serviceChargeIncluded:
+          type: boolean
+          description: True indicates the service charge is included.
+    questions-paginated-response1:
+      title: Travel Program Questions Paginated Response
+      description: A paginated list of Questions.
+      type: object
+      properties:
+        paging:
+          $ref: '#/components/schemas/Paging'
+        data:
+          type: array
+          items:
+            $ref: '#/components/schemas/TravelProgramQuestion'
+          description: Collection of Questions.
+    AmenityType:
+      title: Amenity Type
+      enum:
+      - included_amenity
+      - amenity
+      - bundled_supplement
+      type: string
+      description: Amenity type
+      example: amenity
+    TravelProposalGroupAndMeeting:
+      title: Travel Proposal Group and Meeting
+      description: Group and meeting information.
+      type: object
+      properties:
+        runOfHouseRate:
+          $ref: '#/components/schemas/TravelProposalGroupAndMeetingRunOfHouseRate'
+        dayDelegateRate:
+          $ref: '#/components/schemas/TravelProposalGroupAndMeetingDayDelegateRate'
+        taxAndServiceCharge:
+          $ref: '#/components/schemas/TravelProposalGroupAndMeetingTaxAndServiceCharge'
+        meetingRoomBasicInformation:
+          $ref: '#/components/schemas/TravelProposalGroupAndMeetingMeetingRoomBasicInformation'
+        amenity:
+          $ref: '#/components/schemas/TravelProposalGroupAndMeetingAmenity'
+        breakOutRoom:
+          $ref: '#/components/schemas/TravelProposalGroupAndMeetingBreakOutRoom'
+    RateType:
+      title: Rate Type
+      enum:
+      - fixed
+      - dynamic
+      - dynamicwithceiling
+      type: string
+      description: Rate type.
+      default: fixed
+    PolicyValueType:
+      title: Policy Value Type
+      enum:
+      - selection_list
+      - integer
+      - money
+      - percent
+      - multi_select
+      - text_multi_line
+      - percent_or_money
+      - boolean
+      type: string
+      description: Value type of the policy
+    business-type:
+      title: Business Type
       enum:
       - corporate
       - leisure
-      - consortia
       type: string
-      description: Code representing the travel program type.
+      description: Business type.
       example: corporate
-    TravelBidSeasonRate:
-      title: Travel Bid Season Rate
-      description: The negotiated rates for a property room during a specific season.
+    travel-proposal-paginated-response:
+      title: Travel Proposal Paginated Response
+      description: A paginated list of travel proposals.
       type: object
+      properties:
+        paging:
+          $ref: '#/components/schemas/Paging'
+        data:
+          type: array
+          items:
+            $ref: '#/components/schemas/travel-proposal'
+          description: Paginated list of business transient proposals.
+    question:
+      title: Travel Program Question
+      description: A question, defined by the program, for the supplier to answer as part of their proposal.
+      type: object
+      allOf:
+      - $ref: '#/components/schemas/Audit'
+      properties:
+        id:
+          title: Question ID
+          description: The unique ID of the question.
+          type: string
+          format: uuid
+          example: 76c461cb-77f6-40b3-acc8-db44452f11c4
+        text:
+          title: Question Text
+          description: The text of the question.
+          type: string
+          maxLength: 300
+          example: What type of food is served in the hotel restaurant?
+        required:
+          title: Required?
+          type: boolean
+          example: true
+          description: Is this question required by default?
+        responseType:
+          $ref: '#/components/schemas/QuestionResponseType'
+        responseDataType:
+          $ref: '#/components/schemas/QuestionResponseDataType'
+        responseFormat:
+          $ref: '#/components/schemas/QuestionResponseFormat'
+        responseChoices:
+          title: Response Choices
+          description: A list of options for the question.  This only applies when responseType is 'choice'
+          type: array
+          items:
+            type: string
+          example:
+          - Mexican
+          - American
+          - French
+          - Other
+    TravelProgramQuestion:
+      title: Travel Program Question
+      description: A question, defined by the program, for the supplier to answer as part of their proposal.
+      type: object
+      allOf:
+      - $ref: '#/components/schemas/Audit'
+      properties:
+        travelProgram:
+          title: Travel Program
+          description: Travel program that the question belongs to.
+          type: object
+          properties:
+            id:
+              title: Travel Program ID
+              description: The unique ID of the travel program.
+              type: string
+              format: uuid
+              example: ddc61444-45c7-4e1d-9fdd-07713c8baf9b
+        id:
+          title: Question ID
+          description: The unique ID of the question.
+          type: string
+          format: uuid
+          example: 76c461cb-77f6-40b3-acc8-db44452f11c4
+        text:
+          title: Question Text
+          description: The text of the question.
+          type: string
+          maxLength: 300
+          example: What type of food is served in the hotel restaurant?
+        required:
+          title: Required
+          type: boolean
+          example: true
+          description: Is this question required by default?
+        responseType:
+          $ref: '#/components/schemas/QuestionResponseType'
+        responseDataType:
+          $ref: '#/components/schemas/QuestionResponseDataType'
+        responseFormat:
+          $ref: '#/components/schemas/QuestionResponseFormat'
+        responseChoices:
+          title: Response Choices
+          description: A list of options for the question.  This only applies when responseType is 'choice'
+          type: array
+          items:
+            type: string
+          example:
+          - Mexican
+          - American
+          - French
+          - Other
+    UUIDProperty:
+      title: UUID Property
+      description: A string that has to be a format matching the industry standard uuid
+      type: string
+      format: uuid
+      example: 04ca6ae2-0dc3-487b-953e-86d6abbdf7d3
+    TravelBidRoom:
+      title: Travel Bid Room
+      type: object
+      description: A room in a travel bid.
       properties:
         propertyRoom:
           title: Property Room
@@ -763,50 +1030,62 @@ components:
               type: string
               format: uuid
               example: 04ca6ae2-0dc3-487b-953e-86d6abbdf7d3
-        singleRate:
-          type: number
-          minimum: 0.01
-          maximum: 9999999999.99
-          example: 100
-          description: The last room available (LRA) single rate.
-        doubleRate:
-          type: number
-          minimum: 0.01
-          maximum: 9999999999.99
-          example: 101
-          description: The last room available (LRA) double rate.
-        tripleRate:
-          type: number
-          minimum: 0.01
-          maximum: 9999999999.99
-          example: 102
-          description: The last room available (LRA) triple rate.
-        quadRate:
-          type: number
-          minimum: 0.01
-          maximum: 9999999999.99
-          example: 103
-          description: The last room available (LRA) quad rate.
-        nlraSingleRate:
-          type: number
-          minimum: 0.01
-          maximum: 9999999999.99
-          example: 104
-          description: The non last room available (NLRA) single rate.
-        nlraDoubleRate:
-          type: number
-          minimum: 0.01
-          maximum: 9999999999.99
-          example: 105
-          description: The non last room available (NLRA) double rate.
-        allotment:
+        allocation:
           type: integer
           minimum: 1
-          maximum: 999
-          description: The number of rooms allotted at the negotiated rate.
-          example: 100
+          maximum: 9999
+          description: The number of rooms allocated to the bid.
+          example: 10
+        order:
+          type: integer
+          description: The order of the room in the bid.
+          example: 1
         status:
           $ref: '#/components/schemas/BidItemStatusType'
+    ErrorResponse:
+      title: ErrorResponse
+      description: Represents an error response with additional details of cascading error messages.
+      allOf:
+      - $ref: '#/components/schemas/ErrorResponseBase'
+      type: object
+      required:
+      - code
+      - message
+      properties:
+        details:
+          type: array
+          items:
+            $ref: '#/components/schemas/ErrorResponseBase'
+          description: Additional details of cascading error messages.
+    Paging:
+      title: Paging
+      required:
+      - _links
+      type: object
+      description: Represents pagination information for a collection of resources.
+      properties:
+        previousToken:
+          type: string
+          description: The pagination token for the previous page, if one exists. You can use this token to navigate to the previous page of data.
+          example: 1a2b3c4d5e6f7g8h9i10j11k
+        nextToken:
+          type: string
+          description: The pagination token for the next page. If this value is present in the response, there is another page of data you can fetch.
+          example: 1a2b3c4d5e6f7g8h9i10j11k
+        currentToken:
+          type: string
+          description: The pagination token for the current page.
+          example: 1a2b3c4d5e6f7g8h9i10j11k
+        limit:
+          type: integer
+          description: The number of records to return on the page. Not to exceed 200.
+          example: 100
+        totalCount:
+          type: integer
+          description: The total number of records available. This field may return blank, even if there are more records. To confirm if there are more records, check the `nextToken` field.
+          example: 2
+        _links:
+          $ref: '#/components/schemas/PaginationLinks'
     TravelBidPolicy:
       title: Travel Bid Policy
       type: object
@@ -843,354 +1122,6 @@ components:
           example: The cancellation period is 24 hours.
         status:
           $ref: '#/components/schemas/BidItemStatusType'
-    TravelProposalGroupAndMeeting:
-      title: Travel Proposal Group and Meeting
-      description: Group and meeting information.
-      type: object
-      properties:
-        runOfHouseRate:
-          $ref: '#/components/schemas/TravelProposalGroupAndMeetingRunOfHouseRate'
-        dayDelegateRate:
-          $ref: '#/components/schemas/TravelProposalGroupAndMeetingDayDelegateRate'
-        taxAndServiceCharge:
-          $ref: '#/components/schemas/TravelProposalGroupAndMeetingTaxAndServiceCharge'
-        meetingRoomBasicInformation:
-          $ref: '#/components/schemas/TravelProposalGroupAndMeetingMeetingRoomBasicInformation'
-        amenity:
-          $ref: '#/components/schemas/TravelProposalGroupAndMeetingAmenity'
-        breakOutRoom:
-          $ref: '#/components/schemas/TravelProposalGroupAndMeetingBreakOutRoom'
-    TravelBidComment:
-      title: Travel Bid Comment
-      type: object
-      description: A comment on a travel bid.
-      properties:
-        commentType:
-          $ref: '#/components/schemas/CommentType'
-        comment:
-          description: The text of the comment.
-          type: string
-          maxLength: 3000
-          example: This is a high value client.
-    TaxType1:
-      title: Tax Type
-      enum:
-      - city_tax
-      - lodging_tax
-      - occupancy_tax
-      - service_fee
-      - state_tax
-      - vat_tax
-      - vatfb_tax
-      - other_tax
-      - resort_fee
-      type: string
-      description: Bid tax type.
-      example: city_tax
-    PaginationLinks:
-      title: PaginationLinks
-      type: object
-      description: Represents pagination links for navigating between pages of data.
-      properties:
-        next:
-          $ref: '#/components/schemas/Link'
-        self:
-          $ref: '#/components/schemas/Link'
-        prev:
-          $ref: '#/components/schemas/Link'
-    TravelBidTaxAndFee:
-      title: Travel Bid Tax and Fee
-      description: A tax or fee associated with a travel bid.
-      type: object
-      properties:
-        code:
-          $ref: '#/components/schemas/TaxType1'
-        amount:
-          type: number
-          description: The amount of the tax/fee. This may be a percent or monetary value depending on the value in `percent`.
-          minimum: 0
-          maximum: 9999999999.99
-          example: 20
-        percent:
-          type: boolean
-          default: false
-          description: True indicates the tax/fee amount represents a percentage, instead of a monetary value.
-        included:
-          type: boolean
-          default: false
-          description: True indicates the tax/fee included in the negotiated rate.
-        notes:
-          type: string
-          maxLength: 50
-          description: Additional notes on the tax/fee.
-          example: This is a tax
-        status:
-          $ref: '#/components/schemas/BidItemStatusType'
-    PolicyValueType:
-      title: Policy Value Type
-      enum:
-      - selection_list
-      - integer
-      - money
-      - percent
-      - multi_select
-      - text_multi_line
-      - percent_or_money
-      - boolean
-      type: string
-      description: Value type of the policy
-    QuestionResponseFormat:
-      title: Question Response Format
-      enum:
-      - lower_case
-      - proper_case
-      - upper_case
-      type: string
-      description: Code representing the format the text of the response will be in.
-      example: proper_case
-    questions-paginated-response1:
-      title: Travel Program Questions Paginated Response
-      description: A paginated list of Questions.
-      type: object
-      properties:
-        paging:
-          $ref: '#/components/schemas/Paging'
-        data:
-          type: array
-          items:
-            $ref: '#/components/schemas/TravelProgramQuestion'
-          description: Collection of Questions.
-    TravelBidDispositionAcceptedRoom:
-      title: Travel Bid Disposition Accepted Room
-      type: object
-      description: Represents bid disposition's accepted room.
-      properties:
-        propertyRoom:
-          title: Property Room
-          description: ID of the property's room.
-          type: object
-          properties:
-            id:
-              title: Property Room ID
-              description: The unique ID of the property room.
-              type: string
-              format: uuid
-              example: 04ca6ae2-0dc3-487b-953e-86d6abbdf7d3
-        lraRateAccepted:
-          title: LRA Rate Accepted
-          description: Indicates whether the LRA rates are accepted.
-          type: boolean
-          example: true
-        nlraRateAccepted:
-          title: NLRA Rate Accepted
-          description: Indicates whether the NLRA rates are accepted.
-          type: boolean
-          example: true
-    TravelProposalCustomQuestion:
-      title: Travel Proposal Custom Question
-      description: Represents custom question associated with a travel proposal.
-      type: object
-      properties:
-        question:
-          title: Question
-          description: Travel account that the proposal is responding to.
-          type: object
-          properties:
-            id:
-              title: Question ID
-              description: The unique ID of the question.
-              type: string
-              format: uuid
-              example: 565ceabb-786a-4a6d-8c85-e2fccc867e88
-        answer:
-          title: Answer
-          description: Hotel's answer to the program's custom question.
-          type: string
-          maxLength: 4000
-          example: No.
-    TravelProposalGroupAndMeetingRunOfHouseRate:
-      title: Travel Proposal Group And Meeting Run of House Rate
-      description: Run of house rate information.
-      type: object
-      properties:
-        seasonOne10To50People:
-          type: number
-          minimum: 0.01
-          maximum: 9999999999.99
-          description: Season one run of house rate for 10-50 people.
-          example: 100
-        seasonOne51To100People:
-          type: number
-          minimum: 0.01
-          maximum: 9999999999.99
-          description: Season one run of house rate for 51-100 people.
-          example: 200
-        seasonTwo10To50People:
-          type: number
-          minimum: 0.01
-          maximum: 9999999999.99
-          description: Season two run of house rate for 10-50 people.
-          example: 300
-        seasonTwo51To100People:
-          type: number
-          minimum: 0.01
-          maximum: 9999999999.99
-          description: Season two run of house rate for 51-100 people.
-          example: 400
-        seasonThree10To50People:
-          type: number
-          minimum: 0.01
-          maximum: 9999999999.99
-          description: Season three run of house rate for 10-50 people.
-          example: 500
-        seasonThree51To100People:
-          type: number
-          minimum: 0.01
-          maximum: 9999999999.99
-          description: Season three run of house rate for 51-100 people.
-          example: 600
-        seasonFour10To50People:
-          type: number
-          minimum: 0.01
-          maximum: 9999999999.99
-          description: Season four run of house rate for 10-50 people.
-          example: 700
-        seasonFour51To100People:
-          type: number
-          minimum: 0.01
-          maximum: 9999999999.99
-          description: Season four run of house rate for 51-100 people.
-          example: 800
-        seasonFive10To50People:
-          type: number
-          minimum: 0.01
-          maximum: 9999999999.99
-          description: Season five run of house rate for 10-50 people.
-          example: 900
-        seasonFive51To100People:
-          type: number
-          minimum: 0.01
-          maximum: 9999999999.99
-          description: Season five run of house rate for 51-100 people.
-          example: 1000
-    question-paginated-response:
-      title: Travel Program Question Paginated Response
-      description: A paginated list of Questions.
-      type: object
-      properties:
-        paging:
-          $ref: '#/components/schemas/Paging'
-        data:
-          type: array
-          items:
-            $ref: '#/components/schemas/question'
-          description: Collection of Questions.
-    TravelProposalGroupAndMeetingMeetingRoomBasicInformation:
-      title: Travel Proposal Group And Meeting Meeting Room Basic Information
-      description: Meeting room basic information.
-      type: object
-      properties:
-        largestMeetingRoom:
-          type: integer
-          minimum: 1
-          maximum: 9999999999
-          description: Size of the largest meeting room. Units of measurement determined by `unitOfMeasurement` field.
-          example: 1000
-        unitOfMeasurement:
-          type: string
-          maxLength: 50
-          example: sq.ft.
-          description: Unit of measurement of the `largestMeetingRoom`'s size.
-        meetingRooms:
-          type: integer
-          minimum: 1
-          maximum: 9999999999
-          description: Total number of meeting rooms.
-          example: 10
-    TravelBidFairSeason:
-      title: Travel Bid Fair Season
-      type: object
-      description: The fair season for a travel bid.
-      properties:
-        type:
-          $ref: '#/components/schemas/FairSeasonType'
-        name:
-          type: string
-          maxLength: 20
-          description: Fair season name.
-          example: Fair season 1
-        startDate:
-          type: string
-          format: date
-          description: The ISO 8601 start date of the fair season.
-          example: '2021-07-13'
-        endDate:
-          type: string
-          format: date
-          description: The ISO 8601 end date of the fair season.
-          example: '2021-07-13'
-        minLengthOfStay:
-          type: integer
-          minimum: 1
-          maximum: 999
-          description: Minimum length of stay for the fair season.
-          example: 1
-        releasePeriod:
-          type: integer
-          minimum: 1
-          maximum: 999
-          description: Release period for the fair season. Release period is the minimum number of days between the booking being made and the earliest arrival date.
-          example: 1
-        rates:
-          type: array
-          description: Collection of rates for the fair season.
-          items:
-            $ref: '#/components/schemas/TravelBidFairSeasonRate'
-        status:
-          $ref: '#/components/schemas/BidItemStatusType'
-    ErrorResponseBase:
-      title: ErrorResponseBase
-      type: object
-      description: Represents an error response with no additional details.
-      required:
-      - code
-      - message
-      properties:
-        code:
-          type: integer
-          description: The HTTP status code representing the error.
-          example: 400
-        message:
-          type: string
-          description: A brief description of the error.
-          example: Bad Request
-        target:
-          type: string
-          description: The target resource of the error.
-          example: example target
-    TravelProgramQuestion-1:
-      title: Travel Program Question
-      description: A question, defined by the account, for the supplier to answer as part of their proposal.
-      type: object
-      properties:
-        questionId:
-          title: Question ID
-          description: The unique ID of the custom question.
-          type: string
-          format: uuid
-          example: 76c461cb-77f6-40b3-acc8-db44452f11c4
-        section:
-          $ref: '#/components/schemas/QuestionSection'
-        required:
-          title: Required?
-          description: Is it required for suppliers to answer this question in their proposal?
-          type: boolean
-          example: true
-        sequence:
-          title: Sequence
-          description: The sequence number of the question within the proposal.
-          type: integer
-          example: 1
     QuestionResponseDataType:
       title: Question Response Data Type
       enum:
@@ -1305,33 +1236,100 @@ components:
           $ref: '#/components/schemas/TravelProposalGroupAndMeeting'
         proposalDisposition:
           $ref: '#/components/schemas/TravelProposalDisposition'
-    business-type:
-      title: Business Type
+    proposal-status-type:
+      title: Proposal Status Type
       enum:
-      - corporate
-      - leisure
+      - participation_requested
+      - new
+      - active
+      - submitted
+      - declined_participation
+      - verified
+      - approved
+      - account_accepted
+      - account_rejected
+      - internal_rejected
+      - request_renegotiation
+      - decline_renegotiation
+      - deleted
       type: string
-      description: Business type.
-      example: corporate
-    TravelProgramFormatType:
-      title: Travel Program Format Type
+      description: The status of the proposal
+      example: account_accepted
+    TravelBidWeekendDays:
+      title: Travel Bid Weekend Days
       enum:
-      - gbta2013
-      - universal
+      - Monday
+      - Tuesday
+      - Wednesday
+      - Thursday
+      - Friday
+      - Saturday
+      - Sunday
       type: string
-      description: Code representing the format of the travel program.
-      example: gbta2013
-    TravelProposalBid:
-      title: Travel Proposal Bid
+      description: Days considered weekend days for pricing purposes in the travel bid.
+      example: Sunday
+    TravelProposalGroupAndMeetingBreakOutRoom:
+      title: Travel Proposal Group And Meeting Break Out Room
+      description: Break-out room information.
       type: object
-      description: A travel proposal bid.
       properties:
-        id:
-          title: Bid ID
-          description: The ID of the bid.
+        10PersonRoomIncluded:
+          type: boolean
+          description: True indicates a 10 person room is included.
+        price10PersonRoom:
+          type: number
+          minimum: 0.01
+          maximum: 9999999999.99
+          description: Price for 10 person room.
+          example: 100
+        25PersonRoomIncluded:
+          type: boolean
+          description: True indicates a 25 person room included.
+        price25PersonRoom:
+          type: number
+          minimum: 0.01
+          maximum: 9999999999.99
+          description: Price for 25 person room.
+          example: 100
+        permanentBoardRoomSetUp:
+          type: boolean
+          description: True indicates there is a permanent board room set up.
+    QuestionSection:
+      title: Question Section
+      enum:
+      - program_client
+      - program_g_and_m
+      type: string
+      description: Code representing the section where the question belongs. Currently, program_client (client specific) and program_g_and_m (group and meeting) are supported.
+      example: program_client
+    TravelBidTaxAndFee:
+      title: Travel Bid Tax and Fee
+      description: A tax or fee associated with a travel bid.
+      type: object
+      properties:
+        code:
+          $ref: '#/components/schemas/TaxType1'
+        amount:
+          type: number
+          description: The amount of the tax/fee. This may be a percent or monetary value depending on the value in `percent`.
+          minimum: 0
+          maximum: 9999999999.99
+          example: 20
+        percent:
+          type: boolean
+          default: false
+          description: True indicates the tax/fee amount represents a percentage, instead of a monetary value.
+        included:
+          type: boolean
+          default: false
+          description: True indicates the tax/fee included in the negotiated rate.
+        notes:
           type: string
-          format: uuid
-          example: 1c208c0d-cf96-42ec-a2c3-7ab7a5c04825
+          maxLength: 50
+          description: Additional notes on the tax/fee.
+          example: This is a tax
+        status:
+          $ref: '#/components/schemas/BidItemStatusType'
     TravelBidSeason:
       title: Travel Bid Season
       type: object
@@ -1376,29 +1374,70 @@ components:
             $ref: '#/components/schemas/TravelBidSeasonRate'
         status:
           $ref: '#/components/schemas/BidItemStatusType'
-    proposal-status-type:
-      title: Proposal Status Type
-      enum:
-      - participation_requested
-      - new
-      - active
-      - submitted
-      - declined_participation
-      - verified
-      - approved
-      - account_accepted
-      - account_rejected
-      - internal_rejected
-      - request_renegotiation
-      - decline_renegotiation
-      - deleted
-      type: string
-      description: The status of the proposal
-      example: account_accepted
-    TravelBidFairSeasonRate:
-      title: Travel Bid Fair Season Rate
+    question-paginated-response:
+      title: Travel Program Question Paginated Response
+      description: A paginated list of Questions.
       type: object
-      description: The negotiated rates for a property room during the fair season.
+      properties:
+        paging:
+          $ref: '#/components/schemas/Paging'
+        data:
+          type: array
+          items:
+            $ref: '#/components/schemas/question'
+          description: Collection of Questions.
+    TravelBidAmenity:
+      title: Travel Bid Amenity
+      type: object
+      description: Amenity details for a travel bid.
+      properties:
+        type:
+          $ref: '#/components/schemas/AmenityType'
+        code:
+          type: string
+          minLength: 1
+          maxLength: 60
+          description: The code representing the amenity.
+          example: parking_valet
+        category:
+          type: string
+          minLength: 1
+          maxLength: 60
+          description: The category of the amenity.
+          example: Parking
+        included:
+          type: boolean
+          default: false
+          description: True indicates the amenity price is included in the rate.
+        price:
+          type: number
+          minimum: 0.01
+          maximum: 9999999999.99
+          description: The price of the amenity.
+          example: 100
+        discountAmount:
+          type: number
+          minimum: 0.01
+          maximum: 9999999999.99
+          description: The price of the amenity after discounts.
+          example: 90
+        internalCost:
+          type: number
+          minimum: 0.01
+          maximum: 9999999999.99
+          description: Internal cost of the amenity.
+          example: 80
+        description:
+          type: string
+          maxLength: 1000
+          description: Additional notes on the amenity.
+          example: Valet parking is available for all guests.
+        status:
+          $ref: '#/components/schemas/BidItemStatusType'
+    TravelBidDiscount:
+      title: Travel Bid Discount
+      type: object
+      description: Discount for a travel bid.
       properties:
         propertyRoom:
           title: Property Room
@@ -1411,60 +1450,45 @@ components:
               type: string
               format: uuid
               example: 9ea95519-2fc5-49d8-991b-e954f49044fe
-        singleRate:
-          type: number
-          minimum: 0.01
-          maximum: 9999999999.99
-          example: 100
-          description: The single room rate.
-        doubleRate:
-          type: number
-          minimum: 0.01
-          maximum: 9999999999.99
-          example: 101
-          description: The double room rate.
-        tripleRate:
-          type: number
-          minimum: 0.01
-          maximum: 9999999999.99
-          example: 102
-          description: The triple room rate.
-        quadRate:
-          type: number
-          minimum: 0.01
-          maximum: 9999999999.99
-          example: 103
-          description: The quadruple room rate.
-        allotment:
+        discount:
           type: integer
-          minimum: 1
-          maximum: 999
-          description: The number of rooms allotted at the negotiated rate.
-          example: 100
+          minimum: 0
+          maximum: 99
+          description: Discount percentage for the dynamic rate.
+          example: 10
         status:
           $ref: '#/components/schemas/BidItemStatusType'
-    TravelProposalDisposition:
-      title: Travel Proposal Disposition
-      type: object
-      description: Represent proposal disposition details.
-      properties:
-        bidDispositions:
-          type: array
-          description: List of bid dispositions.
-          items:
-            $ref: '#/components/schemas/TravelBidDisposition'
-        groupAndMeetingAccepted:
-          type: boolean
-          description: Indicates if the group and meeting is accepted.
-          example: true
-    BidStayType:
-      title: Bid Stay Type
+    QuestionResponseType:
+      title: Question Response Type
       enum:
-      - daily
-      - extended
+      - single
+      - choice
       type: string
-      description: Bid stay type.
-      default: daily
+      description: Code representing the type of response supported.  Single represents a simple single value response, and choice means the user will be given a set of options for selection.
+      example: choice
+    TravelProgramFormatType:
+      title: Travel Program Format Type
+      enum:
+      - gbta2013
+      - universal
+      type: string
+      description: Code representing the format of the travel program.
+      example: gbta2013
+    TaxType1:
+      title: Tax Type
+      enum:
+      - city_tax
+      - lodging_tax
+      - occupancy_tax
+      - service_fee
+      - state_tax
+      - vat_tax
+      - vatfb_tax
+      - other_tax
+      - resort_fee
+      type: string
+      description: Bid tax type.
+      example: city_tax
     travel-program-paginated-response:
       title: Travel program paginated response
       description: A paginated list of travel programs.
@@ -1477,79 +1501,10 @@ components:
           items:
             $ref: '#/components/schemas/travel-program'
           description: Collection of travel programs and their related details.
-    AmenityType:
-      title: Amenity Type
-      enum:
-      - included_amenity
-      - amenity
-      - bundled_supplement
-      type: string
-      description: Amenity type
-      example: amenity
-    TravelProgramQuestion:
-      title: Travel Program Question
-      description: A question, defined by the program, for the supplier to answer as part of their proposal.
+    TravelBidSeasonRate:
+      title: Travel Bid Season Rate
+      description: The negotiated rates for a property room during a specific season.
       type: object
-      allOf:
-      - $ref: '#/components/schemas/Audit'
-      properties:
-        travelProgram:
-          title: Travel Program
-          description: Travel program that the question belongs to.
-          type: object
-          properties:
-            id:
-              title: Travel Program ID
-              description: The unique ID of the travel program.
-              type: string
-              format: uuid
-              example: ddc61444-45c7-4e1d-9fdd-07713c8baf9b
-        id:
-          title: Question ID
-          description: The unique ID of the question.
-          type: string
-          format: uuid
-          example: 76c461cb-77f6-40b3-acc8-db44452f11c4
-        text:
-          title: Question Text
-          description: The text of the question.
-          type: string
-          maxLength: 300
-          example: What type of food is served in the hotel restaurant?
-        required:
-          title: Required
-          type: boolean
-          example: true
-          description: Is this question required by default?
-        responseType:
-          $ref: '#/components/schemas/QuestionResponseType'
-        responseDataType:
-          $ref: '#/components/schemas/QuestionResponseDataType'
-        responseFormat:
-          $ref: '#/components/schemas/QuestionResponseFormat'
-        responseChoices:
-          title: Response Choices
-          description: A list of options for the question.  This only applies when responseType is 'choice'
-          type: array
-          items:
-            type: string
-          example:
-          - Mexican
-          - American
-          - French
-          - Other
-    TravelProgramStayType:
-      title: Travel Program Stay Type
-      enum:
-      - daily
-      - daily_and_extended_stay
-      type: string
-      description: Code representing the stay types requested by the program.  Programs can accept daily only, or daily and extended stay proposals.
-      example: daily
-    TravelBidRoom:
-      title: Travel Bid Room
-      type: object
-      description: A room in a travel bid.
       properties:
         propertyRoom:
           title: Property Room
@@ -1562,35 +1517,108 @@ components:
               type: string
               format: uuid
               example: 04ca6ae2-0dc3-487b-953e-86d6abbdf7d3
-        allocation:
+        singleRate:
+          type: number
+          minimum: 0.01
+          maximum: 9999999999.99
+          example: 100
+          description: The last room available (LRA) single rate.
+        doubleRate:
+          type: number
+          minimum: 0.01
+          maximum: 9999999999.99
+          example: 101
+          description: The last room available (LRA) double rate.
+        tripleRate:
+          type: number
+          minimum: 0.01
+          maximum: 9999999999.99
+          example: 102
+          description: The last room available (LRA) triple rate.
+        quadRate:
+          type: number
+          minimum: 0.01
+          maximum: 9999999999.99
+          example: 103
+          description: The last room available (LRA) quad rate.
+        nlraSingleRate:
+          type: number
+          minimum: 0.01
+          maximum: 9999999999.99
+          example: 104
+          description: The non last room available (NLRA) single rate.
+        nlraDoubleRate:
+          type: number
+          minimum: 0.01
+          maximum: 9999999999.99
+          example: 105
+          description: The non last room available (NLRA) double rate.
+        allotment:
           type: integer
           minimum: 1
-          maximum: 9999
-          description: The number of rooms allocated to the bid.
-          example: 10
-        order:
-          type: integer
-          description: The order of the room in the bid.
-          example: 1
+          maximum: 999
+          description: The number of rooms allotted at the negotiated rate.
+          example: 100
         status:
           $ref: '#/components/schemas/BidItemStatusType'
-    TravelProgramStatus:
-      title: Travel Program Status
+    BidStayType:
+      title: Bid Stay Type
       enum:
-      - in_progress
-      - complete
-      - closed
+      - daily
+      - extended
       type: string
-      description: Code representing the status of the travel program.
-      example: complete
-    QuestionSection:
-      title: Question Section
+      description: Bid stay type.
+      default: daily
+    TravelBidFairSeason:
+      title: Travel Bid Fair Season
+      type: object
+      description: The fair season for a travel bid.
+      properties:
+        type:
+          $ref: '#/components/schemas/FairSeasonType'
+        name:
+          type: string
+          maxLength: 20
+          description: Fair season name.
+          example: Fair season 1
+        startDate:
+          type: string
+          format: date
+          description: The ISO 8601 start date of the fair season.
+          example: '2021-07-13'
+        endDate:
+          type: string
+          format: date
+          description: The ISO 8601 end date of the fair season.
+          example: '2021-07-13'
+        minLengthOfStay:
+          type: integer
+          minimum: 1
+          maximum: 999
+          description: Minimum length of stay for the fair season.
+          example: 1
+        releasePeriod:
+          type: integer
+          minimum: 1
+          maximum: 999
+          description: Release period for the fair season. Release period is the minimum number of days between the booking being made and the earliest arrival date.
+          example: 1
+        rates:
+          type: array
+          description: Collection of rates for the fair season.
+          items:
+            $ref: '#/components/schemas/TravelBidFairSeasonRate'
+        status:
+          $ref: '#/components/schemas/BidItemStatusType'
+    QuestionResponseFormat:
+      title: Question Response Format
       enum:
-      - program_client
-      - program_g_and_m
+      - lower_case
+      - proper_case
+      - upper_case
       type: string
-      description: Code representing the section where the question belongs. Currently, program_client (client specific) and program_g_and_m (group and meeting) are supported.
-      example: program_client
+      description: Code representing the format the text of the response will be in.
+      example: proper_case
     TravelProposalGroupAndMeetingDayDelegateRate:
       title: Travel Proposal Group And Meeting Day Delegate Rate
       description: Day delegate rate information. This represents the costs for hosting meeting at the venue for a half or full day.
@@ -1620,53 +1648,116 @@ components:
           maximum: 9999999999.99
           description: Half day delegate rate for 51 to 100 people.
           example: 100
-    RateType:
-      title: Rate Type
+    TravelProposalGroupAndMeetingRunOfHouseRate:
+      title: Travel Proposal Group And Meeting Run of House Rate
+      description: Run of house rate information.
+      type: object
+      properties:
+        seasonOne10To50People:
+          type: number
+          minimum: 0.01
+          maximum: 9999999999.99
+          description: Season one run of house rate for 10-50 people.
+          example: 100
+        seasonOne51To100People:
+          type: number
+          minimum: 0.01
+          maximum: 9999999999.99
+          description: Season one run of house rate for 51-100 people.
+          example: 200
+        seasonTwo10To50People:
+          type: number
+          minimum: 0.01
+          maximum: 9999999999.99
+          description: Season two run of house rate for 10-50 people.
+          example: 300
+        seasonTwo51To100People:
+          type: number
+          minimum: 0.01
+          maximum: 9999999999.99
+          description: Season two run of house rate for 51-100 people.
+          example: 400
+        seasonThree10To50People:
+          type: number
+          minimum: 0.01
+          maximum: 9999999999.99
+          description: Season three run of house rate for 10-50 people.
+          example: 500
+        seasonThree51To100People:
+          type: number
+          minimum: 0.01
+          maximum: 9999999999.99
+          description: Season three run of house rate for 51-100 people.
+          example: 600
+        seasonFour10To50People:
+          type: number
+          minimum: 0.01
+          maximum: 9999999999.99
+          description: Season four run of house rate for 10-50 people.
+          example: 700
+        seasonFour51To100People:
+          type: number
+          minimum: 0.01
+          maximum: 9999999999.99
+          description: Season four run of house rate for 51-100 people.
+          example: 800
+        seasonFive10To50People:
+          type: number
+          minimum: 0.01
+          maximum: 9999999999.99
+          description: Season five run of house rate for 10-50 people.
+          example: 900
+        seasonFive51To100People:
+          type: number
+          minimum: 0.01
+          maximum: 9999999999.99
+          description: Season five run of house rate for 51-100 people.
+          example: 1000
+    RateReviewStatusType:
+      title: Rate Review Status Type
       enum:
-      - fixed
-      - dynamic
-      - dynamicwithceiling
+      - requested
+      - not_required
+      - approved
+      - rejected
       type: string
-      description: Rate type.
-      default: fixed
-    travel-proposal-paginated-response:
-      title: Travel Proposal Paginated Response
-      description: A paginated list of travel proposals.
+      description: The rate review status of the proposal
+    TravelProposalBidRate:
+      title: Travel Proposal Bid Rate
       type: object
+      description: The rate (cost) information for a travel bid.
       properties:
-        paging:
-          $ref: '#/components/schemas/Paging'
-        data:
-          type: array
-          items:
-            $ref: '#/components/schemas/travel-proposal'
-          description: Paginated list of business transient proposals.
-    TravelProposalGroupAndMeetingBreakOutRoom:
-      title: Travel Proposal Group And Meeting Break Out Room
-      description: Break-out room information.
-      type: object
-      properties:
-        10PersonRoomIncluded:
-          type: boolean
-          description: True indicates a 10 person room is included.
-        price10PersonRoom:
-          type: number
-          minimum: 0.01
-          maximum: 9999999999.99
-          description: Price for 10 person room.
-          example: 100
-        25PersonRoomIncluded:
-          type: boolean
-          description: True indicates a 25 person room included.
-        price25PersonRoom:
-          type: number
-          minimum: 0.01
-          maximum: 9999999999.99
-          description: Price for 25 person room.
-          example: 100
-        permanentBoardRoomSetUp:
-          type: boolean
-          description: True indicates there is a permanent board room set up.
+        level:
+          $ref: '#/components/schemas/RateLevelType'
+        type:
+          $ref: '#/components/schemas/RateType'
+        planCode:
+          type: string
+          description: The code given to the bid (also called rate plan) by the supplier.
+          maxLength: 10
+          example: rp123
+        tier:
+          type: string
+          description: The rate tier given to the bid (also called rate plan) by the supplier.
+          maxLength: 10
+          example: tier1
+    FairSeasonType:
+      title: Fair Season Type
+      enum:
+      - negotiated
+      - blackout
+      type: string
+      description: Fair season type. Blackout means that no special rate is negotiated for that date and Best Available Rates will apply
+      default: negotiated
+    TravelProgramStatus:
+      title: Travel Program Status
+      enum:
+      - in_progress
+      - complete
+      - closed
+      type: string
+      description: Code representing the status of the travel program.
+      example: complete
     Audit:
       title: Audit
       description: Audit information
@@ -1694,143 +1785,28 @@ components:
           description: The identifier of the user that last updated this record.
           readOnly: true
           example: hporter
-    TravelBidWeekendDays:
-      title: Travel Bid Weekend Days
-      enum:
-      - Monday
-      - Tuesday
-      - Wednesday
-      - Thursday
-      - Friday
-      - Saturday
-      - Sunday
-      type: string
-      description: Days considered weekend days for pricing purposes in the travel bid.
-      example: Sunday
-    format-type:
-      title: Format Type
-      enum:
-      - gbta2013
-      - universal
-      type: string
-      description: Proposal format.
-      example: gbta2013
-    TravelProposalGroupAndMeetingTaxAndServiceCharge:
-      title: Travel Proposal Group And Meeting Tax and Service Charge
-      description: Tax and service charge information.
+    TravelProposalGroupAndMeetingMeetingRoomBasicInformation:
+      title: Travel Proposal Group And Meeting Meeting Room Basic Information
+      description: Meeting room basic information.
       type: object
       properties:
-        taxAmount:
-          type: number
-          minimum: 0
-          maximum: 9999999999.99
-          description: Tax amount.
-          example: 0
-        taxPercent:
-          type: boolean
-          description: True indicates the tax amount represents a percentage, instead of a monetary value.
-        taxIncluded:
-          type: boolean
-          description: True indicates the tax included.
-        serviceChargeAmount:
-          type: number
-          minimum: 0
-          maximum: 9999999999.99
-          description: Service charge amount.
-          example: 1
-        serviceChargePercent:
-          type: boolean
-          description: True indicates the service charge amount represents a percentage, instead of a monetary value
-        serviceChargeIncluded:
-          type: boolean
-          description: True indicates the service charge is included.
-    ErrorResponse:
-      title: ErrorResponse
-      description: Represents an error response with additional details of cascading error messages.
-      allOf:
-      - $ref: '#/components/schemas/ErrorResponseBase'
-      type: object
-      required:
-      - code
-      - message
-      properties:
-        details:
-          type: array
-          items:
-            $ref: '#/components/schemas/ErrorResponseBase'
-          description: Additional details of cascading error messages.
-    travel-proposal-bid-paginated-response:
-      title: Travel Proposal Paginated Response
-      description: A paginated list of travel proposals.
-      type: object
-      properties:
-        paging:
-          $ref: '#/components/schemas/Paging'
-        data:
-          type: array
-          items:
-            $ref: '#/components/schemas/travel-proposal-bid'
-          description: Paginated list of business transient proposal bids.
-    TravelProposalBidRate:
-      title: Travel Proposal Bid Rate
-      type: object
-      description: The rate (cost) information for a travel bid.
-      properties:
-        level:
-          $ref: '#/components/schemas/RateLevelType'
-        type:
-          $ref: '#/components/schemas/RateType'
-        planCode:
+        largestMeetingRoom:
+          type: integer
+          minimum: 1
+          maximum: 9999999999
+          description: Size of the largest meeting room. Units of measurement determined by `unitOfMeasurement` field.
+          example: 1000
+        unitOfMeasurement:
           type: string
-          description: The code given to the bid (also called rate plan) by the supplier.
-          maxLength: 10
-          example: rp123
-        tier:
-          type: string
-          description: The rate tier given to the bid (also called rate plan) by the supplier.
-          maxLength: 10
-          example: tier1
-    question:
-      title: Travel Program Question
-      description: A question, defined by the program, for the supplier to answer as part of their proposal.
-      type: object
-      allOf:
-      - $ref: '#/components/schemas/Audit'
-      properties:
-        id:
-          title: Question ID
-          description: The unique ID of the question.
-          type: string
-          format: uuid
-          example: 76c461cb-77f6-40b3-acc8-db44452f11c4
-        text:
-          title: Question Text
-          description: The text of the question.
-          type: string
-          maxLength: 300
-          example: What type of food is served in the hotel restaurant?
-        required:
-          title: Required?
-          type: boolean
-          example: true
-          description: Is this question required by default?
-        responseType:
-          $ref: '#/components/schemas/QuestionResponseType'
-        responseDataType:
-          $ref: '#/components/schemas/QuestionResponseDataType'
-        responseFormat:
-          $ref: '#/components/schemas/QuestionResponseFormat'
-        responseChoices:
-          title: Response Choices
-          description: A list of options for the question.  This only applies when responseType is 'choice'
-          type: array
-          items:
-            type: string
-          example:
-          - Mexican
-          - American
-          - French
-          - Other
+          maxLength: 50
+          example: sq.ft.
+          description: Unit of measurement of the `largestMeetingRoom`'s size.
+        meetingRooms:
+          type: integer
+          minimum: 1
+          maximum: 9999999999
+          description: Total number of meeting rooms.
+          example: 10
     BidItemStatusType:
       title: Bid Item Status Type
       enum:
@@ -1841,81 +1817,46 @@ components:
       type: string
       description: The status of the item in negotiation. e.g. The corporation might mark an item as delete_requested, and the hotel, if they agree, can update the item to deleted. not_offered indicates the hotel does not offer this amenity (supply side only).
       example: requested
-    CommentType:
-      title: Comment Type
-      enum:
-      - promotions
-      - special_offers
-      - child_policies
-      - other_information
-      - internal_comments
-      type: string
-      description: Bid comment type
-      example: promotions
-  responses:
-    TooManyRequests1:
-      description: Too many requests
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/ErrorResponse'
-          example:
-            code: 429
-            message: Limit Exceeded
-    NotFound1:
-      description: Resource not found
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/ErrorResponse'
-          example:
-            code: 404
-            message: Not found
-    BadRequest1:
-      description: Bad request
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/ErrorResponse'
-          example:
-            code: 400
-            message: Bad Request
-    Unauthorized1:
-      description: Bad or expired token
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/ErrorResponse'
-          example:
-            code: 401
-            message: Unauthorized
-    Forbidden1:
-      description: You do not have access to the resource
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/ErrorResponse'
-          example:
-            code: 403
-            message: Access Forbidden
+    TravelProgramQuestion-1:
+      title: Travel Program Question
+      description: A question, defined by the account, for the supplier to answer as part of their proposal.
+      type: object
+      properties:
+        questionId:
+          title: Question ID
+          description: The unique ID of the custom question.
+          type: string
+          format: uuid
+          example: 76c461cb-77f6-40b3-acc8-db44452f11c4
+        section:
+          $ref: '#/components/schemas/QuestionSection'
+        required:
+          title: Required?
+          description: Is it required for suppliers to answer this question in their proposal?
+          type: boolean
+          example: true
+        sequence:
+          title: Sequence
+          description: The sequence number of the question within the proposal.
+          type: integer
+          example: 1
+    TravelBidComment:
+      title: Travel Bid Comment
+      type: object
+      description: A comment on a travel bid.
+      properties:
+        commentType:
+          $ref: '#/components/schemas/CommentType'
+        comment:
+          description: The text of the comment.
+          type: string
+          maxLength: 3000
+          example: This is a high value client.
   parameters:
-    token:
-      name: token
-      in: query
-      description: 'The continuation token returned from a previous class. This must be a valid UUID v4 if provided.
-
-        This will override any other pageable parameters provided.
-
-        '
-      style: form
-      explode: true
-      schema:
-        type: string
-        example: 0e28af57-511f-47ab-ae46-46cd1ca51a1a
-    travelProposalBidId:
-      description: Unique ID of a travel proposal bid.
+    travelProposalId:
+      description: Unique ID of a travel proposal.
       example: 413c5cc2-cb77-4082-9131-bab73fde5834
-      name: travelProposalBidId
+      name: travelProposalId
       required: true
       in: path
       schema:
@@ -1960,24 +1901,28 @@ components:
       schema:
         type: string
         example: proposal.id eq '1ffa56d9-9f60-4b8c-8b3b-3451de21293c'
-    programId:
-      name: programId
-      description: A uuid used to uniquely identify the program.
-      required: true
-      in: path
+    token:
+      name: token
+      in: query
+      description: 'The continuation token returned from a previous class. This must be a valid UUID v4 if provided.
+
+        This will override any other pageable parameters provided.
+
+        '
+      style: form
+      explode: true
       schema:
-        title: Program ID
         type: string
-        format: uuid
-        example: 04ca6ae2-0dc3-487b-953e-86d6abbdf7d3
-    travelProposalId:
-      description: Unique ID of a travel proposal.
-      example: 413c5cc2-cb77-4082-9131-bab73fde5834
-      name: travelProposalId
-      required: true
-      in: path
+        example: 0e28af57-511f-47ab-ae46-46cd1ca51a1a
+    before:
+      name: before
+      required: false
+      in: query
+      description: Used to query records that have been added or updated before this time point.
       schema:
-        $ref: '#/components/schemas/UUIDProperty'
+        type: string
+        format: date-time
+        example: '2017-01-02T02:00:00Z'
     travel-program-filter:
       name: filter
       in: query
@@ -2022,24 +1967,6 @@ components:
       schema:
         type: string
         example: travelAccount.id eq 3c74daaf-11af-4b43-9a4e-ed3ec60f9bd3
-    after:
-      name: after
-      required: false
-      description: Used to query records that have been added or updated after this time point. Default to the beginning of time of the data store.
-      in: query
-      schema:
-        type: string
-        format: date-time
-        example: '2017-01-02T02:00:00Z'
-    before:
-      name: before
-      required: false
-      in: query
-      description: Used to query records that have been added or updated before this time point.
-      schema:
-        type: string
-        format: date-time
-        example: '2017-01-02T02:00:00Z'
     travel-proposal-filter:
       name: filter
       in: query
@@ -2094,13 +2021,16 @@ components:
       schema:
         type: string
         example: travelProgram.id eq '1ffa56d9-9f60-4b8c-8b3b-3451de21293c'
-    questionId2:
-      name: questionId
-      description: Unique ID for a question
-      in: path
+    programId:
+      name: programId
+      description: A uuid used to uniquely identify the program.
       required: true
+      in: path
       schema:
-        $ref: '#/components/schemas/UUIDProperty'
+        title: Program ID
+        type: string
+        format: uuid
+        example: 04ca6ae2-0dc3-487b-953e-86d6abbdf7d3
     limit:
       name: limit
       in: query
@@ -2113,6 +2043,76 @@ components:
         type: integer
         default: 100
         example: 100
+    after:
+      name: after
+      required: false
+      description: Used to query records that have been added or updated after this time point. Default to the beginning of time of the data store.
+      in: query
+      schema:
+        type: string
+        format: date-time
+        example: '2017-01-02T02:00:00Z'
+    questionId2:
+      name: questionId
+      description: Unique ID for a question
+      in: path
+      required: true
+      schema:
+        $ref: '#/components/schemas/UUIDProperty'
+    travelProposalBidId:
+      description: Unique ID of a travel proposal bid.
+      example: 413c5cc2-cb77-4082-9131-bab73fde5834
+      name: travelProposalBidId
+      required: true
+      in: path
+      schema:
+        $ref: '#/components/schemas/UUIDProperty'
+  responses:
+    TooManyRequests1:
+      description: Too many requests
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+          example:
+            code: 429
+            message: Limit Exceeded
+    BadRequest1:
+      description: Bad request
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+          example:
+            code: 400
+            message: Bad Request
+    NotFound1:
+      description: Resource not found
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+          example:
+            code: 404
+            message: Not found
+    Forbidden1:
+      description: You do not have access to the resource
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+          example:
+            code: 403
+            message: Access Forbidden
+    Unauthorized1:
+      description: Bad or expired token
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+          example:
+            code: 401
+            message: Unauthorized
   securitySchemes:
     OAuth2.authorizationCode:
       type: oauth2

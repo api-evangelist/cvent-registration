@@ -46,6 +46,47 @@ paths:
           $ref: '#/components/responses/TooManyRequests1'
 components:
   schemas:
+    RfpPastEvents:
+      title: RFP Past Events
+      description: List of past RFP events.
+      type: object
+      properties:
+        data:
+          type: array
+          items:
+            $ref: '#/components/schemas/RfpPastEvent'
+          maxItems: 3
+          description: List of past events saved on RFP by planner.
+    ErrorResponse:
+      title: ErrorResponse
+      description: Represents an error response with additional details of cascading error messages.
+      allOf:
+      - $ref: '#/components/schemas/ErrorResponseBase'
+      type: object
+      required:
+      - code
+      - message
+      properties:
+        details:
+          type: array
+          items:
+            $ref: '#/components/schemas/ErrorResponseBase'
+          description: Additional details of cascading error messages.
+    RfpPastEvent:
+      type: object
+      title: RfpPastEvent
+      description: This object includes information about past events hosted by the planner.
+      required:
+      - id
+      allOf:
+      - $ref: '#/components/schemas/RfpPastEventRequest'
+      properties:
+        id:
+          type: string
+          format: uuid
+          readOnly: true
+          description: Unique ID for the event detail.
+          example: f56a51a4-84b0-46c9-a612-716dc95a1c96
     RfpPastEventRequest:
       type: object
       title: RfpPastEventRequest
@@ -98,47 +139,6 @@ components:
           description: Any other information about the event.
           maxLength: 2500
           example: This was the 25th event hosted by Alpha Planners.
-    ErrorResponse:
-      title: ErrorResponse
-      description: Represents an error response with additional details of cascading error messages.
-      allOf:
-      - $ref: '#/components/schemas/ErrorResponseBase'
-      type: object
-      required:
-      - code
-      - message
-      properties:
-        details:
-          type: array
-          items:
-            $ref: '#/components/schemas/ErrorResponseBase'
-          description: Additional details of cascading error messages.
-    RfpPastEvent:
-      type: object
-      title: RfpPastEvent
-      description: This object includes information about past events hosted by the planner.
-      required:
-      - id
-      allOf:
-      - $ref: '#/components/schemas/RfpPastEventRequest'
-      properties:
-        id:
-          type: string
-          format: uuid
-          readOnly: true
-          description: Unique ID for the event detail.
-          example: f56a51a4-84b0-46c9-a612-716dc95a1c96
-    RfpPastEvents:
-      title: RFP Past Events
-      description: List of past RFP events.
-      type: object
-      properties:
-        data:
-          type: array
-          items:
-            $ref: '#/components/schemas/RfpPastEvent'
-          maxItems: 3
-          description: List of past events saved on RFP by planner.
     ErrorResponseBase:
       title: ErrorResponseBase
       type: object
@@ -169,15 +169,6 @@ components:
           example:
             code: 404
             message: Not found
-    Forbidden1:
-      description: You do not have access to the resource
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/ErrorResponse'
-          example:
-            code: 403
-            message: Access Forbidden
     TooManyRequests1:
       description: Too many requests
       content:
@@ -196,6 +187,15 @@ components:
           example:
             code: 401
             message: Unauthorized
+    Forbidden1:
+      description: You do not have access to the resource
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+          example:
+            code: 403
+            message: Access Forbidden
   parameters:
     rfpId:
       name: rfpId

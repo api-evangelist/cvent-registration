@@ -86,17 +86,32 @@ paths:
         url: '#oauth2-auth-code-planner-admin'
 components:
   schemas:
-    PaginationLinks:
-      title: PaginationLinks
+    UsagePlan:
+      title: Usage Plan
+      description: Object representing an API Platform Usage Tier
+      required:
+      - name
+      - quota
+      - burstLimit
+      - rateLimit
       type: object
-      description: Represents pagination links for navigating between pages of data.
       properties:
-        next:
-          $ref: '#/components/schemas/Link'
-        self:
-          $ref: '#/components/schemas/Link'
-        prev:
-          $ref: '#/components/schemas/Link'
+        name:
+          type: string
+          description: The name of the usage tier
+          example: API_Platform_Free_Tier
+        quota:
+          type: number
+          description: The daily quota of the usage tier. If this value is null, this means the usage tier is unlimited.
+          example: 1000
+        burstLimit:
+          type: number
+          description: The burst limit capacity of the usage tier
+          example: 1
+        rateLimit:
+          type: number
+          description: The per-second steady rate-limit of the usage tier
+          example: 2
     Link:
       title: Link
       required:
@@ -108,6 +123,76 @@ components:
           type: string
           description: A url provided that can be followed for linking
           example: ?token=90c5f062-76ad-4ea4-aa53-00eb698d9262
+    public-usage-plan:
+      title: Public Usage Plan
+      description: Object representing an API Platform Usage Tier, including information when the usage plan is scheduled to revert to a previous plan, if any.
+      type: object
+      allOf:
+      - $ref: '#/components/schemas/UsagePlan'
+      properties:
+        switchBackPlan:
+          $ref: '#/components/schemas/SwitchBackTargetUsagePlan'
+    ErrorResponse:
+      title: ErrorResponse
+      description: Represents an error response with additional details of cascading error messages.
+      allOf:
+      - $ref: '#/components/schemas/ErrorResponseBase'
+      type: object
+      required:
+      - code
+      - message
+      properties:
+        details:
+          type: array
+          items:
+            $ref: '#/components/schemas/ErrorResponseBase'
+          description: Additional details of cascading error messages.
+    PaginationLinks:
+      title: PaginationLinks
+      type: object
+      description: Represents pagination links for navigating between pages of data.
+      properties:
+        next:
+          $ref: '#/components/schemas/Link'
+        self:
+          $ref: '#/components/schemas/Link'
+        prev:
+          $ref: '#/components/schemas/Link'
+    usage-paginated-response:
+      title: Usage Paginated Response
+      description: The list of usage for the caller's account in the date range specified.
+      required:
+      - data
+      type: object
+      properties:
+        paging:
+          $ref: '#/components/schemas/Paging'
+        data:
+          type: array
+          items:
+            $ref: '#/components/schemas/Usage'
+          description: Collection of usage objects.
+    UsageQuotaFields:
+      title: Usage Quota Fields
+      description: Fields representing usage quota information. Usage quota represents the number of API requests that can be made in a given usage period. Usage periods reset daily at midnight UTC.
+      type: object
+      required:
+      - used
+      - remaining
+      - total
+      properties:
+        used:
+          type: integer
+          description: The number of API requests that have been made in the current usage period. Usage periods reset daily at midnight UTC.
+          example: 40000
+        remaining:
+          type: integer
+          description: The number of API requests remaining in the current usage period. Usage periods reset daily at midnight UTC.
+          example: 260000
+        total:
+          type: integer
+          description: The total number of API requests allowed in the current usage period. Usage periods reset daily at midnight UTC.
+          example: 300000
     Paging:
       title: Paging
       required:
@@ -137,32 +222,22 @@ components:
           example: 2
         _links:
           $ref: '#/components/schemas/PaginationLinks'
-    UsagePlan:
-      title: Usage Plan
-      description: Object representing an API Platform Usage Tier
+    Usage:
+      title: Usage
+      description: A usage object represents the usage of a resource on a given day
       required:
-      - name
-      - quota
-      - burstLimit
-      - rateLimit
+      - date
+      - used
+      - remaining
+      - total
       type: object
+      allOf:
+      - $ref: '#/components/schemas/UsageQuotaFields'
       properties:
-        name:
+        date:
           type: string
-          description: The name of the usage tier
-          example: API_Platform_Free_Tier
-        quota:
-          type: number
-          description: The daily quota of the usage tier. If this value is null, this means the usage tier is unlimited.
-          example: 1000
-        burstLimit:
-          type: number
-          description: The burst limit capacity of the usage tier
-          example: 1
-        rateLimit:
-          type: number
-          description: The per-second steady rate-limit of the usage tier
-          example: 2
+          description: The date the usage occurred, as an ISO8601 date
+          example: '2020-01-01'
     SwitchBackTargetUsagePlan:
       title: Switch Back Target Usage Plan
       description: Object representing the target usage plan and the date when the current plan is scheduled to revert to it. This object is only present when a switch-back is scheduled.
@@ -180,60 +255,6 @@ components:
           format: date-time
           description: The date and time when the usage plan is scheduled to revert to a previous plan. This field is only present when the usage plan is scheduled to revert to a previous plan. The date and time cannot be more than 14 days from the current date.
           example: '2023-10-01T12:00:00Z'
-    public-usage-plan:
-      title: Public Usage Plan
-      description: Object representing an API Platform Usage Tier, including information when the usage plan is scheduled to revert to a previous plan, if any.
-      type: object
-      allOf:
-      - $ref: '#/components/schemas/UsagePlan'
-      properties:
-        switchBackPlan:
-          $ref: '#/components/schemas/SwitchBackTargetUsagePlan'
-    ErrorResponse:
-      title: ErrorResponse
-      description: Represents an error response with additional details of cascading error messages.
-      allOf:
-      - $ref: '#/components/schemas/ErrorResponseBase'
-      type: object
-      required:
-      - code
-      - message
-      properties:
-        details:
-          type: array
-          items:
-            $ref: '#/components/schemas/ErrorResponseBase'
-          description: Additional details of cascading error messages.
-    Usage:
-      title: Usage
-      description: A usage object represents the usage of a resource on a given day
-      required:
-      - date
-      - used
-      - remaining
-      - total
-      type: object
-      allOf:
-      - $ref: '#/components/schemas/UsageQuotaFields'
-      properties:
-        date:
-          type: string
-          description: The date the usage occurred, as an ISO8601 date
-          example: '2020-01-01'
-    usage-paginated-response:
-      title: Usage Paginated Response
-      description: The list of usage for the caller's account in the date range specified.
-      required:
-      - data
-      type: object
-      properties:
-        paging:
-          $ref: '#/components/schemas/Paging'
-        data:
-          type: array
-          items:
-            $ref: '#/components/schemas/Usage'
-          description: Collection of usage objects.
     ErrorResponseBase:
       title: ErrorResponseBase
       type: object
@@ -254,34 +275,7 @@ components:
           type: string
           description: The target resource of the error.
           example: example target
-    UsageQuotaFields:
-      title: Usage Quota Fields
-      description: Fields representing usage quota information. Usage quota represents the number of API requests that can be made in a given usage period. Usage periods reset daily at midnight UTC.
-      type: object
-      required:
-      - used
-      - remaining
-      - total
-      properties:
-        used:
-          type: integer
-          description: The number of API requests that have been made in the current usage period. Usage periods reset daily at midnight UTC.
-          example: 40000
-        remaining:
-          type: integer
-          description: The number of API requests remaining in the current usage period. Usage periods reset daily at midnight UTC.
-          example: 260000
-        total:
-          type: integer
-          description: The total number of API requests allowed in the current usage period. Usage periods reset daily at midnight UTC.
-          example: 300000
   responses:
-    PublicUsagePlanResponse:
-      description: The Usage Tier assigned to the account
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/public-usage-plan'
     BadRequest1:
       description: Bad request
       content:
@@ -291,15 +285,12 @@ components:
           example:
             code: 400
             message: Bad Request
-    Forbidden1:
-      description: You do not have access to the resource
+    usage-paginated-response:
+      description: Usage metrics for the dates requested
       content:
         application/json:
           schema:
-            $ref: '#/components/schemas/ErrorResponse'
-          example:
-            code: 403
-            message: Access Forbidden
+            $ref: '#/components/schemas/usage-paginated-response'
     TooManyRequests1:
       description: Too many requests
       content:
@@ -309,12 +300,6 @@ components:
           example:
             code: 429
             message: Limit Exceeded
-    usage-paginated-response:
-      description: Usage metrics for the dates requested
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/usage-paginated-response'
     Unauthorized1:
       description: Bad or expired token
       content:
@@ -324,6 +309,21 @@ components:
           example:
             code: 401
             message: Unauthorized
+    PublicUsagePlanResponse:
+      description: The Usage Tier assigned to the account
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/public-usage-plan'
+    Forbidden1:
+      description: You do not have access to the resource
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+          example:
+            code: 403
+            message: Access Forbidden
   securitySchemes:
     OAuth2.authorizationCode:
       type: oauth2

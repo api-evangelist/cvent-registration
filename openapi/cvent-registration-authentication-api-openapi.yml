@@ -317,19 +317,6 @@ paths:
         url: '#oauth2-auth-code-planner-admin'
 components:
   schemas:
-    ValidToken:
-      title: Valid Token
-      description: Validity status of an authentication token.
-      type: object
-      properties:
-        tokenValid:
-          type: boolean
-          description: True indicates the presented authentication token is valid.
-          example: true
-        statusCode:
-          type: integer
-          description: Supplementary status code. Typically will be 200 for a success case.
-          example: 200
     ErrorResponse:
       title: ErrorResponse
       description: Represents an error response with additional details of cascading error messages.
@@ -345,6 +332,19 @@ components:
           items:
             $ref: '#/components/schemas/ErrorResponseBase'
           description: Additional details of cascading error messages.
+    ValidToken:
+      title: Valid Token
+      description: Validity status of an authentication token.
+      type: object
+      properties:
+        tokenValid:
+          type: boolean
+          description: True indicates the presented authentication token is valid.
+          example: true
+        statusCode:
+          type: integer
+          description: Supplementary status code. Typically will be 200 for a success case.
+          example: 200
     ErrorResponseBase:
       title: ErrorResponseBase
       type: object
@@ -366,13 +366,6 @@ components:
           description: The target resource of the error.
           example: example target
   responses:
-    ValidToken:
-      description: A confirmation message that the token is valid
-      headers: {}
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/ValidToken'
     BadRequest1:
       description: Bad request
       content:
@@ -382,15 +375,6 @@ components:
           example:
             code: 400
             message: Bad Request
-    Forbidden1:
-      description: You do not have access to the resource
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/ErrorResponse'
-          example:
-            code: 403
-            message: Access Forbidden
     TooManyRequests1:
       description: Too many requests
       content:
@@ -409,6 +393,22 @@ components:
           example:
             code: 401
             message: Unauthorized
+    Forbidden1:
+      description: You do not have access to the resource
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+          example:
+            code: 403
+            message: Access Forbidden
+    ValidToken:
+      description: A confirmation message that the token is valid
+      headers: {}
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ValidToken'
   securitySchemes:
     OAuth2.authorizationCode:
       type: oauth2

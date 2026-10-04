@@ -62,13 +62,6 @@ paths:
       operationId: postEaOauth2Token
       x-operation-id-source: derived
 components:
-  responses:
-    Unauthorized:
-      description: Missing or invalid OAuth credentials
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/Error'
   schemas:
     Error:
       type: object
@@ -94,6 +87,13 @@ components:
           example: 3599
         scope:
           type: string
+  responses:
+    Unauthorized:
+      description: Missing or invalid OAuth credentials
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
   securitySchemes:
     OAuth2ClientCredentials:
       type: oauth2

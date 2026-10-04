@@ -54,6 +54,21 @@ paths:
           $ref: '#/components/responses/TooManyRequests1'
 components:
   schemas:
+    ErrorResponse:
+      title: ErrorResponse
+      description: Represents an error response with additional details of cascading error messages.
+      allOf:
+      - $ref: '#/components/schemas/ErrorResponseBase'
+      type: object
+      required:
+      - code
+      - message
+      properties:
+        details:
+          type: array
+          items:
+            $ref: '#/components/schemas/ErrorResponseBase'
+          description: Additional details of cascading error messages.
     HotelRoomRatesRequest:
       description: Represents hotel room rates request.
       title: HotelRoomRatesRequest
@@ -83,27 +98,6 @@ components:
           example: 150
         currencyCode:
           $ref: '#/components/schemas/currency.json'
-    ErrorResponse:
-      title: ErrorResponse
-      description: Represents an error response with additional details of cascading error messages.
-      allOf:
-      - $ref: '#/components/schemas/ErrorResponseBase'
-      type: object
-      required:
-      - code
-      - message
-      properties:
-        details:
-          type: array
-          items:
-            $ref: '#/components/schemas/ErrorResponseBase'
-          description: Additional details of cascading error messages.
-    currency.json:
-      description: ISO 4217 currency code.
-      title: Currency
-      type: string
-      example: USD
-      default: USD
     HotelRoomRatesResponse:
       description: Represents hotel room rates response.
       title: HotelRoomRatesResponse
@@ -173,23 +167,12 @@ components:
           type: string
           description: The target resource of the error.
           example: example target
-  parameters:
-    hotelCode:
-      in: path
-      name: hotelCode
-      description: The hotel code.
-      required: true
-      schema:
-        type: string
-        example: HOTELCODE
-    roomCode:
-      in: path
-      name: roomCode
-      description: The room code.
-      required: true
-      schema:
-        type: string
-        example: VLR
+    currency.json:
+      description: ISO 4217 currency code.
+      title: Currency
+      type: string
+      example: USD
+      default: USD
   responses:
     NotFound1:
       description: Resource not found
@@ -209,15 +192,6 @@ components:
           example:
             code: 400
             message: Bad Request
-    Forbidden1:
-      description: You do not have access to the resource
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/ErrorResponse'
-          example:
-            code: 403
-            message: Access Forbidden
     TooManyRequests1:
       description: Too many requests
       content:
@@ -236,6 +210,32 @@ components:
           example:
             code: 401
             message: Unauthorized
+    Forbidden1:
+      description: You do not have access to the resource
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+          example:
+            code: 403
+            message: Access Forbidden
+  parameters:
+    hotelCode:
+      in: path
+      name: hotelCode
+      description: The hotel code.
+      required: true
+      schema:
+        type: string
+        example: HOTELCODE
+    roomCode:
+      in: path
+      name: roomCode
+      description: The room code.
+      required: true
+      schema:
+        type: string
+        example: VLR
   securitySchemes:
     OAuth2.authorizationCode:
       type: oauth2

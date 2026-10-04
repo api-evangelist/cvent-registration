@@ -61,6 +61,32 @@ paths:
         url: '#oauth2-auth-code-planner-admin'
 components:
   schemas:
+    Link:
+      title: Link
+      required:
+      - href
+      type: object
+      description: Represents a link to a related resource.
+      properties:
+        href:
+          type: string
+          description: A url provided that can be followed for linking
+          example: ?token=90c5f062-76ad-4ea4-aa53-00eb698d9262
+    ErrorResponse:
+      title: ErrorResponse
+      description: Represents an error response with additional details of cascading error messages.
+      allOf:
+      - $ref: '#/components/schemas/ErrorResponseBase'
+      type: object
+      required:
+      - code
+      - message
+      properties:
+        details:
+          type: array
+          items:
+            $ref: '#/components/schemas/ErrorResponseBase'
+          description: Additional details of cascading error messages.
     PaginationLinks:
       title: PaginationLinks
       type: object
@@ -113,17 +139,21 @@ components:
           description: The identifier of the user who assigned the event role.
           readOnly: true
           example: hporter
-    Link:
-      title: Link
+    event-role-assignments-paginated-response:
+      title: EventRoleAssignmentPaginatedResponse
+      description: The response to a request to get a paginated list of event role assignments. This includes the paging object and the collection of event role assignments.
       required:
-      - href
+      - paging
+      - data
       type: object
-      description: Represents a link to a related resource.
       properties:
-        href:
-          type: string
-          description: A url provided that can be followed for linking
-          example: ?token=90c5f062-76ad-4ea4-aa53-00eb698d9262
+        paging:
+          $ref: '#/components/schemas/Paging'
+        data:
+          type: array
+          description: A collection of event role assignments.
+          items:
+            $ref: '#/components/schemas/EventRoleAssignment'
     Paging:
       title: Paging
       required:
@@ -164,36 +194,6 @@ components:
           description: The ID of the event role.
           readOnly: true
           example: 2b1a3bba-84b2-46f4-bddb-4b4a44442dcc
-    ErrorResponse:
-      title: ErrorResponse
-      description: Represents an error response with additional details of cascading error messages.
-      allOf:
-      - $ref: '#/components/schemas/ErrorResponseBase'
-      type: object
-      required:
-      - code
-      - message
-      properties:
-        details:
-          type: array
-          items:
-            $ref: '#/components/schemas/ErrorResponseBase'
-          description: Additional details of cascading error messages.
-    event-role-assignments-paginated-response:
-      title: EventRoleAssignmentPaginatedResponse
-      description: The response to a request to get a paginated list of event role assignments. This includes the paging object and the collection of event role assignments.
-      required:
-      - paging
-      - data
-      type: object
-      properties:
-        paging:
-          $ref: '#/components/schemas/Paging'
-        data:
-          type: array
-          description: A collection of event role assignments.
-          items:
-            $ref: '#/components/schemas/EventRoleAssignment'
     ErrorResponseBase:
       title: ErrorResponseBase
       type: object
@@ -214,6 +214,43 @@ components:
           type: string
           description: The target resource of the error.
           example: example target
+  responses:
+    BadRequest1:
+      description: Bad request
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+          example:
+            code: 400
+            message: Bad Request
+    TooManyRequests1:
+      description: Too many requests
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+          example:
+            code: 429
+            message: Limit Exceeded
+    Unauthorized1:
+      description: Bad or expired token
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+          example:
+            code: 401
+            message: Unauthorized
+    Forbidden1:
+      description: You do not have access to the resource
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+          example:
+            code: 403
+            message: Access Forbidden
   parameters:
     token:
       name: token
@@ -237,17 +274,6 @@ components:
         type: string
         format: date-time
         example: '2017-01-02T02:00:00Z'
-    eventRoleAssignmentLimit:
-      name: limit
-      in: query
-      style: form
-      explode: true
-      description: The maximum number of event role assignments that can be fetched at once.
-      schema:
-        type: integer
-        minimum: 1
-        maximum: 200
-        default: 10
     eventRoleExpand:
       name: expand
       in: query
@@ -271,43 +297,17 @@ components:
         type: string
         format: date-time
         example: '2017-01-02T02:00:00Z'
-  responses:
-    BadRequest1:
-      description: Bad request
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/ErrorResponse'
-          example:
-            code: 400
-            message: Bad Request
-    Forbidden1:
-      description: You do not have access to the resource
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/ErrorResponse'
-          example:
-            code: 403
-            message: Access Forbidden
-    TooManyRequests1:
-      description: Too many requests
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/ErrorResponse'
-          example:
-            code: 429
-            message: Limit Exceeded
-    Unauthorized1:
-      description: Bad or expired token
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/ErrorResponse'
-          example:
-            code: 401
-            message: Unauthorized
+    eventRoleAssignmentLimit:
+      name: limit
+      in: query
+      style: form
+      explode: true
+      description: The maximum number of event role assignments that can be fetched at once.
+      schema:
+        type: integer
+        minimum: 1
+        maximum: 200
+        default: 10
   securitySchemes:
     OAuth2.authorizationCode:
       type: oauth2

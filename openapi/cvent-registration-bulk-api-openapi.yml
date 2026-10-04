@@ -270,100 +270,19 @@ components:
           type: string
           description: A url provided that can be followed for linking
           example: ?token=90c5f062-76ad-4ea4-aa53-00eb698d9262
-    bulk-results-paginated-response:
-      title: BulkResultsPaginationResponse
-      description: 'The response from a request to get the list of results from a Bulk Job run.  This includes the paging object as well
-
-        as the collection of bulk results.'
-      required:
-      - data
+    BulkDataRecord:
+      title: BulkDataRecord
       type: object
-      properties:
-        paging:
-          $ref: '#/components/schemas/Paging'
-        data:
-          type: array
-          items:
-            $ref: '#/components/schemas/BulkResult'
-          description: Collection of bulk result objects.
-    BulkDataProperty:
-      title: BulkDataProperty
-      description: Data Record envelope
-      type: object
-      required:
-      - dataRecord
-      properties:
-        pathParams:
-          description: Key-value pairs where a key identifies a labeled placeholders in the url (e.g. "/endpoint/{entityId}") and a value represents the value to substitute. Necessary if the target endpoint has path parameters. Values must NOT be null.
-          type: object
-          additionalProperties:
-            type: string
-          example:
-            id: 11111111-0dc3-487b-953e-86d6abbdf7d3
-        queryParams:
-          description: Query params specific to this data record to pass to the target endpoint. Entries merge with, and overlaps override, job-level queryParams. Values must NOT be null.
-          type: object
-          additionalProperties:
-            type: string
-          example:
-            param1: param1Value
-            param2: param2Value
-        headers:
-          type: object
-          description: Headers specific to this data record to pass to the target endpoint. Entries merge with, and overlaps override, job-level headers. Values must NOT be null.
-          additionalProperties:
-            type: string
-          example:
-            header1: header1Value
-            header2: header2Value
-        dataRecord:
-          $ref: '#/components/schemas/BulkDataRecord'
-    PaginationLinks:
-      title: PaginationLinks
-      type: object
-      description: Represents pagination links for navigating between pages of data.
-      properties:
-        next:
-          $ref: '#/components/schemas/Link'
-        self:
-          $ref: '#/components/schemas/Link'
-        prev:
-          $ref: '#/components/schemas/Link'
-    Paging:
-      title: Paging
-      required:
-      - _links
-      type: object
-      description: Represents pagination information for a collection of resources.
-      properties:
-        previousToken:
-          type: string
-          description: The pagination token for the previous page, if one exists. You can use this token to navigate to the previous page of data.
-          example: 1a2b3c4d5e6f7g8h9i10j11k
-        nextToken:
-          type: string
-          description: The pagination token for the next page. If this value is present in the response, there is another page of data you can fetch.
-          example: 1a2b3c4d5e6f7g8h9i10j11k
-        currentToken:
-          type: string
-          description: The pagination token for the current page.
-          example: 1a2b3c4d5e6f7g8h9i10j11k
-        limit:
-          type: integer
-          description: The number of records to return on the page. Not to exceed 200.
-          example: 100
-        totalCount:
-          type: integer
-          description: The total number of records available. This field may return blank, even if there are more records. To confirm if there are more records, check the `nextToken` field.
-          example: 2
-        _links:
-          $ref: '#/components/schemas/PaginationLinks'
-    bulk-data:
-      title: BulkData
-      description: The model representing an arbitrary list of JSON data loaded to bulk job.
-      properties:
-        data:
-          $ref: '#/components/schemas/BulkDataLimitedList'
+      description: Arbitrary container to hold a JSON payload. The payload is the data you're sending, or the reply received when fetching results. For the request, this data must be structured in the way the API you're running a bulk job for accepts. For example, to bulk create sessions, you structure each of the `dataRecord` entries based on the format of the Create Session endpoint.
+      additionalProperties:
+        type: object
+      example:
+        event:
+          id: 04ca6ae2-0dc3-487b-953e-86d6abbdf7d3
+        title: Day 1 Keynote Session
+        start: '2020-02-03T13:00:00.000Z'
+        end: '2020-02-07T17:00:00.000Z'
+        status: Active
     BulkResponseItem:
       title: BulkResponseItem
       description: Represents a single item that is returned as part of a Bulk request call.
@@ -400,63 +319,23 @@ components:
               param2: param2Value
           additionalProperties: true
       additionalProperties: false
-    BulkDataLimitedList:
-      title: BulkDataLimitedList
-      description: Collection of objects to be processed
-      type: array
-      maxItems: 1000
-      items:
-        $ref: '#/components/schemas/BulkDataProperty'
-    Audit:
-      title: Audit
-      description: Audit information
+    PaginationLinks:
+      title: PaginationLinks
       type: object
+      description: Represents pagination links for navigating between pages of data.
       properties:
-        created:
-          type: string
-          format: date-time
-          description: The ISO 8601 zoned date time when this record was created.
-          readOnly: true
-          example: '2017-01-02T02:00:00Z'
-        createdBy:
-          type: string
-          description: The identifier of the user that created this record.
-          readOnly: true
-          example: hporter
-        lastModified:
-          type: string
-          format: date-time
-          description: The ISO 8601 zoned date time when this record was updated.
-          readOnly: true
-          example: '2019-02-12T03:00:00Z'
-        lastModifiedBy:
-          type: string
-          description: The identifier of the user that last updated this record.
-          readOnly: true
-          example: hporter
-    BulkDataRecord:
-      title: BulkDataRecord
-      type: object
-      description: Arbitrary container to hold a JSON payload. The payload is the data you're sending, or the reply received when fetching results. For the request, this data must be structured in the way the API you're running a bulk job for accepts. For example, to bulk create sessions, you structure each of the `dataRecord` entries based on the format of the Create Session endpoint.
-      additionalProperties:
-        type: object
-      example:
-        event:
-          id: 04ca6ae2-0dc3-487b-953e-86d6abbdf7d3
-        title: Day 1 Keynote Session
-        start: '2020-02-03T13:00:00.000Z'
-        end: '2020-02-07T17:00:00.000Z'
-        status: Active
-    bulk-data-upload-response:
-      title: BulkDataUploadResponse
-      description: The model representing the results of a bulk data upload
-      properties:
-        data:
-          $ref: '#/components/schemas/BulkDataLimitedList'
-        count:
-          type: integer
-          description: The number of successfully uploaded data records
-          example: 100
+        next:
+          $ref: '#/components/schemas/Link'
+        self:
+          $ref: '#/components/schemas/Link'
+        prev:
+          $ref: '#/components/schemas/Link'
+    UUIDProperty:
+      title: UUID Property
+      description: A string that has to be a format matching the industry standard uuid
+      type: string
+      format: uuid
+      example: 04ca6ae2-0dc3-487b-953e-86d6abbdf7d3
     bulk-job:
       title: BulkJob
       description: The model representing a bulk job that can load data asynchronously.
@@ -545,21 +424,13 @@ components:
           description: Total number of records that were unsuccessfully processed by the bulk job.
           example: 50
           readOnly: true
-    ErrorResponse:
-      title: ErrorResponse
-      description: Represents an error response with additional details of cascading error messages.
-      allOf:
-      - $ref: '#/components/schemas/ErrorResponseBase'
-      type: object
-      required:
-      - code
-      - message
-      properties:
-        details:
-          type: array
-          items:
-            $ref: '#/components/schemas/ErrorResponseBase'
-          description: Additional details of cascading error messages.
+    BulkDataLimitedList:
+      title: BulkDataLimitedList
+      description: Collection of objects to be processed
+      type: array
+      maxItems: 1000
+      items:
+        $ref: '#/components/schemas/BulkDataProperty'
     BulkResult:
       title: BulkResult
       description: This entity is used to represent a single item that is returned as part of a Bulk Job Result call.
@@ -592,24 +463,83 @@ components:
           description: The response data for the bulk operation.
           allOf:
           - $ref: '#/components/schemas/BulkDataProperty'
-    bulk-job-with-data:
-      title: BulkJobWithData
-      description: The model representing a bulk job that can load data asynchronously including the data
-      required:
-      - url
-      - operation
+    Audit:
+      title: Audit
+      description: Audit information
       type: object
+      properties:
+        created:
+          type: string
+          format: date-time
+          description: The ISO 8601 zoned date time when this record was created.
+          readOnly: true
+          example: '2017-01-02T02:00:00Z'
+        createdBy:
+          type: string
+          description: The identifier of the user that created this record.
+          readOnly: true
+          example: hporter
+        lastModified:
+          type: string
+          format: date-time
+          description: The ISO 8601 zoned date time when this record was updated.
+          readOnly: true
+          example: '2019-02-12T03:00:00Z'
+        lastModifiedBy:
+          type: string
+          description: The identifier of the user that last updated this record.
+          readOnly: true
+          example: hporter
+    ErrorResponse:
+      title: ErrorResponse
+      description: Represents an error response with additional details of cascading error messages.
       allOf:
-      - $ref: '#/components/schemas/bulk-job'
+      - $ref: '#/components/schemas/ErrorResponseBase'
+      type: object
+      required:
+      - code
+      - message
+      properties:
+        details:
+          type: array
+          items:
+            $ref: '#/components/schemas/ErrorResponseBase'
+          description: Additional details of cascading error messages.
+    Paging:
+      title: Paging
+      required:
+      - _links
+      type: object
+      description: Represents pagination information for a collection of resources.
+      properties:
+        previousToken:
+          type: string
+          description: The pagination token for the previous page, if one exists. You can use this token to navigate to the previous page of data.
+          example: 1a2b3c4d5e6f7g8h9i10j11k
+        nextToken:
+          type: string
+          description: The pagination token for the next page. If this value is present in the response, there is another page of data you can fetch.
+          example: 1a2b3c4d5e6f7g8h9i10j11k
+        currentToken:
+          type: string
+          description: The pagination token for the current page.
+          example: 1a2b3c4d5e6f7g8h9i10j11k
+        limit:
+          type: integer
+          description: The number of records to return on the page. Not to exceed 200.
+          example: 100
+        totalCount:
+          type: integer
+          description: The total number of records available. This field may return blank, even if there are more records. To confirm if there are more records, check the `nextToken` field.
+          example: 2
+        _links:
+          $ref: '#/components/schemas/PaginationLinks'
+    bulk-data:
+      title: BulkData
+      description: The model representing an arbitrary list of JSON data loaded to bulk job.
       properties:
         data:
           $ref: '#/components/schemas/BulkDataLimitedList'
-    UUIDProperty:
-      title: UUID Property
-      description: A string that has to be a format matching the industry standard uuid
-      type: string
-      format: uuid
-      example: 04ca6ae2-0dc3-487b-953e-86d6abbdf7d3
     ErrorResponseBase:
       title: ErrorResponseBase
       type: object
@@ -630,6 +560,76 @@ components:
           type: string
           description: The target resource of the error.
           example: example target
+    bulk-results-paginated-response:
+      title: BulkResultsPaginationResponse
+      description: 'The response from a request to get the list of results from a Bulk Job run.  This includes the paging object as well
+
+        as the collection of bulk results.'
+      required:
+      - data
+      type: object
+      properties:
+        paging:
+          $ref: '#/components/schemas/Paging'
+        data:
+          type: array
+          items:
+            $ref: '#/components/schemas/BulkResult'
+          description: Collection of bulk result objects.
+    BulkDataProperty:
+      title: BulkDataProperty
+      description: Data Record envelope
+      type: object
+      required:
+      - dataRecord
+      properties:
+        pathParams:
+          description: Key-value pairs where a key identifies a labeled placeholders in the url (e.g. "/endpoint/{entityId}") and a value represents the value to substitute. Necessary if the target endpoint has path parameters. Values must NOT be null.
+          type: object
+          additionalProperties:
+            type: string
+          example:
+            id: 11111111-0dc3-487b-953e-86d6abbdf7d3
+        queryParams:
+          description: Query params specific to this data record to pass to the target endpoint. Entries merge with, and overlaps override, job-level queryParams. Values must NOT be null.
+          type: object
+          additionalProperties:
+            type: string
+          example:
+            param1: param1Value
+            param2: param2Value
+        headers:
+          type: object
+          description: Headers specific to this data record to pass to the target endpoint. Entries merge with, and overlaps override, job-level headers. Values must NOT be null.
+          additionalProperties:
+            type: string
+          example:
+            header1: header1Value
+            header2: header2Value
+        dataRecord:
+          $ref: '#/components/schemas/BulkDataRecord'
+    bulk-job-with-data:
+      title: BulkJobWithData
+      description: The model representing a bulk job that can load data asynchronously including the data
+      required:
+      - url
+      - operation
+      type: object
+      allOf:
+      - $ref: '#/components/schemas/bulk-job'
+      properties:
+        data:
+          $ref: '#/components/schemas/BulkDataLimitedList'
+    bulk-data-upload-response:
+      title: BulkDataUploadResponse
+      description: The model representing the results of a bulk data upload
+      properties:
+        data:
+          $ref: '#/components/schemas/BulkDataLimitedList'
+        count:
+          type: integer
+          description: The number of successfully uploaded data records
+          example: 100
   responses:
     TooManyRequests18:
       description: Too many requests
@@ -637,14 +637,20 @@ components:
         application/json:
           schema:
             $ref: '#/components/schemas/ErrorResponse'
-    NotFound18:
-      description: Resource not found
+    Forbidden18:
+      description: You do not have access to the resource
       content:
         application/json:
           schema:
             $ref: '#/components/schemas/ErrorResponse'
-    Forbidden18:
-      description: You do not have access to the resource
+    Unauthorized18:
+      description: Bad or expired token
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+    BadRequest18:
+      description: Bad request
       content:
         application/json:
           schema:
@@ -667,32 +673,22 @@ components:
           example:
             code: 409
             message: Conflict
-    Unauthorized18:
-      description: Bad or expired token
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/ErrorResponse'
-    BadRequest18:
-      description: Bad request
+    NotFound18:
+      description: Resource not found
       content:
         application/json:
           schema:
             $ref: '#/components/schemas/ErrorResponse'
   parameters:
-    token:
-      name: token
+    before:
+      name: before
+      required: false
       in: query
-      description: 'The continuation token returned from a previous class. This must be a valid UUID v4 if provided.
-
-        This will override any other pageable parameters provided.
-
-        '
-      style: form
-      explode: true
+      description: Used to query records that have been added or updated before this time point.
       schema:
         type: string
-        example: 0e28af57-511f-47ab-ae46-46cd1ca51a1a
+        format: date-time
+        example: '2017-01-02T02:00:00Z'
     uuid1:
       description: A uuid path parameter.
       schema:
@@ -709,6 +705,19 @@ components:
         type: string
         format: date-time
         example: '2017-01-02T02:00:00Z'
+    token:
+      name: token
+      in: query
+      description: 'The continuation token returned from a previous class. This must be a valid UUID v4 if provided.
+
+        This will override any other pageable parameters provided.
+
+        '
+      style: form
+      explode: true
+      schema:
+        type: string
+        example: 0e28af57-511f-47ab-ae46-46cd1ca51a1a
     limit:
       name: limit
       in: query
@@ -721,15 +730,6 @@ components:
         type: integer
         default: 100
         example: 100
-    before:
-      name: before
-      required: false
-      in: query
-      description: Used to query records that have been added or updated before this time point.
-      schema:
-        type: string
-        format: date-time
-        example: '2017-01-02T02:00:00Z'
   securitySchemes:
     OAuth2.authorizationCode:
       type: oauth2

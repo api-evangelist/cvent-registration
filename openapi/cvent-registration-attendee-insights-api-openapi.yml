@@ -172,41 +172,6 @@ paths:
         url: '#oauth2-auth-code-planner-admin'
 components:
   schemas:
-    attendee-insights-stats:
-      title: AttendeeInsightsStats
-      description: Attendee insights statistics.
-      type: object
-      required:
-      - averageAttendeeScore
-      - attendeeCount
-      - activityCount
-      properties:
-        averageAttendeeScore:
-          type: integer
-          description: Average engagement score across all attendees.
-          default: 0
-          example: 120
-        attendeeCount:
-          type: integer
-          description: Count of attendees who've participated in an engagement score.
-          default: 0
-          example: 200
-        activityCount:
-          type: integer
-          description: Count of all activities included in an engagement score.
-          default: 0
-          example: 3000
-    link.json:
-      title: Link
-      required:
-      - href
-      type: object
-      description: Represents a link to a related resource.
-      properties:
-        href:
-          type: string
-          description: A url provided that can be followed for linking
-          example: ?token=90c5f062-76ad-4ea4-aa53-00eb698d9262
     paging.json:
       title: Paging
       required:
@@ -236,9 +201,20 @@ components:
           example: 2
         _links:
           $ref: '#/components/schemas/pagination-links.json'
-    scores-paginated-response:
-      title: ScoresPaginatedResponse
-      description: Paginated collection of score objects.
+    link.json:
+      title: Link
+      required:
+      - href
+      type: object
+      description: Represents a link to a related resource.
+      properties:
+        href:
+          type: string
+          description: A url provided that can be followed for linking
+          example: ?token=90c5f062-76ad-4ea4-aa53-00eb698d9262
+    attendee-insights-paginated-response:
+      title: AttendeeInsightsPaginatedResponse
+      description: Paginated collection of engagement score objects.
       required:
       - data
       - paging
@@ -249,8 +225,19 @@ components:
         data:
           type: array
           items:
-            $ref: '#/components/schemas/scores.json'
-          description: Collection of score objects.
+            $ref: '#/components/schemas/attendee-insights'
+          description: Collection of engagement score objects.
+    pagination-links.json:
+      title: PaginationLinks
+      type: object
+      description: Represents pagination links for navigating between pages of data.
+      properties:
+        next:
+          $ref: '#/components/schemas/link.json'
+        self:
+          $ref: '#/components/schemas/link.json'
+        prev:
+          $ref: '#/components/schemas/link.json'
     attendee-insights:
       title: AttendeeInsights
       description: Attendee insights.
@@ -307,17 +294,18 @@ components:
           type: boolean
           description: True indicates this is the default engagement score in the event.
           example: false
-    pagination-links.json:
-      title: PaginationLinks
+    event.json3:
+      title: Event
+      description: An event reference used in attendee insights to identify the event context for engagement data
       type: object
-      description: Represents pagination links for navigating between pages of data.
+      required:
+      - id
       properties:
-        next:
-          $ref: '#/components/schemas/link.json'
-        self:
-          $ref: '#/components/schemas/link.json'
-        prev:
-          $ref: '#/components/schemas/link.json'
+        id:
+          type: string
+          format: uuid
+          description: A unique identifier (UUID) for the event where the engagement score applies
+          example: 04cb6ae2-0dc3-487b-953e-86d6abbdf7d3
     ErrorResponse:
       title: ErrorResponse
       description: Represents an error response with additional details of cascading error messages.
@@ -333,33 +321,56 @@ components:
           items:
             $ref: '#/components/schemas/ErrorResponseBase'
           description: Additional details of cascading error messages.
-    attendee-insights-paginated-response:
-      title: AttendeeInsightsPaginatedResponse
-      description: Paginated collection of engagement score objects.
-      required:
-      - data
-      - paging
+    uuid-property:
+      title: UUID Property
+      description: A string that has to be a format matching the industry standard uuid
+      type: string
+      format: uuid
+      example: 04ca6ae2-0dc3-487b-953e-86d6abbdf7d3
+    ErrorResponseBase:
+      title: ErrorResponseBase
       type: object
-      properties:
-        paging:
-          $ref: '#/components/schemas/paging.json'
-        data:
-          type: array
-          items:
-            $ref: '#/components/schemas/attendee-insights'
-          description: Collection of engagement score objects.
-    event.json3:
-      title: Event
-      description: An event reference used in attendee insights to identify the event context for engagement data
-      type: object
+      description: Represents an error response with no additional details.
       required:
-      - id
+      - code
+      - message
       properties:
-        id:
+        code:
+          type: integer
+          description: The HTTP status code representing the error.
+          example: 400
+        message:
           type: string
-          format: uuid
-          description: A unique identifier (UUID) for the event where the engagement score applies
-          example: 04cb6ae2-0dc3-487b-953e-86d6abbdf7d3
+          description: A brief description of the error.
+          example: Bad Request
+        target:
+          type: string
+          description: The target resource of the error.
+          example: example target
+    attendee-insights-stats:
+      title: AttendeeInsightsStats
+      description: Attendee insights statistics.
+      type: object
+      required:
+      - averageAttendeeScore
+      - attendeeCount
+      - activityCount
+      properties:
+        averageAttendeeScore:
+          type: integer
+          description: Average engagement score across all attendees.
+          default: 0
+          example: 120
+        attendeeCount:
+          type: integer
+          description: Count of attendees who've participated in an engagement score.
+          default: 0
+          example: 200
+        activityCount:
+          type: integer
+          description: Count of all activities included in an engagement score.
+          default: 0
+          example: 3000
     scores.json:
       title: Scores
       description: Insight score and ranking.
@@ -392,32 +403,21 @@ components:
           default: 0
           description: Attendees rank amongst other attendees in terms of points scored.
           example: 10
-    uuid-property:
-      title: UUID Property
-      description: A string that has to be a format matching the industry standard uuid
-      type: string
-      format: uuid
-      example: 04ca6ae2-0dc3-487b-953e-86d6abbdf7d3
-    ErrorResponseBase:
-      title: ErrorResponseBase
-      type: object
-      description: Represents an error response with no additional details.
+    scores-paginated-response:
+      title: ScoresPaginatedResponse
+      description: Paginated collection of score objects.
       required:
-      - code
-      - message
+      - data
+      - paging
+      type: object
       properties:
-        code:
-          type: integer
-          description: The HTTP status code representing the error.
-          example: 400
-        message:
-          type: string
-          description: A brief description of the error.
-          example: Bad Request
-        target:
-          type: string
-          description: The target resource of the error.
-          example: example target
+        paging:
+          $ref: '#/components/schemas/paging.json'
+        data:
+          type: array
+          items:
+            $ref: '#/components/schemas/scores.json'
+          description: Collection of score objects.
   parameters:
     attendeeInsightsId:
       name: id
@@ -426,6 +426,24 @@ components:
       required: true
       schema:
         $ref: '#/components/schemas/uuid-property'
+    before:
+      name: before
+      required: false
+      in: query
+      description: Used to query records that have been added or updated before this time point.
+      schema:
+        type: string
+        format: date-time
+        example: '2017-01-02T02:00:00Z'
+    after:
+      name: after
+      required: false
+      description: Used to query records that have been added or updated after this time point. Default to the beginning of time of the data store.
+      in: query
+      schema:
+        type: string
+        format: date-time
+        example: '2017-01-02T02:00:00Z'
     token:
       name: token
       in: query
@@ -439,15 +457,6 @@ components:
       schema:
         type: string
         example: 0e28af57-511f-47ab-ae46-46cd1ca51a1a
-    after:
-      name: after
-      required: false
-      description: Used to query records that have been added or updated after this time point. Default to the beginning of time of the data store.
-      in: query
-      schema:
-        type: string
-        format: date-time
-        example: '2017-01-02T02:00:00Z'
     limit:
       name: limit
       in: query
@@ -460,15 +469,6 @@ components:
         type: integer
         default: 100
         example: 100
-    before:
-      name: before
-      required: false
-      in: query
-      description: Used to query records that have been added or updated before this time point.
-      schema:
-        type: string
-        format: date-time
-        example: '2017-01-02T02:00:00Z'
   responses:
     BadRequest1:
       description: Bad request
@@ -479,15 +479,6 @@ components:
           example:
             code: 400
             message: Bad Request
-    Forbidden1:
-      description: You do not have access to the resource
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/ErrorResponse'
-          example:
-            code: 403
-            message: Access Forbidden
     TooManyRequests1:
       description: Too many requests
       content:
@@ -515,6 +506,15 @@ components:
           example:
             code: 404
             message: Not found
+    Forbidden1:
+      description: You do not have access to the resource
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+          example:
+            code: 403
+            message: Access Forbidden
   securitySchemes:
     OAuth2.authorizationCode:
       type: oauth2

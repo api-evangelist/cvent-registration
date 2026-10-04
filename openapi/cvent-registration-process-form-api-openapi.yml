@@ -98,6 +98,49 @@ components:
             type: string
             example: Green
           description: The set of answers to the question.
+    ProcessForm:
+      title: ProcessForm
+      description: 'An object that contains the process form ID.
+
+
+        This is an **expandable** object and if requested will contain the name of a process form object.'
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+          description: The ID of the process form.
+          readOnly: true
+          example: 9c97eb50-9f88-4972-a603-f617fc3258dd
+    PaginationLinks:
+      title: PaginationLinks
+      type: object
+      description: Represents pagination links for navigating between pages of data.
+      properties:
+        next:
+          $ref: '#/components/schemas/Link'
+        self:
+          $ref: '#/components/schemas/Link'
+        prev:
+          $ref: '#/components/schemas/Link'
+    QuestionType-11:
+      title: QuestionType
+      enum:
+      - CommentBox
+      - Currency
+      - Decimal
+      - DateTime
+      - Email
+      - General
+      - Number
+      - MultiSelect
+      - SingleSelect
+      - USPhoneNumber
+      - Unknown
+      type: string
+      description: Denotes the type of data collected by a question.
+      example: FreeText
+      readOnly: true
     process-form-submission:
       title: ProcessFormSubmission
       description: Represents a process form submission in the context of a specific event.
@@ -134,17 +177,63 @@ components:
           items:
             $ref: '#/components/schemas/ProcessFormSubmissionQuestion'
           description: The list of possible answers to a question.
-    PaginationLinks:
-      title: PaginationLinks
+    Audit:
+      title: Audit
+      description: Audit information
       type: object
-      description: Represents pagination links for navigating between pages of data.
       properties:
-        next:
-          $ref: '#/components/schemas/Link'
-        self:
-          $ref: '#/components/schemas/Link'
-        prev:
-          $ref: '#/components/schemas/Link'
+        created:
+          type: string
+          format: date-time
+          description: The ISO 8601 zoned date time when this record was created.
+          readOnly: true
+          example: '2017-01-02T02:00:00Z'
+        createdBy:
+          type: string
+          description: The identifier of the user that created this record.
+          readOnly: true
+          example: hporter
+        lastModified:
+          type: string
+          format: date-time
+          description: The ISO 8601 zoned date time when this record was updated.
+          readOnly: true
+          example: '2019-02-12T03:00:00Z'
+        lastModifiedBy:
+          type: string
+          description: The identifier of the user that last updated this record.
+          readOnly: true
+          example: hporter
+    process-form-submissions-paginated-response:
+      title: ProcessFormSubmissionPaginatedResponse
+      description: The response from a request to get the list of process form submissions. This includes the paging object as well as the collection of process form submissions.
+      required:
+      - paging
+      - data
+      type: object
+      properties:
+        paging:
+          $ref: '#/components/schemas/Paging'
+        data:
+          type: array
+          items:
+            $ref: '#/components/schemas/process-form-submission'
+          description: Collection of process form submission objects.
+    ErrorResponse:
+      title: ErrorResponse
+      description: Represents an error response with additional details of cascading error messages.
+      allOf:
+      - $ref: '#/components/schemas/ErrorResponseBase'
+      type: object
+      required:
+      - code
+      - message
+      properties:
+        details:
+          type: array
+          items:
+            $ref: '#/components/schemas/ErrorResponseBase'
+          description: Additional details of cascading error messages.
     Paging:
       title: Paging
       required:
@@ -174,95 +263,6 @@ components:
           example: 2
         _links:
           $ref: '#/components/schemas/PaginationLinks'
-    process-form-submissions-paginated-response:
-      title: ProcessFormSubmissionPaginatedResponse
-      description: The response from a request to get the list of process form submissions. This includes the paging object as well as the collection of process form submissions.
-      required:
-      - paging
-      - data
-      type: object
-      properties:
-        paging:
-          $ref: '#/components/schemas/Paging'
-        data:
-          type: array
-          items:
-            $ref: '#/components/schemas/process-form-submission'
-          description: Collection of process form submission objects.
-    Audit:
-      title: Audit
-      description: Audit information
-      type: object
-      properties:
-        created:
-          type: string
-          format: date-time
-          description: The ISO 8601 zoned date time when this record was created.
-          readOnly: true
-          example: '2017-01-02T02:00:00Z'
-        createdBy:
-          type: string
-          description: The identifier of the user that created this record.
-          readOnly: true
-          example: hporter
-        lastModified:
-          type: string
-          format: date-time
-          description: The ISO 8601 zoned date time when this record was updated.
-          readOnly: true
-          example: '2019-02-12T03:00:00Z'
-        lastModifiedBy:
-          type: string
-          description: The identifier of the user that last updated this record.
-          readOnly: true
-          example: hporter
-    ErrorResponse:
-      title: ErrorResponse
-      description: Represents an error response with additional details of cascading error messages.
-      allOf:
-      - $ref: '#/components/schemas/ErrorResponseBase'
-      type: object
-      required:
-      - code
-      - message
-      properties:
-        details:
-          type: array
-          items:
-            $ref: '#/components/schemas/ErrorResponseBase'
-          description: Additional details of cascading error messages.
-    QuestionType-11:
-      title: QuestionType
-      enum:
-      - CommentBox
-      - Currency
-      - Decimal
-      - DateTime
-      - Email
-      - General
-      - Number
-      - MultiSelect
-      - SingleSelect
-      - USPhoneNumber
-      - Unknown
-      type: string
-      description: Denotes the type of data collected by a question.
-      example: FreeText
-      readOnly: true
-    ProcessForm:
-      title: ProcessForm
-      description: 'An object that contains the process form ID.
-
-
-        This is an **expandable** object and if requested will contain the name of a process form object.'
-      type: object
-      properties:
-        id:
-          type: string
-          format: uuid
-          description: The ID of the process form.
-          readOnly: true
-          example: 9c97eb50-9f88-4972-a603-f617fc3258dd
     ErrorResponseBase:
       title: ErrorResponseBase
       type: object
@@ -283,80 +283,7 @@ components:
           type: string
           description: The target resource of the error.
           example: example target
-  responses:
-    BadRequest1:
-      description: Bad request
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/ErrorResponse'
-          example:
-            code: 400
-            message: Bad Request
-    Forbidden1:
-      description: You do not have access to the resource
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/ErrorResponse'
-          example:
-            code: 403
-            message: Access Forbidden
-    TooManyRequests1:
-      description: Too many requests
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/ErrorResponse'
-          example:
-            code: 429
-            message: Limit Exceeded
-    Unauthorized1:
-      description: Bad or expired token
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/ErrorResponse'
-          example:
-            code: 401
-            message: Unauthorized
   parameters:
-    token:
-      name: token
-      in: query
-      description: 'The continuation token returned from a previous class. This must be a valid UUID v4 if provided.
-
-        This will override any other pageable parameters provided.
-
-        '
-      style: form
-      explode: true
-      schema:
-        type: string
-        example: 0e28af57-511f-47ab-ae46-46cd1ca51a1a
-    processFormExpand:
-      name: expand
-      in: query
-      explode: false
-      required: false
-      description: "This endpoint enables users to request the process form name in an extended response by utilizing the expand query parameter. The expanded process form including the name is fetched and presented inline for each specified expand value.\n\nA process form submission includes the ID of a corresponding process form in its response properties. By employing the expand query parameter, users can access the process form name within the process form submission.\n\nThe following fields are expandable:\n  * process-form\n"
-      example:
-      - process-form
-      schema:
-        type: array
-        items:
-          type: string
-          enum:
-          - process-form
-    after:
-      name: after
-      required: false
-      description: Used to query records that have been added or updated after this time point. Default to the beginning of time of the data store.
-      in: query
-      schema:
-        type: string
-        format: date-time
-        example: '2017-01-02T02:00:00Z'
     limit3:
       name: limit
       in: query
@@ -377,6 +304,79 @@ components:
         type: string
         format: date-time
         example: '2017-01-02T02:00:00Z'
+    processFormExpand:
+      name: expand
+      in: query
+      explode: false
+      required: false
+      description: "This endpoint enables users to request the process form name in an extended response by utilizing the expand query parameter. The expanded process form including the name is fetched and presented inline for each specified expand value.\n\nA process form submission includes the ID of a corresponding process form in its response properties. By employing the expand query parameter, users can access the process form name within the process form submission.\n\nThe following fields are expandable:\n  * process-form\n"
+      example:
+      - process-form
+      schema:
+        type: array
+        items:
+          type: string
+          enum:
+          - process-form
+    token:
+      name: token
+      in: query
+      description: 'The continuation token returned from a previous class. This must be a valid UUID v4 if provided.
+
+        This will override any other pageable parameters provided.
+
+        '
+      style: form
+      explode: true
+      schema:
+        type: string
+        example: 0e28af57-511f-47ab-ae46-46cd1ca51a1a
+    after:
+      name: after
+      required: false
+      description: Used to query records that have been added or updated after this time point. Default to the beginning of time of the data store.
+      in: query
+      schema:
+        type: string
+        format: date-time
+        example: '2017-01-02T02:00:00Z'
+  responses:
+    BadRequest1:
+      description: Bad request
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+          example:
+            code: 400
+            message: Bad Request
+    TooManyRequests1:
+      description: Too many requests
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+          example:
+            code: 429
+            message: Limit Exceeded
+    Unauthorized1:
+      description: Bad or expired token
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+          example:
+            code: 401
+            message: Unauthorized
+    Forbidden1:
+      description: You do not have access to the resource
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+          example:
+            code: 403
+            message: Access Forbidden
   securitySchemes:
     OAuth2.authorizationCode:
       type: oauth2
