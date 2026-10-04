@@ -1089,6 +1089,9 @@ apis:
   - type: OpenAPI
     url: openapi/cvent-registration-oauth-api-openapi.yml
 common:
+  - type: CapabilityMap
+    url: capabilities/cvent-registration-capability-edges.yml
+    name: Cvent Registration Business Capability Map
   - type: AgenticAccess
     url: agentic-access/cvent-registration-agentic-access.yml
   - type: TrustCenter

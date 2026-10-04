@@ -1,0 +1,115 @@
+slug: cvent-registration
+provider: Cvent Registration
+generated_by: planning/capability-mapping/scripts/classify_capabilities.py
+model: claude-opus-5
+frame:
+- Software & Technology
+min_confidence: 0.7
+capability_model:
+  source: https://github.com/vincentmakes/turbo-ea-capabilities
+  license: CC-BY-4.0
+  attribution: Turbo EA Capabilities by Vincent Verdet — Turbo EA, https://github.com/vincentmakes/turbo-ea-capabilities,
+    CC BY 4.0
+  notice: NOTICE
+edge_count: 9
+edges:
+- tag: Webhooks
+  spec_file: cvent-registration-webhooks-api-openapi.yml
+  capability_id: BC-4270.80
+  capability_id_l1: BC-4270
+  capability_name: Webhook & Event Subscription Management
+  confidence: 0.85
+  evidence: 'POST /ea/webhooks postEaWebhooks Create webhook subscription; description: "manage ... webhook
+    subscriptions for registration lifecycle events"'
+  reason: Listing and creating outbound webhook subscriptions for platform events is precisely the frame's
+    Webhook & Event Subscription Management capability; normally plumbing, but the candidate list explicitly
+    carries it as a developer-platform capability.
+- tag: Discounts
+  spec_file: cvent-registration-discounts-api-openapi.yml
+  capability_id: BC-440.30
+  capability_id_l1: BC-440
+  capability_name: Discount & Promotion Management
+  confidence: 0.82
+  evidence: POST /events/{id}/discounts createEventDiscount "Create Event Discount"; schemas DiscountCode,
+    CreateUpdateVolumeDiscount, DiscountMethodType
+  reason: Operations create and maintain discount definitions, discount codes and volume-discount thresholds
+    applied to event pricing — squarely Discount & Promotion Management.
+- tag: Travel RFPs
+  spec_file: cvent-registration-travel-rfps-api-openapi.yml
+  capability_id: BC-500.10
+  capability_id_l1: BC-500
+  capability_name: Sourcing Management
+  confidence: 0.75
+  evidence: GET /travel-proposals/bids ListTravelProposalBids List Travel Proposal Bids; schemas travel-program,
+    travel-proposal-bid, TravelBidSeasonRate, RateReviewStatusType, BidStatusType
+  reason: Travel programmes with question sets, proposals and supplier bids with season rates and bid
+    status is an RFx/sourcing event lifecycle (hotel rate sourcing) — strategic sourcing and supplier
+    bid evaluation. Confidence held at 0.75 as the API is read-only reporting over the sourcing data rather
+    than executing the RFx.
+- tag: Usage
+  spec_file: cvent-registration-usage-api-openapi.yml
+  capability_id: BC-4270.50
+  capability_id_l1: BC-4270
+  capability_name: API Consumption Governance
+  confidence: 0.75
+  evidence: GET /usage/tier getUsageTier Get Current Usage Tier; schemas UsagePlan, UsageQuotaFields,
+    public-usage-plan
+  reason: Exposes the caller's current API usage against a usage plan, quota fields and tier — i.e. quota/rate-limit
+    and plan-tier visibility for API consumers, which is API consumption governance for the vendor's public
+    API.
+- tag: Contacts
+  spec_file: cvent-registration-contacts-api-openapi.yml
+  capability_id: BC-420.10
+  capability_id_l1: BC-420
+  capability_name: Customer Data Management
+  confidence: 0.72
+  evidence: POST /ea/contacts "Create contact"; PUT /ea/contacts/{contactId} "Update contact"; POST /contact-groups
+    "Create Contact Group"; schemas Contact, ContactOptOut, ContactHistory
+  reason: Full CRUD over a contact master record plus grouping, opt-out and history is customer/contact
+    data stewardship — Customer Data Management. Some chance it is better read as list/segmentation management,
+    hence not higher.
+- tag: RFP Management
+  spec_file: cvent-registration-rfp-management-api-openapi.yml
+  capability_id: BC-500.10
+  capability_id_l1: BC-500
+  capability_name: Sourcing Management
+  confidence: 0.72
+  evidence: 'GET /rfps/{rfpId}  getRFP  Get RFP; schemas: Rfp, RfpStatus-1, RfpLeadSource, RecipientType,
+    PackagePricingPreference'
+  reason: 'Operations retrieve the RFP itself plus lead sources and recipient types — the request-for-proposal
+    artefact and its distribution, which is RFx handling under Sourcing Management. Not a pure business-noun
+    homograph: Rfp/RfpStatus schemas confirm genuine RFP lifecycle data.'
+- tag: RFP Requirements
+  spec_file: cvent-registration-rfp-requirements-api-openapi.yml
+  capability_id: BC-500.10
+  capability_id_l1: BC-500
+  capability_name: Sourcing Management
+  confidence: 0.7
+  evidence: GET /rfps/{rfpId}/questions  listRfpQuestions  List RFP Questions; GET /rfps/{rfpId}/guest-rooms  getRfpGuestRooms;
+    GET /rfps/{rfpId}/attachments  listRfpAttachments
+  reason: Endpoints expose the requirement content of an RFP — questions, agenda items, guest-room needs,
+    attachments and custom-field answers — i.e. the specification side of an RFx, mapping to Sourcing
+    Management. Moderate confidence as it is a read-only slice of a larger sourcing process.
+- tag: Surveys
+  spec_file: cvent-registration-surveys-api-openapi.yml
+  capability_id: BC-430.50
+  capability_id_l1: BC-430
+  capability_name: Customer Feedback Management
+  confidence: 0.7
+  evidence: GET /events/{id}/surveys/{surveyId}/respondents  getEventSurveyRespondents; POST /events/{id}/surveys/{surveyId}/respondents/{respondentId}/responses  createEventSurveyResponses
+  reason: The operations create and read surveys, questions, respondents and responses for events — collection
+    of attendee feedback, which matches Customer Feedback Management ('Surveys, NPS, voice-of-customer
+    programmes'). Confidence held at 0.7 because the respondents are event attendees rather than customers
+    in a service context, and the surface is partly generic question/choice plumbing.
+- tag: User SCIM
+  spec_file: cvent-registration-user-scim-api-openapi.yml
+  capability_id: BC-4230.50
+  capability_id_l1: BC-4230
+  capability_name: Tenant Identity Federation
+  confidence: 0.7
+  evidence: POST /scim/v2/Users createUser Create User; GET /scim/v2/Groups getUserGroups Get SCIM Groups;
+    GET /scim/v2/ServiceProviderConfig
+  reason: A full SCIM 2.0 service-provider surface for provisioning and deprovisioning user accounts and
+    groups in the vendor's SaaS account — the frame names exactly this (tenant user account lifecycle
+    via SSO and SCIM). Some chance the intended reading is generic Identity & Access Management, hence
+    0.7.
