@@ -1,4 +1,4 @@
-generated: '2026-09-16'
+generated: '2026-09-23'
 method: generated
 source: openapi/cvent-registration-appointments-api-openapi.yml, openapi/cvent-registration-attendee-activities-api-openapi.yml,
   openapi/cvent-registration-attendee-insights-api-openapi.yml, openapi/cvent-registration-attendee-messages-api-openapi.yml,
@@ -36,12 +36,12 @@ description: Recommended x-agentic-access execution contracts, classified heuris
 summary:
   operations: 489
   by_action_class:
-    connected: 267
-    acting: 222
+    connected: 282
+    acting: 207
   by_consequence:
-    read: 267
-    write: 211
-    physical: 11
+    read: 282
+    write: 197
+    physical: 10
   human_in_the_loop_required: 0
 operations:
 - path: /appointment-attendees
@@ -508,20 +508,14 @@ operations:
   method: post
   operationId: listAttendeesPostFilter
   x-agentic-access:
-    action-class: acting
-    consequence: write
-    subject: required
+    action-class: connected
+    consequence: read
+    subject: optional
     scope:
     - event/attendees:read
-    audience: null
     token:
-      max-ttl: 900
-    escalation:
-      human-in-the-loop: conditional
-      triggers:
-      - abnormal
-      - high-value
-    audit: required
+      max-ttl: 3600
+    audit: none
 - path: /attendees/{id}
   method: get
   operationId: getAttendeeById
@@ -622,20 +616,14 @@ operations:
   method: post
   operationId: getBadgesPostFilters
   x-agentic-access:
-    action-class: acting
-    consequence: write
-    subject: required
+    action-class: connected
+    consequence: read
+    subject: optional
     scope:
     - exhibitor/badges:read
-    audience: null
     token:
-      max-ttl: 900
-    escalation:
-      human-in-the-loop: conditional
-      triggers:
-      - abnormal
-      - high-value
-    audit: required
+      max-ttl: 3600
+    audit: none
 - path: /events/{id}/badges/{badgeId}
   method: put
   operationId: updateBadge
@@ -688,20 +676,14 @@ operations:
   method: post
   operationId: listAssociatedAudienceSegments
   x-agentic-access:
-    action-class: acting
-    consequence: write
-    subject: required
+    action-class: connected
+    consequence: read
+    subject: optional
     scope:
     - event/audience-segments:read
-    audience: null
     token:
-      max-ttl: 900
-    escalation:
-      human-in-the-loop: conditional
-      triggers:
-      - abnormal
-      - high-value
-    audit: required
+      max-ttl: 3600
+    audit: none
 - path: /audience-segments
   method: post
   operationId: createAudienceSegment
@@ -736,20 +718,14 @@ operations:
   method: post
   operationId: listAudienceSegmentsPostFilter
   x-agentic-access:
-    action-class: acting
-    consequence: write
-    subject: required
+    action-class: connected
+    consequence: read
+    subject: optional
     scope:
     - event/audience-segments:read
-    audience: null
     token:
-      max-ttl: 900
-    escalation:
-      human-in-the-loop: conditional
-      triggers:
-      - abnormal
-      - high-value
-    audit: required
+      max-ttl: 3600
+    audit: none
 - path: /audience-segments/{audienceSegmentId}
   method: get
   operationId: getAudienceSegmentById
@@ -1550,20 +1526,14 @@ operations:
   method: post
   operationId: filterCommunicationLogMessages
   x-agentic-access:
-    action-class: acting
-    consequence: write
-    subject: required
+    action-class: connected
+    consequence: read
+    subject: optional
     scope:
     - compliance/communications:read
-    audience: null
     token:
-      max-ttl: 900
-    escalation:
-      human-in-the-loop: conditional
-      triggers:
-      - abnormal
-      - high-value
-    audit: required
+      max-ttl: 3600
+    audit: none
 - path: /ea/contacts
   method: get
   operationId: getEaContacts
@@ -1840,20 +1810,14 @@ operations:
   method: post
   operationId: listContactsPostFilters
   x-agentic-access:
-    action-class: acting
-    consequence: write
-    subject: required
+    action-class: connected
+    consequence: read
+    subject: optional
     scope:
     - event/contacts:read
-    audience: null
     token:
-      max-ttl: 900
-    escalation:
-      human-in-the-loop: conditional
-      triggers:
-      - abnormal
-      - high-value
-    audit: required
+      max-ttl: 3600
+    audit: none
 - path: /contacts/obfuscate/{obfuscateId}/status
   method: get
   operationId: getContactObfuscationStatusById
@@ -2577,20 +2541,14 @@ operations:
   method: post
   operationId: listAdmissionItemsPostFilters
   x-agentic-access:
-    action-class: acting
-    consequence: write
-    subject: required
+    action-class: connected
+    consequence: read
+    subject: optional
     scope:
     - event/admission-items:read
-    audience: null
     token:
-      max-ttl: 900
-    escalation:
-      human-in-the-loop: conditional
-      triggers:
-      - abnormal
-      - high-value
-    audit: required
+      max-ttl: 3600
+    audit: none
 - path: /event-questions
   method: get
   operationId: getEventQuestions
@@ -2705,20 +2663,14 @@ operations:
   method: post
   operationId: getEventsPostFilters
   x-agentic-access:
-    action-class: acting
-    consequence: write
-    subject: required
+    action-class: connected
+    consequence: read
+    subject: optional
     scope:
     - event/events:read
-    audience: null
     token:
-      max-ttl: 900
-    escalation:
-      human-in-the-loop: conditional
-      triggers:
-      - abnormal
-      - high-value
-    audit: required
+      max-ttl: 3600
+    audit: none
 - path: /events/{id}
   method: get
   operationId: getEventById
@@ -2837,20 +2789,14 @@ operations:
   method: post
   operationId: listDonationItemsPostFilter
   x-agentic-access:
-    action-class: acting
-    consequence: write
-    subject: required
+    action-class: connected
+    consequence: read
+    subject: optional
     scope:
     - event/donation-items:read
-    audience: null
     token:
-      max-ttl: 900
-    escalation:
-      human-in-the-loop: conditional
-      triggers:
-      - abnormal
-      - high-value
-    audit: required
+      max-ttl: 3600
+    audit: none
 - path: /events/{id}/emails
   method: get
   operationId: listEventEmails
@@ -2903,22 +2849,14 @@ operations:
   method: post
   operationId: listMembershipItemsPostFilter
   x-agentic-access:
-    action-class: acting
-    consequence: physical
-    subject: required
+    action-class: connected
+    consequence: read
+    subject: optional
     scope:
     - event/membership-items:read
-    audience: null
     token:
-      max-ttl: 300
-      exchange: true
-      purpose-required: true
-    escalation:
-      human-in-the-loop: conditional
-      triggers:
-      - abnormal
-      - high-value
-    audit: required
+      max-ttl: 3600
+    audit: none
 - path: /events/{id}/orders
   method: get
   operationId: getOrders
@@ -2991,20 +2929,14 @@ operations:
   method: post
   operationId: listQuantityItemsPostFilter
   x-agentic-access:
-    action-class: acting
-    consequence: write
-    subject: required
+    action-class: connected
+    consequence: read
+    subject: optional
     scope:
     - event/quantity-items:read
-    audience: null
     token:
-      max-ttl: 900
-    escalation:
-      human-in-the-loop: conditional
-      triggers:
-      - abnormal
-      - high-value
-    audit: required
+      max-ttl: 3600
+    audit: none
 - path: /events/{id}/registration-paths
   method: get
   operationId: listRegistrationPaths
@@ -3165,20 +3097,14 @@ operations:
   method: post
   operationId: listEventVouchersPostFilter
   x-agentic-access:
-    action-class: acting
-    consequence: write
-    subject: required
+    action-class: connected
+    consequence: read
+    subject: optional
     scope:
     - event/vouchers:read
-    audience: null
     token:
-      max-ttl: 900
-    escalation:
-      human-in-the-loop: conditional
-      triggers:
-      - abnormal
-      - high-value
-    audit: required
+      max-ttl: 3600
+    audit: none
 - path: /events/{id}/vouchers/{voucherId}/attendees
   method: get
   operationId: listEventVoucherAttendees
@@ -4561,20 +4487,14 @@ operations:
   method: post
   operationId: getLeadsPostFiltersData
   x-agentic-access:
-    action-class: acting
-    consequence: write
-    subject: required
+    action-class: connected
+    consequence: read
+    subject: optional
     scope:
     - exhibitor/leads:read
-    audience: null
     token:
-      max-ttl: 900
-    escalation:
-      human-in-the-loop: conditional
-      triggers:
-      - abnormal
-      - high-value
-    audit: required
+      max-ttl: 3600
+    audit: none
 - path: /events/{id}/meeting-requests
   method: get
   operationId: getMeetingRequestByEventId
@@ -5121,20 +5041,14 @@ operations:
   method: post
   operationId: listProgramItemsPostFilters
   x-agentic-access:
-    action-class: acting
-    consequence: write
-    subject: required
+    action-class: connected
+    consequence: read
+    subject: optional
     scope:
     - event/program-items:read
-    audience: null
     token:
-      max-ttl: 900
-    escalation:
-      human-in-the-loop: conditional
-      triggers:
-      - abnormal
-      - high-value
-    audit: required
+      max-ttl: 3600
+    audit: none
 - path: /program-items/{programItemId}
   method: put
   operationId: updateProgramItem
@@ -5649,20 +5563,14 @@ operations:
   method: post
   operationId: listSpeakersPostFilter
   x-agentic-access:
-    action-class: acting
-    consequence: write
-    subject: required
+    action-class: connected
+    consequence: read
+    subject: optional
     scope:
     - event/speakers:read
-    audience: null
     token:
-      max-ttl: 900
-    escalation:
-      human-in-the-loop: conditional
-      triggers:
-      - abnormal
-      - high-value
-    audit: required
+      max-ttl: 3600
+    audit: none
 - path: /speakers/{id}
   method: put
   operationId: updateSpeaker

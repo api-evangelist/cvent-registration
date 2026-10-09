@@ -122,3 +122,51 @@ selfCheck:
 maintainers:
   - FN: Kin Lane
     email: kin@apievangelist.com
+x-canonical:
+  generated: '2026-10-08'
+  vocabulary: all/0-working/economics/plans-canonical.yml
+  models:
+  - free
+  - negotiated
+  units:
+  - request
+  plans:
+  - name: Professional
+    access: paid
+    model: unstated
+    model_how: derived
+    units: []
+    periods: []
+  - name: Enterprise
+    access: enterprise
+    model: negotiated
+    model_how: derived
+    units: []
+    periods: []
+  - name: REST API usage tier — Free
+    access: freemium
+    model: free
+    model_how: derived
+    units:
+    - request
+    periods:
+    - day
+    - second
+  - name: REST API usage tier — Standard
+    access: paid
+    model: free
+    model_how: derived
+    units:
+    - request
+    periods:
+    - day
+    - second
+  - name: REST API usage tier — Premium
+    access: paid
+    model: free
+    model_how: derived
+    units:
+    - request
+    periods:
+    - day
+    - second
