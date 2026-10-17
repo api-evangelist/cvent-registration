@@ -42,13 +42,6 @@ paths:
       operationId: getEaEventsByEventIdExhibitors
       x-operation-id-source: derived
 components:
-  parameters:
-    EventId:
-      in: path
-      name: eventId
-      required: true
-      schema:
-        type: string
   schemas:
     Exhibitor:
       type: object
@@ -59,6 +52,13 @@ components:
           type: string
         boothNumber:
           type: string
+  parameters:
+    EventId:
+      in: path
+      name: eventId
+      required: true
+      schema:
+        type: string
   securitySchemes:
     OAuth2ClientCredentials:
       type: oauth2

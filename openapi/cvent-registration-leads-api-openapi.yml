@@ -229,313 +229,6 @@ paths:
         url: '#oauth2-auth-code-planner-admin'
 components:
   schemas:
-    Link:
-      title: Link
-      required:
-      - href
-      type: object
-      description: Represents a link to a related resource.
-      properties:
-        href:
-          type: string
-          description: A url provided that can be followed for linking
-          example: ?token=90c5f062-76ad-4ea4-aa53-00eb698d9262
-    Attendee-1:
-      title: Attendee
-      type: object
-      description: A JSON schema representing the Attendee object
-      properties:
-        id:
-          type: string
-          format: uuid
-          example: 04ca6ae2-0dc3-487b-953e-86d6abbdf7d3
-          description: Attendee id
-    Exhibitor:
-      description: The Associated Exhibitor.
-      title: Exhibitor
-      type: object
-      required:
-      - id
-      properties:
-        id:
-          type: string
-          format: uuid
-          example: 4888db54-db22-11eb-8d19-0242ac130003
-          description: Exhibitor id
-    AnswerType:
-      title: AnswerType
-      enum:
-      - Choice
-      - Text
-      - ChoiceText
-      - Other
-      - NA
-      type: string
-      description: Type of answer
-      example: File
-    UUID:
-      title: UUID
-      description: The reference to the related entity. Contains only the ID of the related entity.
-      required:
-      - id
-      type: object
-      properties:
-        id:
-          $ref: '#/components/schemas/UUIDProperty'
-    PaginationLinks:
-      title: PaginationLinks
-      type: object
-      description: Represents pagination links for navigating between pages of data.
-      properties:
-        next:
-          $ref: '#/components/schemas/Link'
-        self:
-          $ref: '#/components/schemas/Link'
-        prev:
-          $ref: '#/components/schemas/Link'
-    UUIDProperty:
-      title: UUID Property
-      description: A string that has to be a format matching the industry standard uuid
-      type: string
-      format: uuid
-      example: 04ca6ae2-0dc3-487b-953e-86d6abbdf7d3
-    Address-11:
-      title: Address
-      description: Schema for address information
-      type: object
-      properties:
-        address1:
-          type: string
-          description: The first line of an address
-          example: Cvent Inc.
-        address2:
-          type: string
-          description: The second line of an address
-          example: 4001 West Parmer Lane
-        city:
-          type: string
-          description: The name of the city.
-          example: Austin
-        region:
-          type: string
-          description: The name of the state/province/region of the address.
-          example: Texas
-        regionCode:
-          type: string
-          description: The abbreviation of the state/province/region of the address.
-          example: TX
-        postalCode:
-          type: string
-          description: postal code (also known as zipcode) of the address
-          example: '78727'
-        country:
-          type: string
-          description: Name of the country for example, 'United States'
-          example: United States of America
-        countryCode:
-          type: string
-          description: ISO 3166 two-letter (alpha-2) country code
-          example: US
-    leads-paginated-response:
-      title: LeadsPaginatedResponse
-      type: object
-      properties:
-        paging:
-          $ref: '#/components/schemas/Paging'
-        data:
-          type: array
-          items:
-            $ref: '#/components/schemas/Lead'
-          description: Collection of leads.
-      description: A paginated response of leads.
-    lead-qualification-answers-list-response:
-      title: Lead Qualification Answers List Response
-      type: object
-      description: A JSON schema representing the response for a list of lead qualification answers.
-      properties:
-        data:
-          type: array
-          items:
-            $ref: '#/components/schemas/LeadQualificationAnswers'
-          description: Collection of Lead Qualification Answers.
-    Lead:
-      title: Lead
-      type: object
-      description: A JSON Schema file for Lead.
-      allOf:
-      - $ref: '#/components/schemas/Lead-1'
-      properties:
-        id:
-          type: string
-          format: uuid
-          example: cdd0d110-3a84-4bc5-a420-37c007716c73
-          description: ID of Lead.
-          readOnly: true
-    BoothStaff:
-      title: Booth Staff
-      type: object
-      description: A JSON schema representing Booth Staff entity
-      properties:
-        id:
-          type: string
-          format: uuid
-          example: 04ca6ae2-0dc3-487b-953e-86d6abbdf7d3
-          description: Booth Staff id
-    Audit:
-      title: Audit
-      description: Audit information
-      type: object
-      properties:
-        created:
-          type: string
-          format: date-time
-          description: The ISO 8601 zoned date time when this record was created.
-          readOnly: true
-          example: '2017-01-02T02:00:00Z'
-        createdBy:
-          type: string
-          description: The identifier of the user that created this record.
-          readOnly: true
-          example: hporter
-        lastModified:
-          type: string
-          format: date-time
-          description: The ISO 8601 zoned date time when this record was updated.
-          readOnly: true
-          example: '2019-02-12T03:00:00Z'
-        lastModifiedBy:
-          type: string
-          description: The identifier of the user that last updated this record.
-          readOnly: true
-          example: hporter
-    Device:
-      title: Device
-      type: object
-      description: A JSON object representing an electronic device used to capture leads.
-      properties:
-        id:
-          type: string
-          description: The id of device used to capture lead
-          example: EKEK993IF9F
-        name:
-          type: string
-          description: The name of device used to capture lead
-          example: North Gate
-    Appointment1:
-      title: Appointment
-      description: A JSON schema representing the structure of an appointment object.
-      type: object
-      properties:
-        id:
-          type: string
-          format: uuid
-          example: 04ca6ae2-0dc3-487b-953e-86d6abbdf7d3
-          description: Appointment id
-    LeadQualificationAnswers:
-      title: Lead Qualification Answers
-      description: This JSON schema file represents lead qualification answers
-      type: object
-      allOf:
-      - $ref: '#/components/schemas/Audit'
-      properties:
-        id:
-          type: string
-          format: uuid
-          example: 04ca6ae2-0dc3-487b-953e-86d6abbdf7d3
-          description: Lead Qualification Answer id
-        question:
-          $ref: '#/components/schemas/UUID'
-        event:
-          $ref: '#/components/schemas/Event4'
-        exhibitor:
-          $ref: '#/components/schemas/Exhibitor'
-        lead:
-          $ref: '#/components/schemas/Lead-2'
-        answers:
-          description: List of answers
-          type: array
-          items:
-            $ref: '#/components/schemas/Answer-1'
-    Lead-2:
-      title: Lead
-      type: object
-      required:
-      - id
-      properties:
-        id:
-          type: string
-          format: uuid
-          example: 4e74f930-db22-11eb-8d19-0242ac130003
-          description: Lead id
-      description: JSON schema for the Lead object
-    ELiteratureRequestDataForLead:
-      title: E-literature Request Data for Lead
-      type: object
-      description: E-literature request data containing event, exhibitor, lead, and documents information.
-      required:
-      - event
-      - exhibitor
-      - lead
-      - documents
-      allOf:
-      - $ref: '#/components/schemas/Audit'
-      properties:
-        event:
-          $ref: '#/components/schemas/Event4'
-        exhibitor:
-          $ref: '#/components/schemas/Exhibitor'
-        lead:
-          $ref: '#/components/schemas/Lead-2'
-        documents:
-          type: array
-          items:
-            $ref: '#/components/schemas/ELiteratureDocument'
-          minItems: 1
-          maxItems: 25
-          description: Collection of E-literature documents sent to lead.
-    ErrorResponse:
-      title: ErrorResponse
-      description: Represents an error response with additional details of cascading error messages.
-      allOf:
-      - $ref: '#/components/schemas/ErrorResponseBase'
-      type: object
-      required:
-      - code
-      - message
-      properties:
-        details:
-          type: array
-          items:
-            $ref: '#/components/schemas/ErrorResponseBase'
-          description: Additional details of cascading error messages.
-    Answer-1:
-      title: Answer
-      type: object
-      required:
-      - type
-      description: An object representing the possible answers for lead qualification questions.
-      properties:
-        type:
-          $ref: '#/components/schemas/AnswerType'
-        value:
-          type: string
-          description: 'Answered value like: Choice text, text answer input etc.'
-          example: Choice A
-        choice:
-          $ref: '#/components/schemas/UUID'
-    ExistingELiteratureRequestDataForLead:
-      title: Existing E-literature Request Data for Lead
-      type: object
-      allOf:
-      - $ref: '#/components/schemas/ELiteratureRequestDataForLead'
-      properties:
-        id:
-          type: string
-          format: uuid
-          example: 04ca6ae2-0dc3-487b-953e-86d6abbdf7d3
-          description: Request identifier
-          readOnly: true
-      description: A JSON Schema for an existing e-literature request data for a lead.
     Paging:
       title: Paging
       required:
@@ -565,6 +258,43 @@ components:
           example: 2
         _links:
           $ref: '#/components/schemas/PaginationLinks'
+    Event4:
+      description: The Associated Event.
+      title: Event
+      type: object
+      required:
+      - id
+      properties:
+        id:
+          type: string
+          format: uuid
+          example: 3db28cfc-db22-11eb-8d19-0242ac130003
+          description: Event id
+    ELiteratureRequestDataForLead:
+      title: E-literature Request Data for Lead
+      type: object
+      description: E-literature request data containing event, exhibitor, lead, and documents information.
+      required:
+      - event
+      - exhibitor
+      - lead
+      - documents
+      allOf:
+      - $ref: '#/components/schemas/Audit'
+      properties:
+        event:
+          $ref: '#/components/schemas/Event4'
+        exhibitor:
+          $ref: '#/components/schemas/Exhibitor'
+        lead:
+          $ref: '#/components/schemas/Lead-2'
+        documents:
+          type: array
+          items:
+            $ref: '#/components/schemas/ELiteratureDocument'
+          minItems: 1
+          maxItems: 25
+          description: Collection of E-literature documents sent to lead.
     Lead-1:
       title: Lead
       type: object
@@ -680,6 +410,144 @@ components:
         additionalBadgekitFields:
           description: Map containing extra properties from badgekit provider
           type: object
+    Device:
+      title: Device
+      type: object
+      description: A JSON object representing an electronic device used to capture leads.
+      properties:
+        id:
+          type: string
+          description: The id of device used to capture lead
+          example: EKEK993IF9F
+        name:
+          type: string
+          description: The name of device used to capture lead
+          example: North Gate
+    eliterature-request-paginated-response:
+      title: E-literature Request Paginated Response
+      type: object
+      description: A paginated response for E-literature requests.
+      properties:
+        paging:
+          $ref: '#/components/schemas/Paging'
+        data:
+          type: array
+          items:
+            $ref: '#/components/schemas/ExistingELiteratureRequestDataForLead'
+          description: Collection of E-literature request data.
+    UUID:
+      title: UUID
+      description: The reference to the related entity. Contains only the ID of the related entity.
+      required:
+      - id
+      type: object
+      properties:
+        id:
+          $ref: '#/components/schemas/UUIDProperty'
+    Exhibitor:
+      description: The Associated Exhibitor.
+      title: Exhibitor
+      type: object
+      required:
+      - id
+      properties:
+        id:
+          type: string
+          format: uuid
+          example: 4888db54-db22-11eb-8d19-0242ac130003
+          description: Exhibitor id
+    filter:
+      title: A filter sent in the body of a request
+      description: A filter which is sent through the body of the request.
+      type: object
+      properties:
+        filter:
+          type: string
+          example: property eq 'value'
+          description: Filter included in the request.
+    LeadQualificationAnswers:
+      title: Lead Qualification Answers
+      description: This JSON schema file represents lead qualification answers
+      type: object
+      allOf:
+      - $ref: '#/components/schemas/Audit'
+      properties:
+        id:
+          type: string
+          format: uuid
+          example: 04ca6ae2-0dc3-487b-953e-86d6abbdf7d3
+          description: Lead Qualification Answer id
+        question:
+          $ref: '#/components/schemas/UUID'
+        event:
+          $ref: '#/components/schemas/Event4'
+        exhibitor:
+          $ref: '#/components/schemas/Exhibitor'
+        lead:
+          $ref: '#/components/schemas/Lead-2'
+        answers:
+          description: List of answers
+          type: array
+          items:
+            $ref: '#/components/schemas/Answer-1'
+    BoothStaff:
+      title: Booth Staff
+      type: object
+      description: A JSON schema representing Booth Staff entity
+      properties:
+        id:
+          type: string
+          format: uuid
+          example: 04ca6ae2-0dc3-487b-953e-86d6abbdf7d3
+          description: Booth Staff id
+    Audit:
+      title: Audit
+      description: Audit information
+      type: object
+      properties:
+        created:
+          type: string
+          format: date-time
+          description: The ISO 8601 zoned date time when this record was created.
+          readOnly: true
+          example: '2017-01-02T02:00:00Z'
+        createdBy:
+          type: string
+          description: The identifier of the user that created this record.
+          readOnly: true
+          example: hporter
+        lastModified:
+          type: string
+          format: date-time
+          description: The ISO 8601 zoned date time when this record was updated.
+          readOnly: true
+          example: '2019-02-12T03:00:00Z'
+        lastModifiedBy:
+          type: string
+          description: The identifier of the user that last updated this record.
+          readOnly: true
+          example: hporter
+    Attendee-1:
+      title: Attendee
+      type: object
+      description: A JSON schema representing the Attendee object
+      properties:
+        id:
+          type: string
+          format: uuid
+          example: 04ca6ae2-0dc3-487b-953e-86d6abbdf7d3
+          description: Attendee id
+    PaginationLinks:
+      title: PaginationLinks
+      type: object
+      description: Represents pagination links for navigating between pages of data.
+      properties:
+        next:
+          $ref: '#/components/schemas/Link'
+        self:
+          $ref: '#/components/schemas/Link'
+        prev:
+          $ref: '#/components/schemas/Link'
     ErrorResponseBase:
       title: ErrorResponseBase
       type: object
@@ -700,27 +568,6 @@ components:
           type: string
           description: The target resource of the error.
           example: example target
-    filter:
-      title: A filter sent in the body of a request
-      description: A filter which is sent through the body of the request.
-      type: object
-      properties:
-        filter:
-          type: string
-          example: property eq 'value'
-          description: Filter included in the request.
-    eliterature-request-paginated-response:
-      title: E-literature Request Paginated Response
-      type: object
-      description: A paginated response for E-literature requests.
-      properties:
-        paging:
-          $ref: '#/components/schemas/Paging'
-        data:
-          type: array
-          items:
-            $ref: '#/components/schemas/ExistingELiteratureRequestDataForLead'
-          description: Collection of E-literature request data.
     ELiteratureDocument:
       title: E-literature Document
       type: object
@@ -746,9 +593,161 @@ components:
           - LINK
           type: string
           example: FILE
-    Event4:
-      description: The Associated Event.
-      title: Event
+    Address-11:
+      title: Address
+      description: Schema for address information
+      type: object
+      properties:
+        address1:
+          type: string
+          description: The first line of an address
+          example: Cvent Inc.
+        address2:
+          type: string
+          description: The second line of an address
+          example: 4001 West Parmer Lane
+        city:
+          type: string
+          description: The name of the city.
+          example: Austin
+        region:
+          type: string
+          description: The name of the state/province/region of the address.
+          example: Texas
+        regionCode:
+          type: string
+          description: The abbreviation of the state/province/region of the address.
+          example: TX
+        postalCode:
+          type: string
+          description: postal code (also known as zipcode) of the address
+          example: '78727'
+        country:
+          type: string
+          description: Name of the country for example, 'United States'
+          example: United States of America
+        countryCode:
+          type: string
+          description: ISO 3166 two-letter (alpha-2) country code
+          example: US
+    Lead:
+      title: Lead
+      type: object
+      description: A JSON Schema file for Lead.
+      allOf:
+      - $ref: '#/components/schemas/Lead-1'
+      properties:
+        id:
+          type: string
+          format: uuid
+          example: cdd0d110-3a84-4bc5-a420-37c007716c73
+          description: ID of Lead.
+          readOnly: true
+    lead-qualification-answers-list-response:
+      title: Lead Qualification Answers List Response
+      type: object
+      description: A JSON schema representing the response for a list of lead qualification answers.
+      properties:
+        data:
+          type: array
+          items:
+            $ref: '#/components/schemas/LeadQualificationAnswers'
+          description: Collection of Lead Qualification Answers.
+    Answer-1:
+      title: Answer
+      type: object
+      required:
+      - type
+      description: An object representing the possible answers for lead qualification questions.
+      properties:
+        type:
+          $ref: '#/components/schemas/AnswerType'
+        value:
+          type: string
+          description: 'Answered value like: Choice text, text answer input etc.'
+          example: Choice A
+        choice:
+          $ref: '#/components/schemas/UUID'
+    ErrorResponse:
+      title: ErrorResponse
+      description: Represents an error response with additional details of cascading error messages.
+      allOf:
+      - $ref: '#/components/schemas/ErrorResponseBase'
+      type: object
+      required:
+      - code
+      - message
+      properties:
+        details:
+          type: array
+          items:
+            $ref: '#/components/schemas/ErrorResponseBase'
+          description: Additional details of cascading error messages.
+    leads-paginated-response:
+      title: LeadsPaginatedResponse
+      type: object
+      properties:
+        paging:
+          $ref: '#/components/schemas/Paging'
+        data:
+          type: array
+          items:
+            $ref: '#/components/schemas/Lead'
+          description: Collection of leads.
+      description: A paginated response of leads.
+    Appointment1:
+      title: Appointment
+      description: A JSON schema representing the structure of an appointment object.
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+          example: 04ca6ae2-0dc3-487b-953e-86d6abbdf7d3
+          description: Appointment id
+    AnswerType:
+      title: AnswerType
+      enum:
+      - Choice
+      - Text
+      - ChoiceText
+      - Other
+      - NA
+      type: string
+      description: Type of answer
+      example: File
+    ExistingELiteratureRequestDataForLead:
+      title: Existing E-literature Request Data for Lead
+      type: object
+      allOf:
+      - $ref: '#/components/schemas/ELiteratureRequestDataForLead'
+      properties:
+        id:
+          type: string
+          format: uuid
+          example: 04ca6ae2-0dc3-487b-953e-86d6abbdf7d3
+          description: Request identifier
+          readOnly: true
+      description: A JSON Schema for an existing e-literature request data for a lead.
+    UUIDProperty:
+      title: UUID Property
+      description: A string that has to be a format matching the industry standard uuid
+      type: string
+      format: uuid
+      example: 04ca6ae2-0dc3-487b-953e-86d6abbdf7d3
+    Link:
+      title: Link
+      required:
+      - href
+      type: object
+      description: Represents a link to a related resource.
+      properties:
+        href:
+          type: string
+          description: A url provided that can be followed for linking
+          example: ?token=90c5f062-76ad-4ea4-aa53-00eb698d9262
+    Lead-2:
+      title: Lead
       type: object
       required:
       - id
@@ -756,27 +755,68 @@ components:
         id:
           type: string
           format: uuid
-          example: 3db28cfc-db22-11eb-8d19-0242ac130003
-          description: Event id
+          example: 4e74f930-db22-11eb-8d19-0242ac130003
+          description: Lead id
+      description: JSON schema for the Lead object
+  responses:
+    Forbidden1:
+      description: You do not have access to the resource
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+          example:
+            code: 403
+            message: Access Forbidden
+    TooManyRequests1:
+      description: Too many requests
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+          example:
+            code: 429
+            message: Limit Exceeded
+    NotFound1:
+      description: Resource not found
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+          example:
+            code: 404
+            message: Not found
+    BadRequest1:
+      description: Bad request
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+          example:
+            code: 400
+            message: Bad Request
+    Unauthorized1:
+      description: Bad or expired token
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+          example:
+            code: 401
+            message: Unauthorized
   parameters:
-    id6:
-      in: path
-      name: id
-      description: ID of an event.
-      required: true
+    limit:
+      name: limit
+      in: query
+      description: The maximum number of records to return per page.
+      style: form
+      explode: true
       schema:
-        type: string
-        format: uuid
-        example: 3db28cfc-db22-11eb-8d19-0242ac130003
-    leadId:
-      in: path
-      name: leadId
-      description: ID of a lead.
-      required: true
-      schema:
-        type: string
-        format: uuid
-        example: cdd0d110-3a84-4bc5-a420-37c007716c73
+        maximum: 200
+        minimum: 1
+        type: integer
+        default: 100
+        example: 100
     exhibitorId:
       in: path
       name: exhibitorId
@@ -808,18 +848,6 @@ components:
       schema:
         type: string
         example: 0e28af57-511f-47ab-ae46-46cd1ca51a1a
-    limit:
-      name: limit
-      in: query
-      description: The maximum number of records to return per page.
-      style: form
-      explode: true
-      schema:
-        maximum: 200
-        minimum: 1
-        type: integer
-        default: 100
-        example: 100
     after:
       name: after
       required: false
@@ -829,52 +857,24 @@ components:
         type: string
         format: date-time
         example: '2017-01-02T02:00:00Z'
-  responses:
-    BadRequest1:
-      description: Bad request
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/ErrorResponse'
-          example:
-            code: 400
-            message: Bad Request
-    TooManyRequests1:
-      description: Too many requests
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/ErrorResponse'
-          example:
-            code: 429
-            message: Limit Exceeded
-    Unauthorized1:
-      description: Bad or expired token
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/ErrorResponse'
-          example:
-            code: 401
-            message: Unauthorized
-    Forbidden1:
-      description: You do not have access to the resource
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/ErrorResponse'
-          example:
-            code: 403
-            message: Access Forbidden
-    NotFound1:
-      description: Resource not found
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/ErrorResponse'
-          example:
-            code: 404
-            message: Not found
+    leadId:
+      in: path
+      name: leadId
+      description: ID of a lead.
+      required: true
+      schema:
+        type: string
+        format: uuid
+        example: cdd0d110-3a84-4bc5-a420-37c007716c73
+    id6:
+      in: path
+      name: id
+      description: ID of an event.
+      required: true
+      schema:
+        type: string
+        format: uuid
+        example: 3db28cfc-db22-11eb-8d19-0242ac130003
   securitySchemes:
     OAuth2.authorizationCode:
       type: oauth2

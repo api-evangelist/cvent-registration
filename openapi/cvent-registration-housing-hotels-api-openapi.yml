@@ -69,35 +69,26 @@ components:
           items:
             $ref: '#/components/schemas/ErrorResponseBase'
           description: Additional details of cascading error messages.
-    HotelRoomRatesRequest:
-      description: Represents hotel room rates request.
-      title: HotelRoomRatesRequest
+    ErrorResponseBase:
+      title: ErrorResponseBase
       type: object
+      description: Represents an error response with no additional details.
       required:
-      - startDate
-      - endDate
-      - roomRate
+      - code
+      - message
       properties:
-        rateCode:
+        code:
+          type: integer
+          description: The HTTP status code representing the error.
+          example: 400
+        message:
           type: string
-          description: The rate code.
-          example: VIPRATE
-        startDate:
-          description: The start of the date range the rate applies. Date is in ISO 8601 format.
+          description: A brief description of the error.
+          example: Bad Request
+        target:
           type: string
-          example: '2025-03-25'
-          format: date
-        endDate:
-          description: The end of the date range the rate applies. Date is in ISO 8601 format.
-          type: string
-          example: '2025-03-25'
-          format: date
-        roomRate:
-          description: Cost of room per night.
-          type: number
-          example: 150
-        currencyCode:
-          $ref: '#/components/schemas/currency.json'
+          description: The target resource of the error.
+          example: example target
     HotelRoomRatesResponse:
       description: Represents hotel room rates response.
       title: HotelRoomRatesResponse
@@ -147,26 +138,35 @@ components:
           type: string
           description: The room code.
           example: VLR
-    ErrorResponseBase:
-      title: ErrorResponseBase
+    HotelRoomRatesRequest:
+      description: Represents hotel room rates request.
+      title: HotelRoomRatesRequest
       type: object
-      description: Represents an error response with no additional details.
       required:
-      - code
-      - message
+      - startDate
+      - endDate
+      - roomRate
       properties:
-        code:
-          type: integer
-          description: The HTTP status code representing the error.
-          example: 400
-        message:
+        rateCode:
           type: string
-          description: A brief description of the error.
-          example: Bad Request
-        target:
+          description: The rate code.
+          example: VIPRATE
+        startDate:
+          description: The start of the date range the rate applies. Date is in ISO 8601 format.
           type: string
-          description: The target resource of the error.
-          example: example target
+          example: '2025-03-25'
+          format: date
+        endDate:
+          description: The end of the date range the rate applies. Date is in ISO 8601 format.
+          type: string
+          example: '2025-03-25'
+          format: date
+        roomRate:
+          description: Cost of room per night.
+          type: number
+          example: 150
+        currencyCode:
+          $ref: '#/components/schemas/currency.json'
     currency.json:
       description: ISO 4217 currency code.
       title: Currency
@@ -174,6 +174,15 @@ components:
       example: USD
       default: USD
   responses:
+    Unauthorized1:
+      description: Bad or expired token
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+          example:
+            code: 401
+            message: Unauthorized
     NotFound1:
       description: Resource not found
       content:
@@ -183,6 +192,15 @@ components:
           example:
             code: 404
             message: Not found
+    Forbidden1:
+      description: You do not have access to the resource
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+          example:
+            code: 403
+            message: Access Forbidden
     BadRequest1:
       description: Bad request
       content:
@@ -201,24 +219,6 @@ components:
           example:
             code: 429
             message: Limit Exceeded
-    Unauthorized1:
-      description: Bad or expired token
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/ErrorResponse'
-          example:
-            code: 401
-            message: Unauthorized
-    Forbidden1:
-      description: You do not have access to the resource
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/ErrorResponse'
-          example:
-            code: 403
-            message: Access Forbidden
   parameters:
     hotelCode:
       in: path

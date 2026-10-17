@@ -366,6 +366,31 @@ components:
           description: The target resource of the error.
           example: example target
   responses:
+    Unauthorized1:
+      description: Bad or expired token
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+          example:
+            code: 401
+            message: Unauthorized
+    ValidToken:
+      description: A confirmation message that the token is valid
+      headers: {}
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ValidToken'
+    Forbidden1:
+      description: You do not have access to the resource
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+          example:
+            code: 403
+            message: Access Forbidden
     BadRequest1:
       description: Bad request
       content:
@@ -384,31 +409,6 @@ components:
           example:
             code: 429
             message: Limit Exceeded
-    Unauthorized1:
-      description: Bad or expired token
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/ErrorResponse'
-          example:
-            code: 401
-            message: Unauthorized
-    Forbidden1:
-      description: You do not have access to the resource
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/ErrorResponse'
-          example:
-            code: 403
-            message: Access Forbidden
-    ValidToken:
-      description: A confirmation message that the token is valid
-      headers: {}
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/ValidToken'
   securitySchemes:
     OAuth2.authorizationCode:
       type: oauth2
