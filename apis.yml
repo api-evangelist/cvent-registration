@@ -58,7 +58,6 @@ tags:
   - Event
   - Authentication
   - On-Site Check-In
-  - Payments
   - Registration
   - REST API
   - SCIM
@@ -74,7 +73,6 @@ tags_raw:
   - Events
   - OAuth 2.0
   - On-Site Check-In
-  - Payments
   - Registration
   - REST API
   - SCIM
@@ -1198,3 +1196,5 @@ x-enrichment:
   status: enriched
   artifacts_added: 35
   pass: local-v3
+x-tags-removed:
+- Payments
