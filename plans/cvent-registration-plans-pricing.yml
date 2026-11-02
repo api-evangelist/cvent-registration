@@ -1,0 +1,51 @@
+# Pricing transcribed from the provider's own page — see provenance. Numbers are quoted, not derived.
+generated: '2026-10-28'
+method: searched
+source: https://www.cvent.com/en/event-management-software/cvent-pricing
+sources:
+- https://www.cvent.com/en/event-management-software/cvent-pricing
+provenance:
+  tool: engine/economics/harvest_pricing.py
+  run: 20261028T120612
+  grounding: every price_text was found verbatim in the fetched page text
+audience: business-product
+pricing_basis: negotiated
+delivery:
+  delivery: managed
+  method: page
+  read: '2026-10-28'
+published: false
+note: Page shows no numeric prices; only 'Get a free quote'/'Get pricing' lead forms. Tiers (Professional,
+  Enterprise) described by features only. Non-profit special rates mentioned without amounts.
+plan_count: 2
+plans:
+- name: Professional
+  price_text: Get pricing
+  period: none
+  included_quota: 15 user logins, registration/Attendee Hub/OnArrival solutions licensed as needed, plus
+    Professional platform features
+- name: Enterprise
+  price_text: Get pricing
+  period: none
+  included_quota: All Professional features plus Registration, Attendee Hub, OnArrival, Essentials licenses,
+    all user logins, API access, SSO, MFA
+x-canonical:
+  generated: '2026-11-01'
+  vocabulary: engine/economics/plans-canonical.yml
+  models: []
+  units: []
+  plans:
+  - name: Professional
+    access: other
+    model: unstated
+    model_how: derived
+    units: []
+    periods:
+    - none
+  - name: Enterprise
+    access: other
+    model: unstated
+    model_how: derived
+    units: []
+    periods:
+    - none
